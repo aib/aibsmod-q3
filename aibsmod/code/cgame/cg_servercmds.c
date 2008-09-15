@@ -140,6 +140,11 @@ void CG_ParseServerinfo( void ) {
 	trap_Cvar_Set("g_redTeam", cgs.redTeam);
 	Q_strncpyz( cgs.blueTeam, Info_ValueForKey( info, "g_blueTeam" ), sizeof(cgs.blueTeam) );
 	trap_Cvar_Set("g_blueTeam", cgs.blueTeam);
+
+	//aibsmod stuff
+	trap_Cvar_Set("am_fastWeaponSwitch", Info_ValueForKey(info, "am_fastWeaponSwitch"));
+	trap_Cvar_Set("am_trainingMode", Info_ValueForKey(info, "am_trainingMode"));
+
 }
 
 /*
@@ -325,7 +330,7 @@ static void CG_ConfigStringModified( void ) {
 	else if ( num == CS_SHADERSTATE ) {
 		CG_ShaderStateChanged();
 	}
-		
+
 }
 
 

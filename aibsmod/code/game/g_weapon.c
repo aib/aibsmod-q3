@@ -1,6 +1,6 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
-// g_weapon.c 
+// g_weapon.c
 // perform the server side effects of a weapon firing
 
 #include "g_local.h"
@@ -91,7 +91,11 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 	}
 #endif
 
-	damage = 50 * s_quadFactor;
+	if ((ent->client->ps.powerups[PW_RAMBO]) || (am_hyperGauntlet.integer))
+		damage = 1000;
+	else
+		damage = 50 * s_quadFactor;
+
 	G_Damage( traceEnt, ent, ent, forward, tr.endpos,
 		damage, 0, MOD_GAUNTLET );
 
@@ -113,7 +117,7 @@ SnapVectorTowards
 
 Round a vector to integers for more efficient network
 transmission, but make sure that it rounds towards a given point
-rather than blindly truncating.  This prevents it from truncating 
+rather than blindly truncating.  This prevents it from truncating
 into a wall.
 ======================
 */
@@ -417,6 +421,7 @@ RAILGUN
 weapon_railgun_fire
 =================
 */
+//http://code3arena.planetquake.gamespy.com/tutorials/tutorial5.shtml
 #define	MAX_RAIL_HITS	4
 void weapon_railgun_fire (gentity_t *ent) {
 	vec3_t		end;
@@ -432,20 +437,40 @@ void weapon_railgun_fire (gentity_t *ent) {
 	int			unlinked;
 	int			passent;
 	gentity_t	*unlinkedEntities[MAX_RAIL_HITS];
+	vec3_t		traceResume;
+	qboolean	piercingHit;
 
 	damage = 100 * s_quadFactor;
 
 	VectorMA (muzzle, 8192, forward, end);
+	VectorCopy(muzzle, traceResume);
 
-	// trace only against the solids, so the railgun will go through people
+	// trace only against the solids, so the railgun will go through people (aibsmod - not anymore)
 	unlinked = 0;
 	hits = 0;
 	passent = ent->s.number;
+	piercingHit = qfalse;
 	do {
-		trap_Trace (&trace, muzzle, NULL, NULL, end, passent, MASK_SHOT );
+		trap_Trace (&trace, traceResume, NULL, NULL, end, ent->s.number, MASK_SHOT );
 		if ( trace.entityNum >= ENTITYNUM_MAX_NORMAL ) {
-			break;
+			//break if piercing is disabled
+			if (am_piercingRail.integer == 0)
+				break;
+
+			//break if we hit the sky
+			if (trace.surfaceFlags & SURF_SKY)
+				break;
+
+			//break if we traversed length of vector tracefrom
+			if (trace.fraction == 1.0)
+				break;
+
+			//otherwise continue tracing through walls
+			VectorMA(trace.endpos, 1, forward, traceResume);
+			piercingHit = qtrue;
+			continue;
 		}
+
 		traceEnt = &g_entities[ trace.entityNum ];
 		if ( traceEnt->takedamage ) {
 #ifdef MISSIONPACK
@@ -470,16 +495,18 @@ void weapon_railgun_fire (gentity_t *ent) {
 				}
 			}
 			else {
+#endif
 				if( LogAccuracyHit( traceEnt, ent ) ) {
 					hits++;
 				}
-				G_Damage (traceEnt, ent, ent, forward, trace.endpos, damage, 0, MOD_RAILGUN);
+
+				//aibsmod - piercing hits have a different MOD
+				if (piercingHit)
+					G_Damage (traceEnt, ent, ent, forward, trace.endpos, damage, 0, MOD_RAILGUN_PIERCE);
+				else
+					G_Damage (traceEnt, ent, ent, forward, trace.endpos, damage, 0, MOD_RAILGUN);
+#ifdef MISSIONPACK
 			}
-#else
-				if( LogAccuracyHit( traceEnt, ent ) ) {
-					hits++;
-				}
-				G_Damage (traceEnt, ent, ent, forward, trace.endpos, damage, 0, MOD_RAILGUN);
 #endif
 		}
 		if ( trace.contents & CONTENTS_SOLID ) {
@@ -519,6 +546,9 @@ void weapon_railgun_fire (gentity_t *ent) {
 		tent->s.eventParm = DirToByte( trace.plane.normal );
 	}
 	tent->s.clientNum = ent->s.clientNum;
+
+	//send the effect to everyone since it tunnels through walls
+	tent->r.svFlags |= SVF_BROADCAST;
 
 	// give the shooter a reward sound if they have made two railgun hits in a row
 	if ( hits == 0 ) {
@@ -831,7 +861,7 @@ void FireWeapon( gentity_t *ent ) {
 		weapon_supershotgun_fire( ent );
 		break;
 	case WP_MACHINEGUN:
-		if ( g_gametype.integer != GT_TEAM ) {
+		if ((g_gametype.integer != GT_TEAM) && (g_gametype.integer != GT_RAMBO_TEAM)) {
 			Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
 		} else {
 			Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_TEAM_DAMAGE );

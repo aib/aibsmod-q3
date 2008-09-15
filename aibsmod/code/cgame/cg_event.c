@@ -195,19 +195,25 @@ static void CG_Obituary( entityState_t *ent ) {
 		char	*s;
 
 		if ( cgs.gametype < GT_TEAM ) {
-			s = va("You fragged %s\n%s place with %i", targetName, 
+			s = va("You fragged %s\n%s place with %i", targetName,
 				CG_PlaceString( cg.snap->ps.persistant[PERS_RANK] + 1 ),
 				cg.snap->ps.persistant[PERS_SCORE] );
 		} else {
 			s = va("You fragged %s", targetName );
 		}
+
+		//aibsmod - kill notice might be disabled or at the top
+		if (am_showKillNotice.integer == 1) {
 #ifdef MISSIONPACK
-		if (!(cg_singlePlayerActive.integer && cg_cameraOrbit.integer)) {
-			CG_CenterPrint( s, SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
-		} 
-#else
-		CG_CenterPrint( s, SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
+			if (!(cg_singlePlayerActive.integer && cg_cameraOrbit.integer)) {
 #endif
+				CG_CenterPrint( s, SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
+#ifdef MISSONPACK
+			}
+#endif
+		} else if (am_showKillNotice.integer == 2) {
+			CG_CenterPrint(s, BIGCHAR_HEIGHT, BIGCHAR_WIDTH);
+		}
 
 		// print the text message as well
 	}
@@ -298,13 +304,20 @@ static void CG_Obituary( entityState_t *ent ) {
 			message = "tried to invade";
 			message2 = "'s personal space";
 			break;
+
+		//aibsmod stuff
+		case MOD_RAILGUN_PIERCE:
+			message = "couldn't hide from";
+			message2 = "'s piercing rail";
+			break;
+
 		default:
 			message = "was killed by";
 			break;
 		}
 
 		if (message) {
-			CG_Printf( "%s %s %s%s\n", 
+			CG_Printf( "%s %s %s%s\n",
 				targetName, message, attackerName, message2);
 			return;
 		}
@@ -328,7 +341,7 @@ static void CG_UseItem( centity_t *cent ) {
 	entityState_t *es;
 
 	es = &cent->currentState;
-	
+
 	itemNum = (es->event & ~EV_EVENT_BITS) - EV_USE_ITEM0;
 	if ( itemNum < 0 || itemNum > HI_NUM_HOLDABLE ) {
 		itemNum = 0;
@@ -423,7 +436,7 @@ void CG_PainEvent( centity_t *cent, int health ) {
 	} else {
 		snd = "*pain100_1.wav";
 	}
-	trap_S_StartSound( NULL, cent->currentState.number, CHAN_VOICE, 
+	trap_S_StartSound( NULL, cent->currentState.number, CHAN_VOICE,
 		CG_CustomSound( cent->currentState.number, snd ) );
 
 	// save pain time for programitic twitch animation
@@ -475,35 +488,35 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	case EV_FOOTSTEP:
 		DEBUGNAME("EV_FOOTSTEP");
 		if (cg_footsteps.integer) {
-			trap_S_StartSound (NULL, es->number, CHAN_BODY, 
+			trap_S_StartSound (NULL, es->number, CHAN_BODY,
 				cgs.media.footsteps[ ci->footsteps ][rand()&3] );
 		}
 		break;
 	case EV_FOOTSTEP_METAL:
 		DEBUGNAME("EV_FOOTSTEP_METAL");
 		if (cg_footsteps.integer) {
-			trap_S_StartSound (NULL, es->number, CHAN_BODY, 
+			trap_S_StartSound (NULL, es->number, CHAN_BODY,
 				cgs.media.footsteps[ FOOTSTEP_METAL ][rand()&3] );
 		}
 		break;
 	case EV_FOOTSPLASH:
 		DEBUGNAME("EV_FOOTSPLASH");
 		if (cg_footsteps.integer) {
-			trap_S_StartSound (NULL, es->number, CHAN_BODY, 
+			trap_S_StartSound (NULL, es->number, CHAN_BODY,
 				cgs.media.footsteps[ FOOTSTEP_SPLASH ][rand()&3] );
 		}
 		break;
 	case EV_FOOTWADE:
 		DEBUGNAME("EV_FOOTWADE");
 		if (cg_footsteps.integer) {
-			trap_S_StartSound (NULL, es->number, CHAN_BODY, 
+			trap_S_StartSound (NULL, es->number, CHAN_BODY,
 				cgs.media.footsteps[ FOOTSTEP_SPLASH ][rand()&3] );
 		}
 		break;
 	case EV_SWIM:
 		DEBUGNAME("EV_SWIM");
 		if (cg_footsteps.integer) {
-			trap_S_StartSound (NULL, es->number, CHAN_BODY, 
+			trap_S_StartSound (NULL, es->number, CHAN_BODY,
 				cgs.media.footsteps[ FOOTSTEP_SPLASH ][rand()&3] );
 		}
 		break;
@@ -583,12 +596,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			vec3_t			up = {0, 0, 1};
 
 
-			smoke = CG_SmokePuff( cent->lerpOrigin, up, 
-						  32, 
+			smoke = CG_SmokePuff( cent->lerpOrigin, up,
+						  32,
 						  1, 1, 1, 0.33f,
-						  1000, 
+						  1000,
 						  cg.time, 0,
-						  LEF_PUFF_DONT_SCALE, 
+						  LEF_PUFF_DONT_SCALE,
 						  cgs.media.smokePuffShader );
 		}
 
@@ -987,7 +1000,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 					else {
 					if (cgs.clientinfo[cg.clientNum].team == TEAM_BLUE) {
 #ifdef MISSIONPACK
-							if (cgs.gametype == GT_1FCTF) 
+							if (cgs.gametype == GT_1FCTF)
 								CG_AddBufferedSound( cgs.media.yourTeamTookTheFlagSound );
 							else
 #endif
@@ -1076,7 +1089,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	case EV_DEATH2:
 	case EV_DEATH3:
 		DEBUGNAME("EV_DEATHx");
-		trap_S_StartSound( NULL, es->number, CHAN_VOICE, 
+		trap_S_StartSound( NULL, es->number, CHAN_VOICE,
 				CG_CustomSound( es->number, va("*death%i.wav", event - EV_DEATH1 + 1) ) );
 		break;
 
@@ -1135,6 +1148,40 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_DEBUG_LINE");
 		CG_Beam( cent );
 		break;
+
+	//aibsmod stuff
+	case EV_RAMBO_STEAL:
+		DEBUGNAME("EV_RAMBO_STEAL");
+		if (es->eventParm == 1) { //stolen
+			CG_Printf("%s" S_COLOR_WHITE " became " S_COLOR_GREEN "rambo!" S_COLOR_WHITE "\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+			trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.ramboStealSound);
+			cg.ramboNum = es->otherEntityNum2;
+		} else if (es->eventParm == 2) { //stolen by red
+			CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_RED "red team" S_COLOR_WHITE ") became " S_COLOR_GREEN "rambo!" S_COLOR_WHITE "\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+			trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.ramboStealSound);
+			cg.ramboNum = es->otherEntityNum2;
+		} else if (es->eventParm == 3) { //stolen by blue
+			CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_BLUE "blue team" S_COLOR_WHITE ") became " S_COLOR_GREEN "rambo!" S_COLOR_WHITE "\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+			trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.ramboStealSound);
+			cg.ramboNum = es->otherEntityNum2;
+		} else if (es->eventParm == 4) { //lost
+			CG_Printf("%s lost " S_COLOR_GREEN "rambo!" S_COLOR_WHITE "\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum), "n"));
+			cg.ramboNum = -1;
+		}
+		break;
+
+	case EV_RAMBO_KILL:
+		DEBUGNAME("EV_RAMBO_KILL");
+		trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.ramboKillSound);
+		break;
+
+	case EV_CURRENT_BUTTONS:
+		DEBUGNAME("EV_CURRENT_BUTTONS");
+		//draw buttons only if the event belongs to us or the current spectatee
+		if (cg.snap->ps.clientNum == es->otherEntityNum)
+			cg.buttonState = es->eventParm;
+		break;
+	//aibsmod stuff ends
 
 	default:
 		DEBUGNAME("UNKNOWN");

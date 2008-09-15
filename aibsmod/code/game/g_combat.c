@@ -37,12 +37,14 @@ void AddScore( gentity_t *ent, vec3_t origin, int score ) {
 	if ( level.warmupTime ) {
 		return;
 	}
+
 	// show score plum
 	ScorePlum(ent, origin, score);
-	//
+
 	ent->client->ps.persistant[PERS_SCORE] += score;
-	if ( g_gametype.integer == GT_TEAM )
+	if ((g_gametype.integer == GT_TEAM) || (g_gametype.integer == GT_RAMBO_TEAM))
 		level.teamScores[ ent->client->ps.persistant[PERS_TEAM] ] += score;
+
 	CalculateRanks();
 }
 
@@ -76,7 +78,7 @@ void TossClientItems( gentity_t *self ) {
 		}
 	}
 
-	if ( weapon > WP_MACHINEGUN && weapon != WP_GRAPPLING_HOOK && 
+	if ( weapon > WP_MACHINEGUN && weapon != WP_GRAPPLING_HOOK &&
 		self->client->ps.ammo[ weapon ] ) {
 		// find the item type for this weapon
 		item = BG_FindItemForWeapon( weapon );
@@ -86,7 +88,7 @@ void TossClientItems( gentity_t *self ) {
 	}
 
 	// drop all the powerups if not in teamplay
-	if ( g_gametype.integer != GT_TEAM ) {
+	if ((g_gametype.integer != GT_TEAM) && (g_gametype.integer != GT_RAMBO_TEAM)) {
 		angle = 45;
 		for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
 			if ( self->client->ps.powerups[ i ] > level.time ) {
@@ -210,7 +212,7 @@ void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker ) 
 	self->client->ps.stats[STAT_DEAD_YAW] = vectoyaw ( dir );
 
 	angles[YAW] = vectoyaw ( dir );
-	angles[PITCH] = 0; 
+	angles[PITCH] = 0;
 	angles[ROLL] = 0;
 }
 
@@ -294,7 +296,10 @@ char	*modNames[] = {
 	"MOD_KAMIKAZE",
 	"MOD_JUICED",
 #endif
-	"MOD_GRAPPLE"
+	"MOD_GRAPPLE",
+
+	//aibsmod stuff
+	"MOD_RAILGUN_PIERCE"
 };
 
 #ifdef MISSIONPACK
@@ -472,8 +477,8 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		obit = modNames[ meansOfDeath ];
 	}
 
-	G_LogPrintf("Kill: %i %i %i: %s killed %s by %s\n", 
-		killer, self->s.number, meansOfDeath, killerName, 
+	G_LogPrintf("Kill: %i %i %i: %s killed %s by %s\n",
+		killer, self->s.number, meansOfDeath, killerName,
 		self->client->pers.netname, obit );
 
 	// broadcast the death event to everyone
@@ -490,13 +495,38 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	if (attacker && attacker->client) {
 		attacker->client->lastkilled_client = self->s.number;
 
-		if ( attacker == self || OnSameTeam (self, attacker ) ) {
-			AddScore( attacker, self->r.currentOrigin, -1 );
+		if (attacker == self) { //rambo suicide
+			AddScore(attacker, self->r.currentOrigin, -1);
+		} else if (OnSameTeam(self, attacker)) {
+			if ((g_gametype.integer == GT_RAMBO_TEAM) && (level.rambo == self)) //teammate killed rambo
+				AddScore(attacker, self->r.currentOrigin, -2);
+			else //teammate killed teammate
+				AddScore(attacker, self->r.currentOrigin, -1);
 		} else {
-			AddScore( attacker, self->r.currentOrigin, 1 );
+			if ((g_gametype.integer == GT_RAMBO) || (g_gametype.integer == GT_RAMBO_TEAM)) {
+
+				if (level.rambo == attacker) { //Rambo killed player
+					if (g_gametype.integer == GT_RAMBO_TEAM)
+						AddScore(attacker, self->r.currentOrigin, 2);
+					else
+						AddScore(attacker, self->r.currentOrigin, 1);
+
+					G_AddEvent(attacker, EV_RAMBO_KILL, 0);
+				} else if (level.rambo == self) { //Player killed Rambo
+					AddScore(attacker, self->r.currentOrigin, 1);
+				} else {
+					if (g_gametype.integer == GT_RAMBO)
+						if (am_nonRamboKill.integer == 2) //Penalty for non-rambo kills
+							AddScore(attacker, self->r.currentOrigin, -1);
+					else if (g_gametype.integer == GT_RAMBO_TEAM)
+						AddScore(attacker, self->r.currentOrigin, 1);
+				}
+			} else {
+				AddScore( attacker, self->r.currentOrigin, 1 );
+			}
 
 			if( meansOfDeath == MOD_GAUNTLET ) {
-				
+
 				// play humiliation on player
 				attacker->client->ps.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
 
@@ -637,9 +667,9 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			self->health = GIB_HEALTH+1;
 		}
 
-		self->client->ps.legsAnim = 
+		self->client->ps.legsAnim =
 			( ( self->client->ps.legsAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
-		self->client->ps.torsoAnim = 
+		self->client->ps.torsoAnim =
 			( ( self->client->ps.torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
 
 		G_AddEvent( self, EV_DEATH1 + i, killer );
@@ -656,6 +686,11 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		}
 #endif
 	}
+
+	if (level.rambo == self) { //aibsmod - Rambo died
+		aibsmod_switchRambo(self, self->client->lastAttacker);
+	}
+
 
 	trap_LinkEntity (self);
 
@@ -829,11 +864,18 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 #endif
+
 	if ( !inflictor ) {
 		inflictor = &g_entities[ENTITYNUM_WORLD];
 	}
 	if ( !attacker ) {
 		attacker = &g_entities[ENTITYNUM_WORLD];
+	}
+
+	//aibsmod - am_nonRamboKill 0 only allows rambo<->player damage and self damage
+	if ((g_gametype.integer == GT_RAMBO) || (g_gametype.integer == GT_RAMBO_TEAM)) {
+		if ((am_nonRamboKill.integer == 0) && attacker->client && targ->client && (attacker!=targ) && (level.rambo!=attacker) && (level.rambo!=targ))
+			return;
 	}
 
 	// shootable doors / buttons don't actually have any health
@@ -858,6 +900,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 #endif
 		damage = damage * max / 100;
+	}
+
+	if (attacker->client && targ->client && (attacker != targ) && (!OnSameTeam(attacker, targ))) {
+		targ->client->lastAttacker = attacker;
 	}
 
 	client = targ->client;
@@ -919,7 +965,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		// if the attacker was on the same team
 #ifdef MISSIONPACK
 		if ( mod != MOD_JUICED && targ != attacker && !(dflags & DAMAGE_NO_TEAM_PROTECTION) && OnSameTeam (targ, attacker)  ) {
-#else	
+#else
 		if ( targ != attacker && OnSameTeam (targ, attacker)  ) {
 #endif
 			if ( !g_friendlyFire.integer ) {
@@ -971,9 +1017,24 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		damage *= 0.5;
 	}
 
+	//aibsmod - also half damage if rambo
+	if (targ->client && targ->client->ps.powerups[PW_RAMBO]) {
+		damage *= 0.5;
+	}
+
 	if ( damage < 1 ) {
 		damage = 1;
 	}
+
+	//aibsmod - am_selfDamage 0 doesn't allow self damage
+	if ((am_selfDamage.integer == 0) && (targ == attacker)) {
+		damage = 0;
+	}
+
+	//aibsmod - in training mode, don't allow any protectable damage except telefrag damage
+	if (am_trainingMode.integer && ((mod == MOD_TELEFRAG) || !(dflags & DAMAGE_NO_PROTECTION)))
+		damage = 0;
+
 	take = damage;
 	save = 0;
 
@@ -1010,7 +1071,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	// See if it's the player hurting the emeny flag carrier
 #ifdef MISSIONPACK
 	if( g_gametype.integer == GT_CTF || g_gametype.integer == GT_1FCTF ) {
-#else	
+#else
 	if( g_gametype.integer == GT_CTF) {
 #endif
 		Team_CheckHurtCarrier(targ, attacker);
@@ -1028,7 +1089,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( targ->client ) {
 			targ->client->ps.stats[STAT_HEALTH] = targ->health;
 		}
-			
+
 		if ( targ->health <= 0 ) {
 			if ( client )
 				targ->flags |= FL_NO_KNOCKBACK;
@@ -1070,7 +1131,7 @@ qboolean CanDamage (gentity_t *targ, vec3_t origin) {
 	if (tr.fraction == 1.0 || tr.entityNum == targ->s.number)
 		return qtrue;
 
-	// this should probably check in the plane of projection, 
+	// this should probably check in the plane of projection,
 	// rather than in world coordinate, and also include Z
 	VectorCopy (midpoint, dest);
 	dest[0] += 15.0;

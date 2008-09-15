@@ -142,20 +142,22 @@ void TeamMain_MenuInit( void ) {
 	s_teammain.spectate.color            = colorRed;
 	y += 20;
 
-	trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);   
+	trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);
 	gametype = atoi( Info_ValueForKey( info,"g_gametype" ) );
-			      
+
 	// set initial states
 	switch( gametype ) {
 	case GT_SINGLE_PLAYER:
 	case GT_FFA:
 	case GT_TOURNAMENT:
+	case GT_RAMBO:
 		s_teammain.joinred.generic.flags  |= QMF_GRAYED;
 		s_teammain.joinblue.generic.flags |= QMF_GRAYED;
 		break;
 
 	default:
 	case GT_TEAM:
+	case GT_RAMBO_TEAM:
 	case GT_CTF:
 		s_teammain.joingame.generic.flags |= QMF_GRAYED;
 		break;

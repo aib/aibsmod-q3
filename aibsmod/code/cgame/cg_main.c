@@ -177,6 +177,18 @@ vmCvar_t	cg_recordSPDemoName;
 vmCvar_t	cg_obeliskRespawnDelay;
 #endif
 
+//aibsmod - client variables
+vmCvar_t	am_showKillNotice;
+vmCvar_t	am_drawSpeed;
+vmCvar_t	am_drawSpeedMethod;
+vmCvar_t	am_drawSpeedFrames;
+vmCvar_t	am_drawButtons;
+vmCvar_t	cg_depthHack;
+
+//aibsmod - server/shared variables. These will be communicated to us by the server (and used by pmove)
+vmCvar_t	am_fastWeaponSwitch;
+vmCvar_t	am_trainingMode;
+
 typedef struct {
 	vmCvar_t	*vmCvar;
 	char		*cvarName;
@@ -294,8 +306,20 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_oldRail, "cg_oldRail", "1", CVAR_ARCHIVE},
 	{ &cg_oldRocket, "cg_oldRocket", "1", CVAR_ARCHIVE},
 	{ &cg_oldPlasma, "cg_oldPlasma", "1", CVAR_ARCHIVE},
-	{ &cg_trueLightning, "cg_trueLightning", "0.0", CVAR_ARCHIVE}
+	{ &cg_trueLightning, "cg_trueLightning", "0.0", CVAR_ARCHIVE},
 //	{ &cg_pmove_fixed, "cg_pmove_fixed", "0", CVAR_USERINFO | CVAR_ARCHIVE }
+
+	{ &am_showKillNotice, "am_showKillNotice", "1", CVAR_ARCHIVE },
+	{ &am_drawSpeed, "am_drawSpeed", "0", CVAR_ARCHIVE },
+	{ &am_drawSpeedMethod, "am_drawSpeedMethod", "0", CVAR_ARCHIVE },
+	{ &am_drawSpeedFrames, "am_drawSpeedFrames", "1", CVAR_ARCHIVE },
+	{ &am_drawButtons, "am_drawButtons", "0", CVAR_ARCHIVE | CVAR_USERINFO },
+
+	{ &am_fastWeaponSwitch, "am_fastWeaponSwitch", "0", CVAR_SERVERINFO | CVAR_ARCHIVE },
+	{ &am_trainingMode, "am_trainingMode", "0", CVAR_SERVERINFO | CVAR_ARCHIVE },
+
+	{ &cg_depthHack, "cg_depth", "0", CVAR_CHEAT }
+
 };
 
 static int  cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[0] );
@@ -327,7 +351,7 @@ void CG_RegisterCvars( void ) {
 	trap_Cvar_Register(NULL, "team_headmodel", DEFAULT_TEAM_HEAD, CVAR_USERINFO | CVAR_ARCHIVE );
 }
 
-/*																																			
+/*
 ===================
 CG_ForceModelChange
 ===================
@@ -493,7 +517,7 @@ static void CG_RegisterItemSounds( int itemNum ) {
 
 		len = s-start;
 		if (len >= MAX_QPATH || len < 5) {
-			CG_Error( "PrecacheItem: %s has bad precache string", 
+			CG_Error( "PrecacheItem: %s has bad precache string",
 				item->classname);
 			return;
 		}
@@ -542,6 +566,10 @@ static void CG_RegisterSounds( void ) {
 #ifdef MISSIONPACK
 	cgs.media.countPrepareTeamSound = trap_S_RegisterSound( "sound/feedback/prepare_team.wav", qtrue );
 #endif
+
+	//aibsmod rambo stuff
+	cgs.media.ramboStealSound = trap_S_RegisterSound("sound/feedback/rambo_steal.wav", qtrue);
+	cgs.media.ramboKillSound = trap_S_RegisterSound("sound/feedback/rambo_kill.wav", qtrue);
 
 	if ( cgs.gametype >= GT_TEAM || cg_buildScript.integer ) {
 
@@ -860,6 +888,7 @@ static void CG_RegisterGraphics( void ) {
 	// powerup shaders
 	cgs.media.quadShader = trap_R_RegisterShader("powerups/quad" );
 	cgs.media.quadWeaponShader = trap_R_RegisterShader("powerups/quadWeapon" );
+
 	cgs.media.battleSuitShader = trap_R_RegisterShader("powerups/battleSuit" );
 	cgs.media.battleWeaponShader = trap_R_RegisterShader("powerups/battleWeapon" );
 	cgs.media.invisShader = trap_R_RegisterShader("powerups/invisibility" );
@@ -1071,6 +1100,24 @@ static void CG_RegisterGraphics( void ) {
 	trap_R_RegisterModel( "models/players/heads/janet/janet.md3" );
 
 #endif
+
+	//aibsmod shaders
+	cgs.media.ramboShader = trap_R_RegisterShader("powerups/rambo");
+	cgs.media.ramboWeaponShader = trap_R_RegisterShader("powerups/ramboWeapon");
+
+	cgs.media.button_up_upShader = trap_R_RegisterShader("gfx/2d/btn_up_up.tga");
+	cgs.media.button_up_downShader = trap_R_RegisterShader("gfx/2d/btn_up_down.tga");
+	cgs.media.button_down_upShader = trap_R_RegisterShader("gfx/2d/btn_down_up.tga");
+	cgs.media.button_down_downShader = trap_R_RegisterShader("gfx/2d/btn_down_down.tga");
+	cgs.media.button_left_upShader = trap_R_RegisterShader("gfx/2d/btn_left_up.tga");
+	cgs.media.button_left_downShader = trap_R_RegisterShader("gfx/2d/btn_left_down.tga");
+	cgs.media.button_right_upShader = trap_R_RegisterShader("gfx/2d/btn_right_up.tga");
+	cgs.media.button_right_downShader = trap_R_RegisterShader("gfx/2d/btn_right_down.tga");
+	cgs.media.button_jump_upShader = trap_R_RegisterShader("gfx/2d/btn_jump_up.tga");
+	cgs.media.button_jump_downShader = trap_R_RegisterShader("gfx/2d/btn_jump_down.tga");
+	cgs.media.button_fire_upShader = trap_R_RegisterShader("gfx/2d/btn_fire_up.tga");;
+	cgs.media.button_fire_downShader = trap_R_RegisterShader("gfx/2d/btn_fire_down.tga");;
+
 	CG_ClearParticles ();
 /*
 	for (i=1; i<MAX_PARTICLES_AREAS; i++)
@@ -1088,7 +1135,7 @@ static void CG_RegisterGraphics( void ) {
 
 
 
-/*																																			
+/*
 =======================
 CG_BuildSpectatorString
 
@@ -1110,7 +1157,7 @@ void CG_BuildSpectatorString() {
 }
 
 
-/*																																			
+/*
 ===================
 CG_RegisterClients
 ===================
@@ -1209,7 +1256,7 @@ qboolean CG_Asset_Parse(int handle) {
 	if (Q_stricmp(token.string, "{") != 0) {
 		return qfalse;
 	}
-    
+
 	while ( 1 ) {
 		if (!trap_PC_ReadToken(handle, &token))
 			return qfalse;
@@ -1405,7 +1452,7 @@ qboolean CG_Load_Menu(char **p) {
 	while ( 1 ) {
 
 		token = COM_ParseExt(p, qtrue);
-    
+
 		if (Q_stricmp(token, "}") == 0) {
 			return qtrue;
 		}
@@ -1414,7 +1461,7 @@ qboolean CG_Load_Menu(char **p) {
 			return qfalse;
 		}
 
-		CG_ParseMenu(token); 
+		CG_ParseMenu(token);
 	}
 	return qfalse;
 }
@@ -1448,7 +1495,7 @@ void CG_LoadMenus(const char *menuFile) {
 	trap_FS_Read( buf, len, f );
 	buf[len] = 0;
 	trap_FS_FCloseFile( f );
-	
+
 	COM_Compress(buf);
 
 	Menu_Reset();
@@ -1645,7 +1692,7 @@ static const char *CG_FeederItemText(float feederID, int index, int column, qhan
 			case 6:
 				if ( sp->ping == -1 ) {
 					return "connecting";
-				} 
+				}
 				return va("%4i", sp->ping);
 			break;
 		}
@@ -1750,7 +1797,7 @@ void CG_LoadHudMenu() {
 	cgDC.registerModel = &trap_R_RegisterModel;
 	cgDC.modelBounds = &trap_R_ModelBounds;
 	cgDC.fillRect = &CG_FillRect;
-	cgDC.drawRect = &CG_DrawRect;   
+	cgDC.drawRect = &CG_DrawRect;
 	cgDC.drawSides = &CG_DrawSides;
 	cgDC.drawTopBottom = &CG_DrawTopBottom;
 	cgDC.clearScene = &trap_R_ClearScene;
@@ -1778,8 +1825,8 @@ void CG_LoadHudMenu() {
 	//cgDC.getBindingBuf = &trap_Key_GetBindingBuf;
 	//cgDC.keynumToStringBuf = &trap_Key_KeynumToStringBuf;
 	//cgDC.executeText = &trap_Cmd_ExecuteText;
-	cgDC.Error = &Com_Error; 
-	cgDC.Print = &Com_Printf; 
+	cgDC.Error = &Com_Error;
+	cgDC.Print = &Com_Printf;
 	cgDC.ownerDrawWidth = &CG_OwnerDrawWidth;
 	//cgDC.Pause = &CG_Pause;
 	cgDC.registerSound = &trap_S_RegisterSound;
@@ -1789,11 +1836,11 @@ void CG_LoadHudMenu() {
 	cgDC.stopCinematic = &CG_StopCinematic;
 	cgDC.drawCinematic = &CG_DrawCinematic;
 	cgDC.runCinematicFrame = &CG_RunCinematicFrame;
-	
+
 	Init_Display(&cgDC);
 
 	Menu_Reset();
-	
+
 	trap_Cvar_VariableStringBuffer("cg_hudFiles", buff, sizeof(buff));
 	hudSet = buff;
 	if (hudSet[0] == '\0') {
@@ -1847,6 +1894,13 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	memset( cg_items, 0, sizeof(cg_items) );
 
 	cg.clientNum = clientNum;
+
+	//aibsmod stuff
+	cg.ramboNum = -1;
+	cg.trackButtonsClient = clientNum;
+	//These might be unnecessary
+	cg.zpos = 0.0f;
+	cg.buttonState = 0;
 
 	cgs.processedSnapshotNum = serverMessageNum;
 	cgs.serverCommandSequence = serverCommandSequence;

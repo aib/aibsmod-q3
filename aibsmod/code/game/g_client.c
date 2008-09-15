@@ -234,7 +234,7 @@ gentity_t *SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles ) 
 		if ( spot == nearestSpot ) {
 			// last try
 			spot = SelectRandomDeathmatchSpawnPoint ( );
-		}		
+		}
 	}
 
 	// find a single player start spot
@@ -332,7 +332,7 @@ void BodySink( gentity_t *ent ) {
 		// the body ques are never actually freed, they are just unlinked
 		trap_UnlinkEntity( ent );
 		ent->physicsObject = qfalse;
-		return;	
+		return;
 	}
 	ent->nextthink = level.time + 100;
 	ent->s.pos.trBase[2] -= 1;
@@ -727,7 +727,7 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	if ( client->pers.connected == CON_CONNECTED ) {
 		if ( strcmp( oldname, client->pers.netname ) ) {
-			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " renamed to %s\n\"", oldname, 
+			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " renamed to %s\n\"", oldname,
 				client->pers.netname) );
 		}
 	}
@@ -844,12 +844,12 @@ void ClientUserinfoChanged( int clientNum ) {
 	// print scoreboards, display models, and play custom sounds
 	if ( ent->r.svFlags & SVF_BOT ) {
 		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\skill\\%s\\tt\\%d\\tl\\%d",
-			client->pers.netname, team, model, headModel, c1, c2, 
+			client->pers.netname, team, model, headModel, c1, c2,
 			client->pers.maxHealth, client->sess.wins, client->sess.losses,
 			Info_ValueForKey( userinfo, "skill" ), teamTask, teamLeader );
 	} else {
 		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\g_redteam\\%s\\g_blueteam\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d",
-			client->pers.netname, client->sess.sessionTeam, model, headModel, redTeam, blueTeam, c1, c2, 
+			client->pers.netname, client->sess.sessionTeam, model, headModel, redTeam, blueTeam, c1, c2,
 			client->pers.maxHealth, client->sess.wins, client->sess.losses, teamTask, teamLeader);
 	}
 
@@ -928,6 +928,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	}
 	G_ReadSessionData( client );
 
+
 	if( isBot ) {
 		ent->r.svFlags |= SVF_BOT;
 		ent->inuse = qtrue;
@@ -992,6 +993,19 @@ void ClientBegin( int clientNum ) {
 	client->pers.enterTime = level.time;
 	client->pers.teamState.state = TEAM_BEGIN;
 
+	//aibsmod - remove existing buttonsEntity if it exists
+	if (client->pers.buttonsEntity) {
+//		G_Printf("Freeing BE number=%i, type=%i, class=%s, inuse=%i\n", ent->client->pers.buttonsEntity->s.number, ent->client->pers.buttonsEntity->s.eType, ent->client->pers.buttonsEntity->classname, ent->client->pers.buttonsEntity->inuse);
+		trap_UnlinkEntity(client->pers.buttonsEntity);
+		client->pers.buttonsEntity->inuse = qfalse;
+		client->pers.buttonsEntity = NULL;
+	}
+
+	//aibsmod - create a new buttonsEntity
+	client->pers.buttonsEntity = G_Spawn();
+	client->pers.buttonsEntity->classname = "buttonsEntity";
+	trap_LinkEntity(client->pers.buttonsEntity);
+
 	// save eflags around this, because changing teams will
 	// cause this to happen with a valid entity, and we
 	// want to make sure the teleport bit is set right
@@ -1051,13 +1065,13 @@ void ClientSpawn(gentity_t *ent) {
 	// do it before setting health back up, so farthest
 	// ranging doesn't count this client
 	if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
-		spawnPoint = SelectSpectatorSpawnPoint ( 
+		spawnPoint = SelectSpectatorSpawnPoint (
 						spawn_origin, spawn_angles);
 	} else if (g_gametype.integer >= GT_CTF ) {
 		// all base oriented team games use the CTF spawn points
-		spawnPoint = SelectCTFSpawnPoint ( 
-						client->sess.sessionTeam, 
-						client->pers.teamState.state, 
+		spawnPoint = SelectCTFSpawnPoint (
+						client->sess.sessionTeam,
+						client->pers.teamState.state,
 						spawn_origin, spawn_angles);
 	} else {
 		do {
@@ -1067,8 +1081,8 @@ void ClientSpawn(gentity_t *ent) {
 				spawnPoint = SelectInitialSpawnPoint( spawn_origin, spawn_angles );
 			} else {
 				// don't spawn near existing origin if possible
-				spawnPoint = SelectSpawnPoint ( 
-					client->ps.origin, 
+				spawnPoint = SelectSpawnPoint (
+					client->ps.origin,
 					spawn_origin, spawn_angles);
 			}
 
@@ -1150,22 +1164,26 @@ void ClientSpawn(gentity_t *ent) {
 	ent->waterlevel = 0;
 	ent->watertype = 0;
 	ent->flags = 0;
-	
+
 	VectorCopy (playerMins, ent->r.mins);
 	VectorCopy (playerMaxs, ent->r.maxs);
 
 	client->ps.clientNum = index;
 
-	client->ps.stats[STAT_WEAPONS] = ( 1 << WP_MACHINEGUN );
-	if ( g_gametype.integer == GT_TEAM ) {
-		client->ps.ammo[WP_MACHINEGUN] = 50;
+	if (am_trainingMode.integer == 1) {
+		aibsmod_giveAllWeapons(client);
 	} else {
-		client->ps.ammo[WP_MACHINEGUN] = 100;
-	}
+		client->ps.stats[STAT_WEAPONS] = ( 1 << WP_MACHINEGUN );
+		if ((g_gametype.integer == GT_TEAM) || (g_gametype.integer == GT_RAMBO_TEAM)) {
+			client->ps.ammo[WP_MACHINEGUN] = 50;
+		} else {
+			client->ps.ammo[WP_MACHINEGUN] = 100;
+		}
 
-	client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_GAUNTLET );
-	client->ps.ammo[WP_GAUNTLET] = -1;
-	client->ps.ammo[WP_GRAPPLING_HOOK] = -1;
+		client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_GAUNTLET );
+		client->ps.ammo[WP_GAUNTLET] = -1;
+		client->ps.ammo[WP_GRAPPLING_HOOK] = -1;
+	}
 
 	// health will count down towards max_health
 	ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] + 25;
@@ -1219,6 +1237,14 @@ void ClientSpawn(gentity_t *ent) {
 			}
 		}
 	}
+
+	//aibsmod stuff
+	//Become rambo if noone else is
+	if ((level.rambo == NULL) && (client->sess.sessionTeam != TEAM_SPECTATOR))
+		aibsmod_switchRambo(NULL, ent);
+
+	//Set last damager to NULL
+	client->lastAttacker = NULL;
 
 	// run a client frame to drop exactly to the floor,
 	// initialize animations and other things
@@ -1277,7 +1303,7 @@ void ClientDisconnect( int clientNum ) {
 	}
 
 	// send effect if they were completely connected
-	if ( ent->client->pers.connected == CON_CONNECTED 
+	if ( ent->client->pers.connected == CON_CONNECTED
 		&& ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
 		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
 		tent->s.clientNum = ent->s.clientNum;
@@ -1293,6 +1319,9 @@ void ClientDisconnect( int clientNum ) {
 #endif
 
 	}
+
+	if (level.rambo == ent)
+		aibsmod_switchRambo(ent, NULL);
 
 	G_LogPrintf( "ClientDisconnect: %i\n", clientNum );
 
@@ -1312,6 +1341,14 @@ void ClientDisconnect( int clientNum ) {
 	ent->client->ps.persistant[PERS_TEAM] = TEAM_FREE;
 	ent->client->sess.sessionTeam = TEAM_FREE;
 
+	//aibsmod - free buttonsEntity
+	if (ent->client->pers.buttonsEntity) {
+//		G_Printf("Freeing BE number=%i, type=%i, class=%s, inuse=%i\n", ent->client->pers.buttonsEntity->s.number, ent->client->pers.buttonsEntity->s.eType, ent->client->pers.buttonsEntity->classname, ent->client->pers.buttonsEntity->inuse);
+		trap_UnlinkEntity(ent->client->pers.buttonsEntity);
+		ent->client->pers.buttonsEntity->inuse = qfalse;
+		ent->client->pers.buttonsEntity = NULL;
+	}
+
 	trap_SetConfigstring( CS_PLAYERS + clientNum, "");
 
 	CalculateRanks();
@@ -1321,4 +1358,66 @@ void ClientDisconnect( int clientNum ) {
 	}
 }
 
+//Called when rambo dies, used to switch rambo
+void aibsmod_switchRambo(gentity_t *oldrambo, gentity_t *newrambo)
+{
+	gentity_t *tmpent;
 
+	if (!((g_gametype.integer == GT_RAMBO) || (g_gametype.integer == GT_RAMBO_TEAM)))
+		return;
+
+	if (oldrambo && oldrambo->client)
+		oldrambo->client->ps.powerups[PW_RAMBO] = 0;
+
+	if (newrambo && newrambo->client && (newrambo->health > 0)) { //player stole rambo
+		newrambo->client->ps.powerups[PW_RAMBO] = INT_MAX;
+
+		tmpent = G_TempEntity(newrambo->r.currentOrigin, EV_RAMBO_STEAL);
+		if (g_gametype.integer == GT_RAMBO_TEAM)
+			if (newrambo->client->sess.sessionTeam == TEAM_RED) //red
+				tmpent->s.eventParm = 2;
+			else
+				tmpent->s.eventParm = 3;
+		else
+			tmpent->s.eventParm = 1;
+
+		tmpent->s.otherEntityNum2 = newrambo->s.number;
+		tmpent->r.svFlags = SVF_BROADCAST;	//send to everyone
+
+		if (newrambo->health < newrambo->client->ps.stats[STAT_MAX_HEALTH]) {
+			newrambo->health = newrambo->client->ps.stats[STAT_MAX_HEALTH];
+			newrambo->client->ps.stats[STAT_HEALTH] = newrambo->client->ps.stats[STAT_MAX_HEALTH];
+		}
+
+		level.rambo = newrambo;
+	} else if (oldrambo && oldrambo->client) { //player lost rambo
+		tmpent = G_TempEntity(newrambo->r.currentOrigin, EV_RAMBO_STEAL);
+		tmpent->s.eventParm = 4;
+		tmpent->s.otherEntityNum = oldrambo->s.number;
+		tmpent->s.otherEntityNum2 = -1;
+		tmpent->r.svFlags = SVF_BROADCAST;	//send to everyone
+
+		level.rambo = NULL;
+	}
+
+	if ((g_gametype.integer == GT_RAMBO_TEAM) && //team rambo switch
+		(oldrambo && oldrambo->client) &&
+		(newrambo && newrambo->client) &&
+		(oldrambo->client->sess.sessionTeam != newrambo->client->sess.sessionTeam))
+	{
+		AddScore(newrambo, oldrambo->r.currentOrigin, 10);
+	}
+}
+
+//Gives all weapons + infinite ammo
+void aibsmod_giveAllWeapons(gclient_t *player)
+{
+	int i;
+
+	//copied from "give weapons"
+	player->ps.stats[STAT_WEAPONS] = (1 << WP_NUM_WEAPONS) - 1 - ( 1 << WP_GRAPPLING_HOOK ) - ( 1 << WP_NONE );
+
+	//copied from "give ammo"
+	for (i=0; i<MAX_WEAPONS; i++)
+		player->ps.ammo[i] = -1;
+}

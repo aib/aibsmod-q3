@@ -1,6 +1,7 @@
 rem make sure we have a safe environement
 set LIBRARY=
 set INCLUDE=
+set PATH=X:\Quake3\aibsmod\bin
 
 mkdir vm
 cd vm

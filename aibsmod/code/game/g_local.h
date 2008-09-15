@@ -9,7 +9,7 @@
 //==================================================================
 
 // the "gameversion" client command will print this plus compile date
-#define	GAMEVERSION	"baseq3"
+#define	GAMEVERSION	"aibsmod_test7"
 
 #define BODY_QUEUE_SIZE		8
 
@@ -70,13 +70,13 @@ struct gentity_s {
 	char		*model;
 	char		*model2;
 	int			freetime;			// level.time when the object was freed
-	
+
 	int			eventTime;			// events will be cleared EVENT_VALID_MSEC after set
 	qboolean	freeAfterEvent;
 	qboolean	unlinkAfterEvent;
 
 	qboolean	physicsObject;		// if true, it can be pushed by movers and fall off edges
-									// all game items are physicsObjects, 
+									// all game items are physicsObjects,
 	float		physicsBounce;		// 1.0 = continuous bounce, 0.0 = no bounce
 	int			clipmask;			// brushes with this content value will be collided against
 									// when moving.  items and corpses do not collide against
@@ -219,7 +219,7 @@ typedef struct {
 // client data that stays across multiple respawns, but is cleared
 // on each level change or team change at ClientBegin()
 typedef struct {
-	clientConnected_t	connected;	
+	clientConnected_t	connected;
 	usercmd_t	cmd;				// we would lose angles if not persistant
 	qboolean	localClient;		// true if "ip" info key is "localhost"
 	qboolean	initialSpawn;		// the first spawn should be at a cool location
@@ -232,6 +232,10 @@ typedef struct {
 	int			voteCount;			// to prevent people from constantly calling votes
 	int			teamVoteCount;		// to prevent people from constantly calling votes
 	qboolean	teamInfo;			// send team overlay updates?
+
+	//aibsmod-specific stuff
+	gentity_t	*buttonsEntity;		//the entity that will have this client's EV_CURRENT_BUTTONS events
+
 } clientPersistant_t;
 
 
@@ -301,6 +305,9 @@ struct gclient_s {
 	int			ammoTimes[WP_NUM_WEAPONS];
 	int			invulnerabilityTime;
 #endif
+
+	//aibsmod-specific stuff
+	gentity_t	*lastAttacker;		//last enemy attacker as calculated by aibsmod
 
 	char		*areabits;
 };
@@ -393,6 +400,8 @@ typedef struct {
 #ifdef MISSIONPACK
 	int			portalSequence;
 #endif
+
+	gentity_t	*rambo;	//aibsmod - current rambo
 } level_locals_t;
 
 
@@ -564,6 +573,8 @@ void player_die (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 void AddScore( gentity_t *ent, vec3_t origin, int score );
 void CalculateRanks( void );
 qboolean SpotWouldTelefrag( gentity_t *spot );
+void aibsmod_switchRambo(gentity_t *oldrambo, gentity_t *newrambo);
+void aibsmod_giveAllWeapons(gclient_t *player);
 
 //
 // g_svcmds.c
@@ -744,6 +755,12 @@ extern	vmCvar_t	g_enableDust;
 extern	vmCvar_t	g_enableBreath;
 extern	vmCvar_t	g_singlePlayer;
 extern	vmCvar_t	g_proxMineTimeout;
+
+//aibsmod server side cvars, also see bg_public.h
+extern	vmCvar_t	am_piercingRail;
+extern	vmCvar_t	am_hyperGauntlet;
+extern	vmCvar_t	am_selfDamage;
+extern	vmCvar_t	am_nonRamboKill;
 
 void	trap_Printf( const char *fmt );
 void	trap_Error( const char *fmt );

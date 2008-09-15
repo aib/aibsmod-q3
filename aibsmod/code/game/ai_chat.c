@@ -269,6 +269,7 @@ char *BotWeaponNameForMeansOfDeath(int mod) {
 		case MOD_ROCKET_SPLASH: return "Rocket Launcher";
 		case MOD_PLASMA:
 		case MOD_PLASMA_SPLASH: return "Plasmagun";
+		case MOD_RAILGUN_PIERCE: //aibsmod
 		case MOD_RAILGUN: return "Railgun";
 		case MOD_LIGHTNING: return "Lightning Gun";
 		case MOD_BFG:
@@ -498,7 +499,7 @@ int BotChat_EndLevel(bot_state_t *bs) {
 	if (BotIsObserver(bs)) return qfalse;
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
 	// teamplay
-	if (TeamPlayIsOn()) 
+	if (TeamPlayIsOn())
 	{
 		if (BotIsFirstInRankings(bs)) {
 			trap_EA_Command(bs->client, "vtaunt");
@@ -607,6 +608,7 @@ int BotChat_Death(bot_state_t *bs) {
 		else {
 			if ((bs->botdeathtype == MOD_GAUNTLET ||
 				bs->botdeathtype == MOD_RAILGUN ||
+				bs->botdeathtype == MOD_RAILGUN_PIERCE || //aibsmod
 				bs->botdeathtype == MOD_BFG ||
 				bs->botdeathtype == MOD_BFG_SPLASH) && random() < 0.5) {
 
@@ -615,7 +617,7 @@ int BotChat_Death(bot_state_t *bs) {
 							name,												// 0
 							BotWeaponNameForMeansOfDeath(bs->botdeathtype),		// 1
 							NULL);
-				else if (bs->botdeathtype == MOD_RAILGUN)
+				else if ((bs->botdeathtype == MOD_RAILGUN) || (bs->botdeathtype == MOD_RAILGUN_PIERCE))
 					BotAI_BotInitialChat(bs, "death_rail",
 							name,												// 0
 							BotWeaponNameForMeansOfDeath(bs->botdeathtype),		// 1

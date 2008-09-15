@@ -5,7 +5,7 @@
 // because games can change separately from the main system version, we need a
 // second version that must match between game and cgame
 
-#define	GAME_VERSION		"baseq3-1"
+#define	GAME_VERSION		"aibsmod-1"
 
 #define	DEFAULT_GRAVITY		800
 #define	GIB_HEALTH			-40
@@ -66,7 +66,7 @@
 #define	CS_SOUNDS				(CS_MODELS+MAX_MODELS)
 #define	CS_PLAYERS				(CS_SOUNDS+MAX_SOUNDS)
 #define CS_LOCATIONS			(CS_PLAYERS+MAX_CLIENTS)
-#define CS_PARTICLES			(CS_LOCATIONS+MAX_LOCATIONS) 
+#define CS_PARTICLES			(CS_LOCATIONS+MAX_LOCATIONS)
 
 #define CS_MAX					(CS_PARTICLES+MAX_LOCATIONS)
 
@@ -74,14 +74,17 @@
 #error overflow: (CS_MAX) > MAX_CONFIGSTRINGS
 #endif
 
+//aibsmod - added custom gametypes
 typedef enum {
 	GT_FFA,				// free for all
 	GT_TOURNAMENT,		// one on one tournament
 	GT_SINGLE_PLAYER,	// single player ffa
+	GT_RAMBO,
 
 	//-- team games go after this --
 
 	GT_TEAM,			// team deathmatch
+	GT_RAMBO_TEAM,
 	GT_CTF,				// capture the flag
 	GT_1FCTF,
 	GT_OBELISK,
@@ -113,7 +116,7 @@ typedef enum {
 } pmtype_t;
 
 typedef enum {
-	WEAPON_READY, 
+	WEAPON_READY,
 	WEAPON_RAISING,
 	WEAPON_DROPPING,
 	WEAPON_FIRING
@@ -177,6 +180,10 @@ void Pmove (pmove_t *pmove);
 
 //===================================================================================
 
+//aibsmod - shared cvars (via CVAR_SERVERINFO)
+extern	vmCvar_t	am_fastWeaponSwitch;
+extern	vmCvar_t	am_trainingMode;
+
 
 // player_state->stats[] indexes
 // NOTE: may not have more than 16
@@ -187,10 +194,10 @@ typedef enum {
 	STAT_PERSISTANT_POWERUP,
 #endif
 	STAT_WEAPONS,					// 16 bit fields
-	STAT_ARMOR,				
+	STAT_ARMOR,
 	STAT_DEAD_YAW,					// look this direction when dead (FIXME: get rid of?)
 	STAT_CLIENTS_READY,				// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
-	STAT_MAX_HEALTH					// health / armor limit, changable by handicap
+	STAT_MAX_HEALTH,				// health / armor limit, changable by handicap
 } statIndex_t;
 
 
@@ -243,6 +250,7 @@ typedef enum {
 #define EF_AWARD_DENIED		0x00040000		// denied
 #define EF_TEAMVOTED		0x00080000		// already cast a team vote
 
+
 // NOTE: may not have more than 16
 typedef enum {
 	PW_NONE,
@@ -263,6 +271,8 @@ typedef enum {
 	PW_DOUBLER,
 	PW_AMMOREGEN,
 	PW_INVULNERABILITY,
+
+	PW_RAMBO,				//aibsmod - rambo powerup
 
 	PW_NUM_POWERUPS
 
@@ -302,7 +312,6 @@ typedef enum {
 
 	WP_NUM_WEAPONS
 } weapon_t;
-
 
 // reward sounds (stored in ps->persistant[PERS_PLAYEREVENTS])
 #define	PLAYEREVENT_DENIEDREWARD		0x0001
@@ -427,7 +436,12 @@ typedef enum {
 	EV_TAUNT_FOLLOWME,
 	EV_TAUNT_GETFLAG,
 	EV_TAUNT_GUARDBASE,
-	EV_TAUNT_PATROL
+	EV_TAUNT_PATROL,
+
+	//aibsmod events
+	EV_RAMBO_STEAL,			//rambo changed (might have just died)
+	EV_RAMBO_KILL,			//rambo killed someone
+	EV_CURRENT_BUTTONS		//button state update (sent every frame)
 
 } entity_event_t;
 
@@ -539,7 +553,7 @@ typedef enum {
 //team task
 typedef enum {
 	TEAMTASK_NONE,
-	TEAMTASK_OFFENSE, 
+	TEAMTASK_OFFENSE,
 	TEAMTASK_DEFENSE,
 	TEAMTASK_PATROL,
 	TEAMTASK_FOLLOW,
@@ -580,7 +594,11 @@ typedef enum {
 	MOD_KAMIKAZE,
 	MOD_JUICED,
 #endif
-	MOD_GRAPPLE
+	MOD_GRAPPLE,
+
+	//aibsmod stuff
+	MOD_RAILGUN_PIERCE,
+
 } meansOfDeath_t;
 
 

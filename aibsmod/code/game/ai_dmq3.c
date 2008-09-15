@@ -2956,6 +2956,12 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 		}
 	}
 #endif
+	//aibsmod - no possible enemies in training mode
+//	if (trap_Cvar_VariableIntegerValue("am_trainingMode"))
+//		return qfalse;
+	//note: disabled, because the only point of having bots in training
+	//mode would be to practice dodging their fire, wouldn't it?
+
 	//
 	for (i = 0; i < maxclients && i < MAX_CLIENTS; i++) {
 
@@ -2992,6 +2998,10 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 		if (squaredist > Square(900.0 + alertness * 4000.0)) continue;
 		//if on the same team
 		if (BotSameTeam(bs, i)) continue;
+
+		//aibsmod TODO: add code to seek rambo if playing rambomatch/team rambomatch
+//		if (trap_Cvar_VariableIntegerValue("g_gametype")
+
 		//if the bot's health decreased or the enemy is shooting
 		if (curenemy < 0 && (healthdecrease || EntityIsShooting(&entinfo)))
 			f = 360;
@@ -4797,7 +4807,7 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 				bs->enemysuicide = qtrue;
 			}
 			//
-#ifdef MISSIONPACK			
+#ifdef MISSIONPACK
 			if (gametype == GT_1FCTF) {
 				//
 				BotEntityInfo(target, &entinfo);

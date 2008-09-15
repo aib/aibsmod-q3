@@ -13,11 +13,11 @@ Modifies the entities position and axis by the given
 tag location
 ======================
 */
-void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent, 
+void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 							qhandle_t parentModel, char *tagName ) {
 	int				i;
 	orientation_t	lerped;
-	
+
 	// lerp the tag
 	trap_R_LerpTag( &lerped, parentModel, parent->oldframe, parent->frame,
 		1.0 - parent->backlerp, tagName );
@@ -42,7 +42,7 @@ Modifies the entities position and axis by the given
 tag location
 ======================
 */
-void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent, 
+void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 							qhandle_t parentModel, char *tagName ) {
 	int				i;
 	orientation_t	lerped;
@@ -109,10 +109,10 @@ static void CG_EntityEffects( centity_t *cent ) {
 	// add loop sound
 	if ( cent->currentState.loopSound ) {
 		if (cent->currentState.eType != ET_SPEAKER) {
-			trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, 
+			trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin,
 				cgs.gameSounds[ cent->currentState.loopSound ] );
 		} else {
-			trap_S_AddRealLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, 
+			trap_S_AddRealLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin,
 				cgs.gameSounds[ cent->currentState.loopSound ] );
 		}
 	}
@@ -258,15 +258,15 @@ static void CG_Item( centity_t *cent ) {
 	// eccentricly
 	if ( item->giType == IT_WEAPON ) {
 		wi = &cg_weapons[item->giTag];
-		cent->lerpOrigin[0] -= 
+		cent->lerpOrigin[0] -=
 			wi->weaponMidpoint[0] * ent.axis[0][0] +
 			wi->weaponMidpoint[1] * ent.axis[1][0] +
 			wi->weaponMidpoint[2] * ent.axis[2][0];
-		cent->lerpOrigin[1] -= 
+		cent->lerpOrigin[1] -=
 			wi->weaponMidpoint[0] * ent.axis[0][1] +
 			wi->weaponMidpoint[1] * ent.axis[1][1] +
 			wi->weaponMidpoint[2] * ent.axis[2][1];
-		cent->lerpOrigin[2] -= 
+		cent->lerpOrigin[2] -=
 			wi->weaponMidpoint[0] * ent.axis[0][2] +
 			wi->weaponMidpoint[1] * ent.axis[1][2] +
 			wi->weaponMidpoint[2] * ent.axis[2][2];
@@ -345,7 +345,7 @@ static void CG_Item( centity_t *cent ) {
 #endif
 
 	// accompanying rings / spheres for powerups
-	if ( !cg_simpleItems.integer ) 
+	if ( !cg_simpleItems.integer )
 	{
 		vec3_t spinAngles;
 
@@ -361,7 +361,7 @@ static void CG_Item( centity_t *cent ) {
 					spinAngles[1] = ( cg.time & 1023 ) * 360 / -1024.0f;
 				}
 				AnglesToAxis( spinAngles, ent.axis );
-				
+
 				// scale up if respawning
 				if ( frac != 1.0 ) {
 					VectorScale( ent.axis[0], frac, ent.axis[0] );
@@ -398,7 +398,7 @@ static void CG_Missile( centity_t *cent ) {
 	VectorCopy( s1->angles, cent->lerpAngles);
 
 	// add trails
-	if ( weapon->missileTrailFunc ) 
+	if ( weapon->missileTrailFunc )
 	{
 		weapon->missileTrailFunc( cent, weapon );
 	}
@@ -415,13 +415,13 @@ static void CG_Missile( centity_t *cent ) {
 
 	// add dynamic light
 	if ( weapon->missileDlight ) {
-		trap_R_AddLightToScene(cent->lerpOrigin, weapon->missileDlight, 
+		trap_R_AddLightToScene(cent->lerpOrigin, weapon->missileDlight,
 			weapon->missileDlightColor[col][0], weapon->missileDlightColor[col][1], weapon->missileDlightColor[col][2] );
 	}
 */
 	// add dynamic light
 	if ( weapon->missileDlight ) {
-		trap_R_AddLightToScene(cent->lerpOrigin, weapon->missileDlight, 
+		trap_R_AddLightToScene(cent->lerpOrigin, weapon->missileDlight,
 			weapon->missileDlightColor[0], weapon->missileDlightColor[1], weapon->missileDlightColor[2] );
 	}
 
@@ -745,7 +745,7 @@ static void CG_CalcEntityLerpPositions( centity_t *cent ) {
 	// adjust for riding a mover if it wasn't rolled into the predicted
 	// player state
 	if ( cent != &cg.predictedPlayerEntity ) {
-		CG_AdjustPositionForMover( cent->lerpOrigin, cent->currentState.groundEntityNum, 
+		CG_AdjustPositionForMover( cent->lerpOrigin, cent->currentState.groundEntityNum,
 		cg.snap->serverTime, cg.time, cent->lerpOrigin );
 	}
 }
@@ -984,7 +984,7 @@ void CG_AddPacketEntities( void ) {
 			cg.frameInterpolation = (float)( cg.time - cg.snap->serverTime ) / delta;
 		}
 	} else {
-		cg.frameInterpolation = 0;	// actually, it should never be used, because 
+		cg.frameInterpolation = 0;	// actually, it should never be used, because
 									// no entities should be marked as interpolating
 	}
 

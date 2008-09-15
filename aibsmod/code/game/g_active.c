@@ -120,7 +120,7 @@ void P_WorldEffects( gentity_t *ent ) {
 				// don't play a normal pain sound
 				ent->pain_debounce_time = level.time + 200;
 
-				G_Damage (ent, NULL, NULL, NULL, NULL, 
+				G_Damage (ent, NULL, NULL, NULL, NULL,
 					ent->damage, DAMAGE_NO_ARMOR, MOD_WATER);
 			}
 		}
@@ -132,7 +132,7 @@ void P_WorldEffects( gentity_t *ent ) {
 	//
 	// check for sizzle damage (move to pmove?)
 	//
-	if (waterlevel && 
+	if (waterlevel &&
 		(ent->watertype&(CONTENTS_LAVA|CONTENTS_SLIME)) ) {
 		if (ent->health > 0
 			&& ent->pain_debounce_time <= level.time	) {
@@ -141,12 +141,12 @@ void P_WorldEffects( gentity_t *ent ) {
 				G_AddEvent( ent, EV_POWERUP_BATTLESUIT, 0 );
 			} else {
 				if (ent->watertype & CONTENTS_LAVA) {
-					G_Damage (ent, NULL, NULL, NULL, NULL, 
+					G_Damage (ent, NULL, NULL, NULL, NULL,
 						30*waterlevel, 0, MOD_LAVA);
 				}
 
 				if (ent->watertype & CONTENTS_SLIME) {
-					G_Damage (ent, NULL, NULL, NULL, NULL, 
+					G_Damage (ent, NULL, NULL, NULL, NULL,
 						10*waterlevel, 0, MOD_SLIME);
 				}
 			}
@@ -354,8 +354,8 @@ qboolean ClientInactivityTimer( gclient_t *client ) {
 		// gameplay, everyone isn't kicked
 		client->inactivityTime = level.time + 60 * 1000;
 		client->inactivityWarning = qfalse;
-	} else if ( client->pers.cmd.forwardmove || 
-		client->pers.cmd.rightmove || 
+	} else if ( client->pers.cmd.forwardmove ||
+		client->pers.cmd.rightmove ||
 		client->pers.cmd.upmove ||
 		(client->pers.cmd.buttons & BUTTON_ATTACK) ) {
 		client->inactivityTime = level.time + g_inactivity.integer * 1000;
@@ -436,13 +436,15 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 		} else {
 			// count down health when over max
 			if ( ent->health > client->ps.stats[STAT_MAX_HEALTH] ) {
-				ent->health--;
+				if (!(client->ps.powerups[PW_RAMBO])) //doesn't apply to rambo
+					ent->health--;
 			}
 		}
 
 		// count down armor when over max
 		if ( client->ps.stats[STAT_ARMOR] > client->ps.stats[STAT_MAX_HEALTH] ) {
-			client->ps.stats[STAT_ARMOR]--;
+			if (!(client->ps.powerups[PW_RAMBO])) //doesn't apply to rambo
+				client->ps.stats[STAT_ARMOR]--;
 		}
 	}
 #ifdef MISSIONPACK
@@ -757,7 +759,7 @@ void ClientThink_real( gentity_t *ent ) {
 	if ( ucmd->serverTime < level.time - 1000 ) {
 		ucmd->serverTime = level.time - 1000;
 //		G_Printf("serverTime >>>>>\n" );
-	} 
+	}
 
 	msec = ucmd->serverTime - client->ps.commandTime;
 	// following others may result in bad times, but we still want
@@ -937,6 +939,27 @@ void ClientThink_real( gentity_t *ent ) {
 		client->fireHeld = qfalse;		// for grapple
 	}
 
+	//aibsmod - update buttonsEntity
+	if (client->pers.buttonsEntity) {
+		//set owner
+		client->pers.buttonsEntity->s.otherEntityNum = client->ps.clientNum;
+
+		//set broadcast
+		client->pers.buttonsEntity->r.svFlags = SVF_BROADCAST;
+
+		//move over to client's position
+		G_SetOrigin(client->pers.buttonsEntity, client->ps.origin);
+
+		G_AddEvent(client->pers.buttonsEntity, EV_CURRENT_BUTTONS,
+			((pm.cmd.forwardmove > 0) ? BTNFLAG_BUTTON_UP : 0) |
+			((pm.cmd.forwardmove < 0) ? BTNFLAG_BUTTON_DOWN : 0) |
+			((pm.cmd.rightmove < 0) ? BTNFLAG_BUTTON_LEFT : 0) |
+			((pm.cmd.rightmove > 0) ? BTNFLAG_BUTTON_RIGHT : 0) |
+			((pm.cmd.upmove > 0) ? BTNFLAG_BUTTON_JUMP : 0) |
+			((pm.cmd.buttons & BUTTON_ATTACK) ? BTNFLAG_BUTTON_FIRE : 0)
+		);
+	}
+
 	// use the snapped origin for linking so it matches client predicted versions
 	VectorCopy( ent->s.pos.trBase, ent->r.currentOrigin );
 
@@ -979,12 +1002,12 @@ void ClientThink_real( gentity_t *ent ) {
 		// wait for the attack button to be pressed
 		if ( level.time > client->respawnTime ) {
 			// forcerespawn is to prevent users from waiting out powerups
-			if ( g_forcerespawn.integer > 0 && 
+			if ( g_forcerespawn.integer > 0 &&
 				( level.time - client->respawnTime ) > g_forcerespawn.integer * 1000 ) {
 				respawn( ent );
 				return;
 			}
-		
+
 			// pressing attack or use is the normal respawn method
 			if ( ucmd->buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) ) {
 				respawn( ent );
