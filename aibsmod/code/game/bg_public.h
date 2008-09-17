@@ -85,6 +85,7 @@ typedef enum {
 
 	GT_TEAM,			// team deathmatch
 	GT_RAMBO_TEAM,
+	GT_FOOTBALL,
 	GT_CTF,				// capture the flag
 	GT_1FCTF,
 	GT_OBELISK,
@@ -249,7 +250,6 @@ typedef enum {
 #define	EF_AWARD_ASSIST		0x00020000		// draw a assist sprite
 #define EF_AWARD_DENIED		0x00040000		// denied
 #define EF_TEAMVOTED		0x00080000		// already cast a team vote
-
 
 // NOTE: may not have more than 16
 typedef enum {
@@ -683,6 +683,9 @@ typedef enum {
 	ET_INVISIBLE,
 	ET_GRAPPLE,				// grapple hooked on wall
 	ET_TEAM,
+
+	//aibsmod
+	ET_FOOTBALL,
 
 	ET_EVENTS				// any of the EV_* events can be added freestanding
 							// by setting eType to ET_EVENTS + eventNum

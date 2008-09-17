@@ -2405,6 +2405,8 @@ static void CG_DrawWarmup( void ) {
 			s = "Rambomatch";
 		} else if (cgs.gametype == GT_RAMBO_TEAM) {
 			s = "Team Rambomatch";
+		} else if (cgs.gametype == GT_FOOTBALL) {
+			s = "Football";
 		} else {
 			s = "";
 		}

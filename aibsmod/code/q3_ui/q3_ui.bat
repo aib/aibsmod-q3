@@ -1,7 +1,7 @@
 rem make sure we have a safe environement
 set LIBRARY=
 set INCLUDE=
-set PATH=X:\Quake3\aibsmod\bin
+set PATH=X:\Quake3\aibsmod.src\bin
 
 mkdir vm
 cd vm
@@ -99,3 +99,5 @@ lcc -DQ3_VM -S -Wf-target=bytecode -Wf-g -I..\..\cgame -I..\..\game -I..\..\q3_u
 q3asm -f ../q3_ui
 :quit
 cd ..
+
+move ..\..\..\baseq3\vm\ui.* ..\..\vm\

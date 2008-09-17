@@ -714,6 +714,12 @@ void G_CheckTeamItems( void ) {
 			G_Printf( S_COLOR_YELLOW "WARNING: No team_CTF_blueflag in map" );
 		}
 	}
+
+	if (g_gametype.integer == GT_FOOTBALL) {
+		if (level.footballSpawnFound == 0)
+			G_Printf(S_COLOR_YELLOW "WARNING: Couldn't find a spawn point for football");
+	}
+
 #ifdef MISSIONPACK
 	if( g_gametype.integer == GT_1FCTF ) {
 		gitem_t	*item;

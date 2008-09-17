@@ -808,7 +808,10 @@ typedef struct {
 	qhandle_t	medalAssist;
 	qhandle_t	medalCapture;
 
-	//aibsmod graphics shaders
+	//aibsmod models
+	qhandle_t	footballModel;
+
+	//aibsmod shaders
 	qhandle_t	ramboShader;
 	qhandle_t	ramboWeaponShader;
 
@@ -1355,7 +1358,6 @@ void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 							qhandle_t parentModel, char *tagName );
 void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 							qhandle_t parentModel, char *tagName );
-
 
 
 //

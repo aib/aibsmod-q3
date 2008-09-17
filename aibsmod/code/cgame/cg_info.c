@@ -230,6 +230,12 @@ void CG_DrawInformation( void ) {
 	case GT_TEAM:
 		s = "Team Deathmatch";
 		break;
+	case GT_RAMBO_TEAM:
+		s = "Team Rambomatch";
+		break;
+	case GT_FOOTBALL:
+		s = "Football";
+		break;
 	case GT_CTF:
 		s = "Capture The Flag";
 		break;
@@ -244,9 +250,6 @@ void CG_DrawInformation( void ) {
 		s = "Harvester";
 		break;
 #endif
-	case GT_RAMBO_TEAM:
-		s = "Team Rambomatch";
-		break;
 	default:
 		s = "Unknown Gametype";
 		break;

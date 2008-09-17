@@ -1101,6 +1101,9 @@ static void CG_RegisterGraphics( void ) {
 
 #endif
 
+	//aibsmod models
+	cgs.media.footballModel = trap_R_RegisterModel("models/football/ball.md3");
+
 	//aibsmod shaders
 	cgs.media.ramboShader = trap_R_RegisterShader("powerups/rambo");
 	cgs.media.ramboWeaponShader = trap_R_RegisterShader("powerups/ramboWeapon");

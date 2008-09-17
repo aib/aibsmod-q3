@@ -1188,6 +1188,8 @@ const char *CG_GameTypeString() {
 		return "Rambomatch";
 	} else if (cgs.gametype == GT_RAMBO_TEAM) {
 		return "Team Rambomatch";
+	} else if (cgs.gametype == GT_FOOTBALL) {
+		return "Football";
 	}
 
 	return "";

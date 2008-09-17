@@ -472,8 +472,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	// range are NEVER anything but clients
 	level.num_entities = MAX_CLIENTS;
 
-	level.rambo = NULL;
-
 	// let the server system know where the entites are
 	trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ),
 		&level.clients[0].ps, sizeof( level.clients[0] ) );
@@ -485,6 +483,13 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	// parse the key/value pairs and spawn gentities
 	G_SpawnEntitiesFromString();
+
+	//aibsmod initialization
+	level.rambo = NULL;
+	if (g_gametype.integer == GT_FOOTBALL)
+		level.football = football_create(level.footballSpawnPoint);
+	else
+		level.football = NULL;
 
 	// general initialization
 	G_FindTeams();
@@ -1778,6 +1783,12 @@ int start, end;
 
 		if ( ent->s.eType == ET_MISSILE ) {
 			G_RunMissile( ent );
+			continue;
+		}
+
+		//aibsmod - use G_RunFootball for ET_FOOTBALL
+		if (ent->s.eType == ET_FOOTBALL) {
+			G_RunFootball(ent);
 			continue;
 		}
 

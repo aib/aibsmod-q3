@@ -56,6 +56,12 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 	// set aiming directions
 	AngleVectors (ent->client->ps.viewangles, forward, right, up);
 
+	//aibsmod - shoot the ball if we have it
+	if (level.ballCarrier == ent) {
+		football_shoot(ent, forward);
+		return qfalse;
+	}
+
 	CalcMuzzlePoint ( ent, forward, right, up, muzzle );
 
 	VectorMA (muzzle, 32, forward, end);

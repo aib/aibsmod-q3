@@ -401,7 +401,14 @@ typedef struct {
 	int			portalSequence;
 #endif
 
-	gentity_t	*rambo;	//aibsmod - current rambo
+	//aibsmod stuff
+	gentity_t	*rambo;
+	gentity_t	*ballCarrier;
+	gentity_t	*football;
+
+	vec3_t		footballSpawnPoint;
+	int			footballSpawnFound;
+
 } level_locals_t;
 
 
@@ -573,6 +580,7 @@ void player_die (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 void AddScore( gentity_t *ent, vec3_t origin, int score );
 void CalculateRanks( void );
 qboolean SpotWouldTelefrag( gentity_t *spot );
+
 void aibsmod_switchRambo(gentity_t *oldrambo, gentity_t *newrambo);
 void aibsmod_giveAllWeapons(gclient_t *player);
 
@@ -966,3 +974,12 @@ int		trap_GeneticParentsAndChildSelection(int numranks, float *ranks, int *paren
 
 void	trap_SnapVector( float *v );
 
+//aibsmod stuff
+
+//g_football.c
+gentity_t *football_create(vec3_t origin);
+void football_catch(gentity_t *player);
+void football_shoot(gentity_t *player, vec3_t direction);
+void G_RunFootball(gentity_t *ball);
+//void G_FootballImpact(gentity_t *ball, trace_t *trace);
+void G_BounceFootball(gentity_t *ball, trace_t *trace);

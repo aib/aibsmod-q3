@@ -995,7 +995,6 @@ void ClientBegin( int clientNum ) {
 
 	//aibsmod - remove existing buttonsEntity if it exists
 	if (client->pers.buttonsEntity) {
-//		G_Printf("Freeing BE number=%i, type=%i, class=%s, inuse=%i\n", ent->client->pers.buttonsEntity->s.number, ent->client->pers.buttonsEntity->s.eType, ent->client->pers.buttonsEntity->classname, ent->client->pers.buttonsEntity->inuse);
 		trap_UnlinkEntity(client->pers.buttonsEntity);
 		client->pers.buttonsEntity->inuse = qfalse;
 		client->pers.buttonsEntity = NULL;
@@ -1170,6 +1169,7 @@ void ClientSpawn(gentity_t *ent) {
 
 	client->ps.clientNum = index;
 
+	//aibsmod - spawn with infinite weapons if trainingmode is 1
 	if (am_trainingMode.integer == 1) {
 		aibsmod_giveAllWeapons(client);
 	} else {
@@ -1320,6 +1320,7 @@ void ClientDisconnect( int clientNum ) {
 
 	}
 
+	//aibsmod - lose rambo
 	if (level.rambo == ent)
 		aibsmod_switchRambo(ent, NULL);
 
@@ -1343,7 +1344,6 @@ void ClientDisconnect( int clientNum ) {
 
 	//aibsmod - free buttonsEntity
 	if (ent->client->pers.buttonsEntity) {
-//		G_Printf("Freeing BE number=%i, type=%i, class=%s, inuse=%i\n", ent->client->pers.buttonsEntity->s.number, ent->client->pers.buttonsEntity->s.eType, ent->client->pers.buttonsEntity->classname, ent->client->pers.buttonsEntity->inuse);
 		trap_UnlinkEntity(ent->client->pers.buttonsEntity);
 		ent->client->pers.buttonsEntity->inuse = qfalse;
 		ent->client->pers.buttonsEntity = NULL;

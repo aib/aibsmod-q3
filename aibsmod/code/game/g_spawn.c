@@ -389,7 +389,7 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 	int			i;
 	gentity_t	*ent;
 	char		*s, *value, *gametypeName;
-	static char *gametypeNames[] = {"ffa", "tournament", "single", "rambo", "team", "ctf", "oneflag", "obelisk", "harvester", "teamtournament", "teamrambo"};
+	static char *gametypeNames[] = {"ffa", "tournament", "single", "rambo", "team", "teamrambo", "football", "ctf", "oneflag", "obelisk", "harvester", "teamtournament" };
 
 	// get the next free entity
 	ent = G_Spawn();
@@ -397,6 +397,22 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 	for ( i = 0 ; i < level.numSpawnVars ; i++ ) {
 		G_ParseField( level.spawnVars[i][0], level.spawnVars[i][1], ent );
 	}
+
+	//aibsmod - find a suitable spawn point for the football
+	if ((level.footballSpawnFound < 10) && (!strcmp(ent->classname, "team_CTF_neutralflag"))) {
+		VectorCopy(ent->s.origin, level.footballSpawnPoint);
+		level.footballSpawnFound = 10;
+		G_FreeEntity(ent);
+		return;
+	}
+
+	/*if ((level.footballSpawnFound < 100) && (!strcmp(ent->classname, "football_ball")) {
+		G_Printf("neutral flag point found at %f %f %f\n", ent->s.origin[0], ent->s.origin[1], ent->s.origin[2]);
+		VectorCopy(ent->s.origin, level.footballSpawnSpot);
+		level.footballSpawnFound = 100;
+		G_FreeEntity(ent);
+		return;
+	}*/
 
 	// check for "notsingle" flag
 	if ( g_gametype.integer == GT_SINGLE_PLAYER ) {
@@ -604,6 +620,9 @@ void G_SpawnEntitiesFromString( void ) {
 	// allow calls to G_Spawn*()
 	level.spawning = qtrue;
 	level.numSpawnVars = 0;
+
+	//aibsmod - start looking for the football spawn point
+	level.footballSpawnFound = 0;
 
 	// the worldspawn is not an actual entity, but it still
 	// has a "spawn" function to perform any global setup
