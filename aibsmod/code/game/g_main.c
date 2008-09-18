@@ -490,6 +490,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 		level.football = football_create(level.footballSpawnPoint);
 	else
 		level.football = NULL;
+	level.ballLastTouchTime = -1;
 
 	// general initialization
 	G_FindTeams();

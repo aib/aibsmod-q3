@@ -58,7 +58,7 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 
 	//aibsmod - shoot the ball if we have it
 	if (level.ballCarrier == ent) {
-		football_shoot(ent, forward);
+		football_shoot(level.football, ent, forward);
 		return qfalse;
 	}
 

@@ -9,7 +9,7 @@
 //==================================================================
 
 // the "gameversion" client command will print this plus compile date
-#define	GAMEVERSION	"aibsmod_test7"
+#define	GAMEVERSION	"aibsmod_test8"
 
 #define BODY_QUEUE_SIZE		8
 
@@ -408,6 +408,7 @@ typedef struct {
 
 	vec3_t		footballSpawnPoint;
 	int			footballSpawnFound;
+	int			ballLastTouchTime;
 
 } level_locals_t;
 
@@ -978,8 +979,8 @@ void	trap_SnapVector( float *v );
 
 //g_football.c
 gentity_t *football_create(vec3_t origin);
+void football_reset(gentity_t *ball);
 void football_catch(gentity_t *player);
-void football_shoot(gentity_t *player, vec3_t direction);
+void football_shoot(gentity_t *ball, gentity_t *player, vec3_t direction);
 void G_RunFootball(gentity_t *ball);
-//void G_FootballImpact(gentity_t *ball, trace_t *trace);
 void G_BounceFootball(gentity_t *ball, trace_t *trace);
