@@ -1,5 +1,6 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
+#include "../game/aibsmod.h"
 #include "../game/q_shared.h"
 #include "tr_types.h"
 #include "../game/bg_public.h"
@@ -626,7 +627,7 @@ typedef struct {
 	qboolean		testGun;
 
 	//aibsmod stuff
-	int			ramboNum;			//current rambo's clientNum (or -1)
+	int			carrierNum;			//current rambo or ball carrier (or -1)
 	float		zpos;				//client height, used in speed calculations
 	int			trackButtonsClient;	//the clientNum whose buttons we are tracking
 	int			buttonState;		//sent by the server so we can draw buttons pressed
@@ -953,9 +954,19 @@ typedef struct {
 	sfxHandle_t	countFightSound;
 	sfxHandle_t	countPrepareSound;
 
-	//Rambo sounds
+	//aibsmod sounds
 	sfxHandle_t ramboStealSound;
 	sfxHandle_t ramboKillSound;
+
+	sfxHandle_t ballKick1Sound;
+	sfxHandle_t ballKick2Sound;
+	sfxHandle_t ballKick3Sound;
+
+	sfxHandle_t yourTeamGoalSound;
+	sfxHandle_t opponentGoalSound;
+
+	sfxHandle_t goalCheerSound;
+	sfxHandle_t goalSneerSound;
 
 #ifdef MISSIONPACK
 	// new stuff
@@ -1201,7 +1212,7 @@ extern	vmCvar_t		am_drawSpeed;
 extern	vmCvar_t		am_drawSpeedMethod;
 extern	vmCvar_t		am_drawSpeedFrames;
 extern	vmCvar_t		am_drawButtons;
-extern	vmCvar_t		cg_depthHack;
+extern	vmCvar_t		amh_depth;
 
 //
 // cg_main.c
@@ -1358,6 +1369,7 @@ void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 							qhandle_t parentModel, char *tagName );
 void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 							qhandle_t parentModel, char *tagName );
+void CG_Football(centity_t *cent); //aibsmod
 
 
 //
@@ -1683,3 +1695,4 @@ void	CG_ParticleMisc (qhandle_t pshader, vec3_t origin, int size, int duration, 
 void	CG_ParticleExplosion (char *animStr, vec3_t origin, vec3_t vel, int duration, int sizeStart, int sizeEnd);
 extern qboolean		initparticles;
 int CG_NewParticleArea ( int num );
+

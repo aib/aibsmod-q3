@@ -700,9 +700,9 @@ static float CG_DrawAttacker( float y ) {
 	const char	*name;
 	int			clientNum;
 
-	//aibsmod - draw rambo's head if playing rambomatch or team rambomatch
-	if ((cgs.gametype == GT_RAMBO) || (cgs.gametype == GT_RAMBO_TEAM)) {
-		clientNum = cg.ramboNum;
+	//aibsmod - draw rambo's head if playing rambomatch or team rambomatch or carrier's head if football
+	if ((cgs.gametype == GT_RAMBO) || (cgs.gametype == GT_RAMBO_TEAM) || (cgs.gametype == GT_FOOTBALL)) {
+		clientNum = cg.carrierNum;
 
 		if ((clientNum < 0) || (clientNum >= MAX_CLIENTS))
 			return y;

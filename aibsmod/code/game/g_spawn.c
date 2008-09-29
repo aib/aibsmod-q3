@@ -173,6 +173,10 @@ void SP_team_neutralobelisk( gentity_t *ent );
 #endif
 void SP_item_botroam( gentity_t *ent ) {};
 
+//aibsmod - football spawn functions (g_football.c)
+void SP_football_redgoal(gentity_t *ent);
+void SP_football_bluegoal(gentity_t *ent);
+
 spawn_t	spawns[] = {
 	// info entities don't do anything at all, but provide positional
 	// information for things controlled by other processes
@@ -245,6 +249,10 @@ spawn_t	spawns[] = {
 	{"team_neutralobelisk", SP_team_neutralobelisk},
 #endif
 	{"item_botroam", SP_item_botroam},
+
+	//aibsmod - football spawn functions
+	{"football_redgoal", SP_football_redgoal},
+	{"football_bluegoal", SP_football_bluegoal},
 
 	{0, 0}
 };
@@ -399,20 +407,39 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 	}
 
 	//aibsmod - find a suitable spawn point for the football
-	if ((level.footballSpawnFound < 10) && (!strcmp(ent->classname, "team_CTF_neutralflag"))) {
+	if ((level.footballSpawnFound < 1) && (!strcmp(ent->classname, "team_CTF_neutralflag"))) {
+		VectorCopy(ent->s.origin, level.footballSpawnPoint);
+		level.footballSpawnFound = 1;
+		G_FreeEntity(ent);
+		return;
+	}
+
+	if ((level.footballSpawnFound < 10) && (!strcmp(ent->classname, "football_ball"))) {
 		VectorCopy(ent->s.origin, level.footballSpawnPoint);
 		level.footballSpawnFound = 10;
 		G_FreeEntity(ent);
 		return;
 	}
 
-	/*if ((level.footballSpawnFound < 100) && (!strcmp(ent->classname, "football_ball")) {
-		G_Printf("neutral flag point found at %f %f %f\n", ent->s.origin[0], ent->s.origin[1], ent->s.origin[2]);
-		VectorCopy(ent->s.origin, level.footballSpawnSpot);
-		level.footballSpawnFound = 100;
+	//aibsmod - find spawn points for the goal posts
+	if ((level.goalSpawnPointsFound < 10) && (!strcmp(ent->classname, "team_CTF_redflag"))) {
+		VectorCopy(ent->s.origin, level.redGoalSpawnPoint);
+		level.goalSpawnPointsFound += 1;
 		G_FreeEntity(ent);
-		return;
-	}*/
+	}
+
+	if ((level.goalSpawnPointsFound < 10) && (!strcmp(ent->classname, "team_CTF_blueflag"))) {
+		VectorCopy(ent->s.origin, level.blueGoalSpawnPoint);
+		level.goalSpawnPointsFound += 1;
+		G_FreeEntity(ent);
+	}
+
+	if ((level.goalSpawnPointsFound < 20) && (!strcmp(ent->classname, "football_redgoal")))
+		level.goalSpawnPointsFound += 10;
+
+	if ((level.goalSpawnPointsFound < 20) && (!strcmp(ent->classname, "football_bluegoal")))
+		level.goalSpawnPointsFound += 10;
+
 
 	// check for "notsingle" flag
 	if ( g_gametype.integer == GT_SINGLE_PLAYER ) {

@@ -183,7 +183,7 @@ vmCvar_t	am_drawSpeed;
 vmCvar_t	am_drawSpeedMethod;
 vmCvar_t	am_drawSpeedFrames;
 vmCvar_t	am_drawButtons;
-vmCvar_t	cg_depthHack;
+vmCvar_t	amh_depth;
 
 //aibsmod - server/shared variables. These will be communicated to us by the server (and used by pmove)
 vmCvar_t	am_fastWeaponSwitch;
@@ -318,7 +318,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &am_fastWeaponSwitch, "am_fastWeaponSwitch", "0", CVAR_SERVERINFO | CVAR_ARCHIVE },
 	{ &am_trainingMode, "am_trainingMode", "0", CVAR_SERVERINFO | CVAR_ARCHIVE },
 
-	{ &cg_depthHack, "cg_depth", "0", CVAR_CHEAT }
+	{ &amh_depth, "amh_depth", "0", CVAR_CHEAT }
 
 };
 
@@ -567,10 +567,6 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.countPrepareTeamSound = trap_S_RegisterSound( "sound/feedback/prepare_team.wav", qtrue );
 #endif
 
-	//aibsmod rambo stuff
-	cgs.media.ramboStealSound = trap_S_RegisterSound("sound/feedback/rambo_steal.wav", qtrue);
-	cgs.media.ramboKillSound = trap_S_RegisterSound("sound/feedback/rambo_kill.wav", qtrue);
-
 	if ( cgs.gametype >= GT_TEAM || cg_buildScript.integer ) {
 
 		cgs.media.captureAwardSound = trap_S_RegisterSound( "sound/teamplay/flagcapture_yourteam.wav", qtrue );
@@ -631,6 +627,21 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.gibBounce1Sound = trap_S_RegisterSound( "sound/player/gibimp1.wav", qfalse );
 	cgs.media.gibBounce2Sound = trap_S_RegisterSound( "sound/player/gibimp2.wav", qfalse );
 	cgs.media.gibBounce3Sound = trap_S_RegisterSound( "sound/player/gibimp3.wav", qfalse );
+
+	//aibsmod sounds
+	cgs.media.ramboStealSound = trap_S_RegisterSound("sound/rambo/rambo_steal.wav", qtrue);
+	cgs.media.ramboKillSound = trap_S_RegisterSound("sound/rambo/rambo_kill.wav", qtrue);
+
+	cgs.media.ballKick1Sound = trap_S_RegisterSound("sound/football/kick1.wav", qtrue);
+	cgs.media.ballKick2Sound = trap_S_RegisterSound("sound/football/kick2.wav", qtrue);
+	cgs.media.ballKick3Sound = trap_S_RegisterSound("sound/football/kick3.wav", qtrue);
+
+	cgs.media.yourTeamGoalSound = trap_S_RegisterSound("sound/football/goal_yourteam.wav", qtrue);
+	cgs.media.opponentGoalSound = trap_S_RegisterSound("sound/football/goal_opponent.wav", qtrue);
+
+	cgs.media.goalCheerSound = trap_S_RegisterSound("sound/football/goal_cheer.wav", qtrue);
+	cgs.media.goalSneerSound = trap_S_RegisterSound("sound/football/goal_sneer.wav", qtrue);
+
 
 #ifdef MISSIONPACK
 	cgs.media.useInvulnerabilitySound = trap_S_RegisterSound( "sound/items/invul_activate.wav", qfalse );
@@ -1899,7 +1910,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	cg.clientNum = clientNum;
 
 	//aibsmod stuff
-	cg.ramboNum = -1;
+	cg.carrierNum = -1;
 	cg.trackButtonsClient = clientNum;
 	//These might be unnecessary
 	cg.zpos = 0.0f;

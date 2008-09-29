@@ -2286,8 +2286,8 @@ void CG_Player( centity_t *cent ) {
 		renderfx |= RF_SHADOW_PLANE;
 	}
 
-	//aibsmod - hidden wallhack
-	if (cg_depthHack.integer == 42)
+	//aibsmod - wallhack
+	if (amh_depth.integer)
 		renderfx |= RF_DEPTHHACK;
 
 	renderfx |= RF_LIGHTING_ORIGIN;			// use the same origin for all

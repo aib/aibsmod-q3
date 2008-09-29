@@ -462,6 +462,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	const char		*s;
 	int				clientNum;
 	clientInfo_t	*ci;
+	int				rnd;
 
 	es = &cent->currentState;
 	event = es->event & ~EV_EVENT_BITS;
@@ -1155,18 +1156,24 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		if (es->eventParm == 1) { //stolen
 			CG_Printf("%s" S_COLOR_WHITE " became " S_COLOR_GREEN "rambo!" S_COLOR_WHITE "\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
 			trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.ramboStealSound);
-			cg.ramboNum = es->otherEntityNum2;
-		} else if (es->eventParm == 2) { //stolen by red
+			cg.carrierNum = es->otherEntityNum2;
+		}
+
+		else if (es->eventParm == 2) { //stolen by red
 			CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_RED "red team" S_COLOR_WHITE ") became " S_COLOR_GREEN "rambo!" S_COLOR_WHITE "\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
 			trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.ramboStealSound);
-			cg.ramboNum = es->otherEntityNum2;
-		} else if (es->eventParm == 3) { //stolen by blue
+			cg.carrierNum = es->otherEntityNum2;
+		}
+
+		else if (es->eventParm == 3) { //stolen by blue
 			CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_BLUE "blue team" S_COLOR_WHITE ") became " S_COLOR_GREEN "rambo!" S_COLOR_WHITE "\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
 			trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.ramboStealSound);
-			cg.ramboNum = es->otherEntityNum2;
-		} else if (es->eventParm == 4) { //lost
+			cg.carrierNum = es->otherEntityNum2;
+		}
+
+		else if (es->eventParm == 4) { //lost
 			CG_Printf("%s lost " S_COLOR_GREEN "rambo!" S_COLOR_WHITE "\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum), "n"));
-			cg.ramboNum = -1;
+			cg.carrierNum = -1;
 		}
 		break;
 
@@ -1180,6 +1187,87 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		//draw buttons only if the event belongs to us or the current spectatee
 		if (cg.snap->ps.clientNum == es->otherEntityNum)
 			cg.buttonState = es->eventParm;
+		break;
+
+	case EV_FOOTBALL_GOAL:
+		DEBUGNAME("EV_FOOTBALL_GOAL");
+		switch (es->eventParm) {
+			case 0:
+				CG_Printf("%s" S_COLOR_WHITE " has scored a goal!\n",  Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+				CG_AddBufferedSound(cgs.media.yourTeamGoalSound);
+				break;
+
+			case 1: //red goal
+				CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_RED "red team" S_COLOR_WHITE ") has scored a goal!\n",  Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+				if (cgs.clientinfo[cg.clientNum].team == TEAM_RED)
+					CG_AddBufferedSound(cgs.media.yourTeamGoalSound);
+				else
+					CG_AddBufferedSound(cgs.media.opponentGoalSound);
+				CG_AddBufferedSound(cgs.media.goalCheerSound);
+				break;
+
+			case 2: //blue goal
+				CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_BLUE "blue team" S_COLOR_WHITE ") has scored a goal!\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+				if (cgs.clientinfo[cg.clientNum].team == TEAM_BLUE)
+					CG_AddBufferedSound(cgs.media.yourTeamGoalSound);
+				else
+					CG_AddBufferedSound(cgs.media.opponentGoalSound);
+				CG_AddBufferedSound(cgs.media.goalCheerSound);
+				break;
+
+			case 3: //red own goal
+				CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_RED "red team" S_COLOR_WHITE ") has scored " S_COLOR_RED "AN OWN GOAL" S_COLOR_WHITE "!\n",  Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+				if (cgs.clientinfo[cg.clientNum].team == TEAM_RED)
+					CG_AddBufferedSound(cgs.media.yourTeamGoalSound);
+				else
+					CG_AddBufferedSound(cgs.media.opponentGoalSound);
+				CG_AddBufferedSound(cgs.media.goalSneerSound);
+				break;
+
+			case 4: //blue own goal
+				CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_BLUE "blue team" S_COLOR_WHITE ") has scored " S_COLOR_RED "AN OWN GOAL" S_COLOR_WHITE "!\n",  Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+				if (cgs.clientinfo[cg.clientNum].team == TEAM_BLUE)
+					CG_AddBufferedSound(cgs.media.yourTeamGoalSound);
+				else
+					CG_AddBufferedSound(cgs.media.opponentGoalSound);
+				CG_AddBufferedSound(cgs.media.goalSneerSound);
+				break;
+		}
+		break;
+
+	case EV_FOOTBALL_PASS:
+		DEBUGNAME("EV_FOOTBALL_PASS");
+		if (es->eventParm == 0) { //ball reset
+			CG_Printf(S_COLOR_GREEN "The ball has reset.\n");
+//			sound?
+			cg.carrierNum = -1;
+		}
+
+		else if (es->eventParm == 1) { //passed to red
+			CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_RED "red team" S_COLOR_WHITE ") has the ball.\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+//			sound?
+			cg.carrierNum = es->otherEntityNum2;
+		}
+
+		else if (es->eventParm == 2) { //passed to blue
+			CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_BLUE "blue team" S_COLOR_WHITE ") has the ball.\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+//			sound?
+			cg.carrierNum = es->otherEntityNum2;
+		}
+
+		else if (es->eventParm == 4) { //shot
+			rnd = rand() % 3;
+//			CG_Printf("%s" S_COLOR_WHITE " shot the ball.\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+
+			if (rnd == 0)
+				trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.ballKick1Sound);
+			else if (rnd == 1)
+				trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.ballKick2Sound);
+			else if (rnd == 2)
+				trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.ballKick3Sound);
+
+			cg.carrierNum = -1;
+		}
 		break;
 	//aibsmod stuff ends
 
@@ -1229,4 +1317,3 @@ void CG_CheckEvents( centity_t *cent ) {
 
 	CG_EntityEvent( cent, cent->lerpOrigin );
 }
-

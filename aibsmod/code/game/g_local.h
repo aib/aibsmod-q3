@@ -2,6 +2,7 @@
 //
 // g_local.h -- local definitions for game module
 
+#include "aibsmod.h"
 #include "q_shared.h"
 #include "bg_public.h"
 #include "g_public.h"
@@ -9,7 +10,8 @@
 //==================================================================
 
 // the "gameversion" client command will print this plus compile date
-#define	GAMEVERSION	"aibsmod_test8"
+//aibsmod - moved over to aibsmod.h
+//#define	GAMEVERSION	"baseq3"
 
 #define BODY_QUEUE_SIZE		8
 
@@ -406,8 +408,17 @@ typedef struct {
 	gentity_t	*ballCarrier;
 	gentity_t	*football;
 
+	int			goalTime;
 	vec3_t		footballSpawnPoint;
 	int			footballSpawnFound;
+
+	vec3_t		redGoalSpawnPoint;
+	vec3_t		blueGoalSpawnPoint;
+	int			goalSpawnPointsFound;
+
+	gentity_t	*redGoalTrigger;
+	gentity_t	*blueGoalTrigger;
+
 	int			ballLastTouchTime;
 
 } level_locals_t;
@@ -978,7 +989,8 @@ void	trap_SnapVector( float *v );
 //aibsmod stuff
 
 //g_football.c
-gentity_t *football_create(vec3_t origin);
+void football_create(vec3_t origin);
+void goalpost_create(vec3_t origin, int color);
 void football_reset(gentity_t *ball);
 void football_catch(gentity_t *player);
 void football_shoot(gentity_t *ball, gentity_t *player, vec3_t direction);

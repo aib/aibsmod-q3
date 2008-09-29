@@ -5,7 +5,8 @@
 // because games can change separately from the main system version, we need a
 // second version that must match between game and cgame
 
-#define	GAME_VERSION		"aibsmod-1"
+//aibsmod - moved over to aibsmod.h
+//#define	GAME_VERSION		"baseq3-1"
 
 #define	DEFAULT_GRAVITY		800
 #define	GIB_HEALTH			-40
@@ -441,7 +442,10 @@ typedef enum {
 	//aibsmod events
 	EV_RAMBO_STEAL,			//rambo changed (might have just died)
 	EV_RAMBO_KILL,			//rambo killed someone
-	EV_CURRENT_BUTTONS		//button state update (sent every frame)
+	EV_CURRENT_BUTTONS,		//button state update (sent every frame)
+
+	EV_FOOTBALL_GOAL,
+	EV_FOOTBALL_PASS
 
 } entity_event_t;
 
@@ -686,6 +690,8 @@ typedef enum {
 
 	//aibsmod
 	ET_FOOTBALL,
+	ET_FOOTBALL_GOAL,
+	ET_FOOTBALL_SOLID,
 
 	ET_EVENTS				// any of the EV_* events can be added freestanding
 							// by setting eType to ET_EVENTS + eventNum

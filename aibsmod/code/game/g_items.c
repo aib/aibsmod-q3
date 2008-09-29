@@ -716,8 +716,19 @@ void G_CheckTeamItems( void ) {
 	}
 
 	if (g_gametype.integer == GT_FOOTBALL) {
-		if (level.footballSpawnFound == 0)
-			G_Printf(S_COLOR_YELLOW "WARNING: Couldn't find a spawn point for football");
+		if (level.footballSpawnFound == 10)
+			G_Printf("Map has a football spawn point.\n");
+		else if (level.footballSpawnFound == 1)
+			G_Printf(S_COLOR_YELLOW "WARNING: Couldn't find football spawn point, using neutral flag position.\n");
+		else
+			G_Printf(S_COLOR_RED "ERROR: Couldn't find football spawn point.\n");
+
+		if (level.goalSpawnPointsFound == 20)
+			G_Printf("Map has custom goal posts.\n");
+		else if (level.goalSpawnPointsFound == 2)
+			G_Printf(S_COLOR_YELLOW "WARNING: Couldn't find goal posts, using CTF flag positions.\n");
+		else
+			G_Printf(S_COLOR_RED "ERROR: Couldn't find goal posts for football.\n");
 	}
 
 #ifdef MISSIONPACK

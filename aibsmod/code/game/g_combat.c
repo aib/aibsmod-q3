@@ -902,6 +902,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		damage = damage * max / 100;
 	}
 
+	//aibsmod - set last attacker
 	if (attacker->client && targ->client && (attacker != targ) && (!OnSameTeam(attacker, targ))) {
 		targ->client->lastAttacker = attacker;
 	}

@@ -3,6 +3,7 @@
 #ifndef __UI_LOCAL_H__
 #define __UI_LOCAL_H__
 
+#include "../game/aibsmod.h"
 #include "../game/q_shared.h"
 #include "../cgame/tr_types.h"
 //NOTE: include the ui_public.h from the new UI
@@ -88,12 +89,12 @@ extern vmCvar_t	ui_cdkeychecked;
 #define MAX_MENUITEMS			64
 
 #define MTYPE_NULL				0
-#define MTYPE_SLIDER			1	
+#define MTYPE_SLIDER			1
 #define MTYPE_ACTION			2
 #define MTYPE_SPINCONTROL		3
 #define MTYPE_FIELD				4
 #define MTYPE_RADIOBUTTON		5
-#define MTYPE_BITMAP			6	
+#define MTYPE_BITMAP			6
 #define MTYPE_TEXT				7
 #define MTYPE_SCROLLLIST		8
 #define MTYPE_PTEXT				9
@@ -175,7 +176,7 @@ typedef struct
 	mfield_t		field;
 } menufield_s;
 
-typedef struct 
+typedef struct
 {
 	menucommon_s generic;
 
@@ -194,7 +195,7 @@ typedef struct
 	int curvalue;
 	int	numitems;
 	int	top;
-		
+
 	const char **itemnames;
 
 	int width;
@@ -217,7 +218,7 @@ typedef struct
 typedef struct
 {
 	menucommon_s	generic;
-	char*			focuspic;	
+	char*			focuspic;
 	char*			errorpic;
 	qhandle_t		shader;
 	qhandle_t		focusshader;
@@ -271,7 +272,7 @@ extern vec4_t		color_dim;
 extern vec4_t		name_color;
 extern vec4_t		list_color;
 extern vec4_t		listbar_color;
-extern vec4_t		text_color_disabled; 
+extern vec4_t		text_color_disabled;
 extern vec4_t		text_color_normal;
 extern vec4_t		text_color_highlight;
 
@@ -541,7 +542,7 @@ extern void			UI_Refresh( int realtime );
 extern qboolean		UI_ConsoleCommand( int realTime );
 extern float		UI_ClampCvar( float min, float max, float value );
 extern void			UI_DrawNamedPic( float x, float y, float width, float height, const char *picname );
-extern void			UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader ); 
+extern void			UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader );
 extern void			UI_FillRect( float x, float y, float width, float height, const float *color );
 extern void			UI_DrawRect( float x, float y, float width, float height, const float *color );
 extern void			UI_UpdateScreen( void );

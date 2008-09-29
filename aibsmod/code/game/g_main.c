@@ -481,15 +481,25 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	ClearRegisteredItems();
 
+	//aibsmod - get ready to look for football type spawn points in map
+	level.footballSpawnFound = 0;
+	level.goalSpawnPointsFound = 0;
+
 	// parse the key/value pairs and spawn gentities
+	//aibsmod - also look for football and goal post spawn points
 	G_SpawnEntitiesFromString();
 
 	//aibsmod initialization
 	level.rambo = NULL;
-	if (g_gametype.integer == GT_FOOTBALL)
-		level.football = football_create(level.footballSpawnPoint);
-	else
+	if (g_gametype.integer == GT_FOOTBALL) {
+		football_create(level.footballSpawnPoint);
+		if (level.goalSpawnPointsFound == 2) { //found CTF flag posts we should convert to goal posts
+			goalpost_create(level.redGoalSpawnPoint, 1);
+			goalpost_create(level.blueGoalSpawnPoint, 2);
+		}
+	} else {
 		level.football = NULL;
+	}
 	level.ballLastTouchTime = -1;
 
 	// general initialization
@@ -1790,6 +1800,7 @@ int start, end;
 		//aibsmod - use G_RunFootball for ET_FOOTBALL
 		if (ent->s.eType == ET_FOOTBALL) {
 			G_RunFootball(ent);
+			trap_LinkEntity(ent);
 			continue;
 		}
 
