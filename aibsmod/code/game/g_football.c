@@ -11,7 +11,23 @@
 #define BALL_GOAL_RESET_TIME	10000
 #define BALL_RECATCH_TIME		500
 
+//how much the ball should turn per unit traveled
+#define BALL_ANGLE_SPEED		0.1
+
+#define CONTENTS_GOALPOST		-1/*(CONTENTS_SOLID | CONTENTS_PLAYERCLIP)*/
 #define CONTENTS_GOALCLIP		CONTENTS_PLAYERCLIP
+
+const vec3_t goalpost_top_mins = { -100.0f, -100.0f, -100.0f };
+const vec3_t goalpost_top_maxs = { +100.0f, +100.0f, +100.0f };
+
+const vec3_t goalpost_back_mins = { 0.0f, 0.0f, 0.0f };
+const vec3_t goalpost_back_maxs = { 0.0f, 0.0f, 0.0f };
+
+const vec3_t goalpost_left_mins = { 0.0f, 0.0f, 0.0f };
+const vec3_t goalpost_left_maxs = { 0.0f, 0.0f, 0.0f };
+
+const vec3_t goalpost_right_mins = { 0.0f, 0.0f, 0.0f };
+const vec3_t goalpost_right_maxs = { 0.0f, 0.0f, 0.0f };
 
 void football_create(vec3_t origin)
 {
@@ -22,8 +38,11 @@ void football_create(vec3_t origin)
 
 	ball->s.eType = ET_FOOTBALL;
 	ball->r.svFlags = SVF_BROADCAST;
-	ball->clipmask = CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_CORPSE;
+	ball->clipmask = CONTENTS_SOLID|CONTENTS_BODY;
+
+	//hurtable ball
 //	ball->r.contents = CONTENTS_BODY;
+//	ball->takedamage = qtrue;
 
 	VectorSet(ball->r.mins, -BALL_RADIUS, -BALL_RADIUS, -BALL_RADIUS);
 	VectorSet(ball->r.maxs, +BALL_RADIUS, +BALL_RADIUS, +BALL_RADIUS);
@@ -37,24 +56,84 @@ void football_create(vec3_t origin)
 
 	level.football = ball;
 	level.goalTime = 0;
+	level.ballLastTouchTime = 0;
 }
 
 void goalpost_create(vec3_t origin, int color) //1=red 2=blue
 {
-//	gentity_t *postup, *postleft, *postright;
+	gentity_t *post_back, *post_top, *post_left, *post_right;
 
-//	postup = G_Spawn();
-//	postup->classname = "goalpost";
+	//top
+	post_top = G_Spawn();
+	post_top->classname = "goalpost_top";
 
-//	postup->s.eType = ET_FOOTBALL_SOLID;
-//	postup->clipmask = MASK_SHOT;
-//	postup->r.contents = CONTENTS_SOLID;
+	post_top->s.eType = ET_FOOTBALL_SOLID;
+	post_top->s.modelindex = 1;
+	post_top->s.generic1 = color;
+//	post_top->clipmask = MASK_SHOT;
 
+	VectorCopy(goalpost_top_mins, post_top->r.mins);
+	VectorCopy(goalpost_top_maxs, post_top->r.maxs);
+	post_top->r.contents = CONTENTS_GOALPOST;
+
+	G_SetOrigin(post_top, origin);
+	trap_LinkEntity(post_top);
+
+	//back
+	post_back = G_Spawn();
+	post_back->classname = "goalpost_back";
+	post_back->s.eType = ET_FOOTBALL_SOLID;
+	post_back->s.modelindex = 2;
+	post_back->s.generic1 = color;
+//	post_back->clipmask = MASK_SHOT;
+
+	VectorCopy(goalpost_back_mins, post_back->r.mins);
+	VectorCopy(goalpost_back_maxs, post_back->r.maxs);
+	post_back->r.contents = CONTENTS_GOALPOST;
+
+	G_SetOrigin(post_back, origin);
+	trap_LinkEntity(post_back);
+
+	//left
+	post_left = G_Spawn();
+	post_left->classname = "goalpost_left";
+	post_left->s.eType = ET_FOOTBALL_SOLID;
+	post_left->s.modelindex = 3;
+	post_left->s.generic1 = color;
+//	post_left->clipmask = MASK_SHOT;
+
+	VectorCopy(goalpost_left_mins, post_left->r.mins);
+	VectorCopy(goalpost_left_maxs, post_left->r.maxs);
+	post_left->r.contents = CONTENTS_GOALPOST;
+
+	G_SetOrigin(post_left, origin);
+	trap_LinkEntity(post_left);
+
+	//right
+	post_right = G_Spawn();
+	post_right->classname = "goalpost_right";
+	post_right->s.eType = ET_FOOTBALL_SOLID;
+	post_right->s.modelindex = 4;
+	post_right->s.generic1 = color;
+//	post_right->clipmask = MASK_SHOT;
+
+	VectorCopy(goalpost_right_mins, post_right->r.mins);
+	VectorCopy(goalpost_right_maxs, post_right->r.maxs);
+	post_right->r.contents = CONTENTS_GOALPOST;
+
+//	post_right->r.contents = CONTENTS_SOLID;
+	G_SetOrigin(post_right, origin);
+	trap_LinkEntity(post_right);
 }
 
 void football_reset(gentity_t *ball)
 {
 	gentity_t *tmpent;
+
+	if (level.ballCarrier) {
+		level.ballCarrier->client->ps.powerups[PW_CARRIER] = 0;
+		level.ballCarrier->client->ps.pm_flags &= ~PMF_GOTFOOTBALL;
+	}
 
 	level.ballCarrier = NULL;
 	level.ballLastTouchTime = 0;
@@ -84,6 +163,12 @@ void football_catch(gentity_t *player)
 		return;
 
 	level.ballCarrier = player;
+	player->client->ps.powerups[PW_CARRIER] = INT_MAX;
+	if (player->client->ps.weapon != WP_GAUNTLET)
+		player->client->ps.pm_flags |= PMF_GOTFOOTBALL;
+
+	level.ballLastTouchTime = 0;
+
 	level.football->r.ownerNum = player->s.number;
 	level.football->s.pos.trType = TR_LINEAR;
 
@@ -99,9 +184,51 @@ void football_catch(gentity_t *player)
 	G_RunFootball(level.football);
 }
 
+void football_steal(gentity_t *player)
+{
+	if (level.ballCarrier) {
+		level.ballCarrier->client->ps.powerups[PW_CARRIER] = 0;
+		level.ballCarrier->client->ps.pm_flags &= ~PMF_GOTFOOTBALL;
+	}
+
+	football_catch(player);
+	player->client->ps.pm_flags |= PMF_GOTFOOTBALL; //don't let the stealer shoot it back to the old carrier
+}
+
+void football_drop(gentity_t *ball, gentity_t *player, vec3_t extraVelocity)
+{
+	gentity_t *tmpent;
+
+	if (level.ballCarrier) {
+		level.ballCarrier->client->ps.powerups[PW_CARRIER] = 0;
+		level.ballCarrier->client->ps.pm_flags &= ~PMF_GOTFOOTBALL;
+	}
+
+	level.ballCarrier = NULL;
+	level.ballLastTouchTime = level.time;
+
+	ball->count = 0;
+	ball->s.pos.trType = TR_GRAVITY;
+	ball->s.pos.trTime = level.time;
+
+	if (extraVelocity != NULL)
+		VectorAdd(ball->s.pos.trDelta, extraVelocity, ball->s.pos.trDelta);
+
+	//send event
+	tmpent = G_TempEntity(player->r.currentOrigin, EV_FOOTBALL_PASS);
+	tmpent->s.eventParm = 5;
+	tmpent->s.otherEntityNum2 = player->s.number;
+	tmpent->r.svFlags = SVF_BROADCAST;
+}
+
 void football_shoot(gentity_t *ball, gentity_t *player, vec3_t direction)
 {
 	gentity_t *tmpent;
+
+	if (level.ballCarrier) {
+		level.ballCarrier->client->ps.powerups[PW_CARRIER] = 0;
+		level.ballCarrier->client->ps.pm_flags &= ~PMF_GOTFOOTBALL;
+	}
 
 	level.ballCarrier = NULL;
 	level.ballLastTouchTime = level.time;
@@ -162,6 +289,7 @@ void G_RunFootball(gentity_t *ball)
 	vec3_t		forward;	//used to calculate ball offset for the carrier
 	int			passent;
 	gentity_t	*hitent;
+	float		xyspeed;
 
 	if (level.goalTime && ((level.time - level.goalTime) >= BALL_GOAL_RESET_TIME))
 		football_reset(ball);
@@ -187,7 +315,7 @@ void G_RunFootball(gentity_t *ball)
 
 				if (hitent->s.eType == ET_FOOTBALL_GOAL) {
 					football_goal(ball, hitent->s.generic1);
-					level.ballCarrier = NULL;
+					football_drop(ball, level.ballCarrier, NULL);
 				}
 			}
 		}
@@ -205,7 +333,14 @@ void G_RunFootball(gentity_t *ball)
 			VectorCopy(ball->s.pos.trBase, ball->r.currentOrigin);
 
 			//adjust ball rotation
-			VectorMA(ball->s.apos.trBase, 0.05, ball->s.pos.trDelta, ball->s.apos.trBase);
+			xyspeed = sqrt(ball->s.pos.trDelta[0]*ball->s.pos.trDelta[0] + ball->s.pos.trDelta[1]*ball->s.pos.trDelta[1]);
+			if (xyspeed > 0) {
+				ball->s.apos.trBase[YAW] = vectoyaw(ball->s.pos.trDelta);
+				ball->s.apos.trBase[PITCH] += (xyspeed * BALL_ANGLE_SPEED);
+
+				if (ball->s.apos.trBase[PITCH] > 360.0f)
+					ball->s.apos.trBase[PITCH] -= 360.0f;
+			}
 
 			return;
 		}
@@ -271,9 +406,19 @@ void G_RunFootball(gentity_t *ball)
 		if (!tr.startsolid || tr.entityNum != ball->r.ownerNum) {
 
 			//but ignore until recatch time passes
-			if ((level.ballLastTouchTime < 0) || (level.time - level.ballLastTouchTime) >= BALL_RECATCH_TIME)
+			if (!level.ballLastTouchTime || ((level.time - level.ballLastTouchTime) >= BALL_RECATCH_TIME))
 				ball->count = 1;
 		}
+	}
+
+	//adjust ball rotation
+	xyspeed = sqrt(ball->s.pos.trDelta[0]*ball->s.pos.trDelta[0] + ball->s.pos.trDelta[1]*ball->s.pos.trDelta[1]);
+	if (xyspeed > 0) {
+		ball->s.apos.trBase[YAW] = vectoyaw(ball->s.pos.trDelta);
+		ball->s.apos.trBase[PITCH] += (xyspeed * BALL_ANGLE_SPEED);
+
+		if (ball->s.apos.trBase[PITCH] > 360.0f)
+			ball->s.apos.trBase[PITCH] -= 360.0f;
 	}
 }
 

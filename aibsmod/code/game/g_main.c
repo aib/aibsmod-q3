@@ -481,10 +481,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	ClearRegisteredItems();
 
-	//aibsmod - get ready to look for football type spawn points in map
-	level.footballSpawnFound = 0;
-	level.goalSpawnPointsFound = 0;
-
 	// parse the key/value pairs and spawn gentities
 	//aibsmod - also look for football and goal post spawn points
 	G_SpawnEntitiesFromString();
@@ -500,7 +496,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	} else {
 		level.football = NULL;
 	}
-	level.ballLastTouchTime = -1;
 
 	// general initialization
 	G_FindTeams();

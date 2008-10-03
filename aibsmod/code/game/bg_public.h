@@ -139,6 +139,8 @@ typedef enum {
 #define PMF_SCOREBOARD		8192	// spectate as a scoreboard
 #define PMF_INVULEXPAND		16384	// invulnerability sphere set to full size
 
+#define PMF_GOTFOOTBALL		0x00008000	//just got football, disable attack until next time (like PMF_RESPAWNED)
+
 #define	PMF_ALL_TIMES	(PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
 
 #define	MAXTOUCH	32
@@ -273,7 +275,7 @@ typedef enum {
 	PW_AMMOREGEN,
 	PW_INVULNERABILITY,
 
-	PW_RAMBO,				//aibsmod - rambo powerup
+	PW_CARRIER,				//aibsmod - generic rambo / football carrier
 
 	PW_NUM_POWERUPS
 

@@ -1237,36 +1237,50 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 
 	case EV_FOOTBALL_PASS:
 		DEBUGNAME("EV_FOOTBALL_PASS");
-		if (es->eventParm == 0) { //ball reset
-			CG_Printf(S_COLOR_GREEN "The ball has reset.\n");
-//			sound?
-			cg.carrierNum = -1;
-		}
+		switch (es->eventParm) {
+			case 0: //reset
+				CG_Printf(S_COLOR_YELLOW "The ball has reset.\n");
+//				sound?
+				cg.carrierNum = -1;
+				break;
 
-		else if (es->eventParm == 1) { //passed to red
-			CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_RED "red team" S_COLOR_WHITE ") has the ball.\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
-//			sound?
-			cg.carrierNum = es->otherEntityNum2;
-		}
+			case 1: //passed to red
+//				CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_RED "red team" S_COLOR_WHITE ") has the ball.\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+//				sound?
+				cg.carrierNum = es->otherEntityNum2;
 
-		else if (es->eventParm == 2) { //passed to blue
-			CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_BLUE "blue team" S_COLOR_WHITE ") has the ball.\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
-//			sound?
-			cg.carrierNum = es->otherEntityNum2;
-		}
+				//if us, switch to gauntlet
+				if (cg.carrierNum == cg.snap->ps.clientNum)
+					cg.weaponSelect = WP_GAUNTLET;
+				break;
 
-		else if (es->eventParm == 4) { //shot
-			rnd = rand() % 3;
-//			CG_Printf("%s" S_COLOR_WHITE " shot the ball.\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+			case 2: //passed to blue
+//				CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_BLUE "blue team" S_COLOR_WHITE ") has the ball.\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+//				sound?
+				cg.carrierNum = es->otherEntityNum2;
 
-			if (rnd == 0)
-				trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.ballKick1Sound);
-			else if (rnd == 1)
-				trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.ballKick2Sound);
-			else if (rnd == 2)
-				trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.ballKick3Sound);
+				//if us, switch to gauntlet
+				if (cg.carrierNum == cg.snap->ps.clientNum)
+					cg.weaponSelect = WP_GAUNTLET;
+				break;
 
-			cg.carrierNum = -1;
+			case 4: //shot
+				rnd = rand() % 3;
+//				CG_Printf("%s" S_COLOR_WHITE " shot the ball.\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+
+				if (rnd == 0)
+					trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.ballKick1Sound);
+				else if (rnd == 1)
+					trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.ballKick2Sound);
+				else if (rnd == 2)
+					trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.ballKick3Sound);
+
+				cg.carrierNum = -1;
+				break;
+
+			case 5: //dropped
+				cg.carrierNum = -1;
+				break;
 		}
 		break;
 	//aibsmod stuff ends

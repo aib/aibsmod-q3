@@ -206,8 +206,8 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 	}
 
 	//aibsmod - highlight rambo
-	if ((cgs.gametype == GT_RAMBO) || (cgs.gametype == GT_RAMBO_TEAM)) {
-		if (ci->powerups & (1<<PW_RAMBO)) {
+	if ((cgs.gametype == GT_RAMBO) || (cgs.gametype == GT_RAMBO_TEAM) || (cgs.gametype == GT_FOOTBALL)) {
+		if (ci->powerups & (1<<PW_CARRIER)) {
 			float hcolor[4] = { 0, 0.7f, 0 };
 			hcolor[3] = fade * 0.7;
 

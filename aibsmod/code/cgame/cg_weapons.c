@@ -1186,7 +1186,8 @@ static void CG_AddWeaponWithPowerups( refEntity_t *gun, int powerups ) {
 			gun->customShader = cgs.media.quadWeaponShader;
 			trap_R_AddRefEntityToScene( gun );
 		}
-		if (powerups & (1 << PW_RAMBO)) {
+
+		if ((cgs.gametype == GT_RAMBO || cgs.gametype == GT_RAMBO_TEAM) && (powerups & (1 << PW_CARRIER))) {
 			gun->customShader = cgs.media.ramboWeaponShader;
 			trap_R_AddRefEntityToScene(gun);
 		}
@@ -1569,6 +1570,10 @@ void CG_NextWeapon_f( void ) {
 	if ( i == 16 ) {
 		cg.weaponSelect = original;
 	}
+
+	//aibsmod - ball carriers cannot change weapons
+	if (cgs.gametype == GT_FOOTBALL && cg.snap->ps.powerups[PW_CARRIER])
+		cg.weaponSelect = original;
 }
 
 /*
@@ -1605,6 +1610,10 @@ void CG_PrevWeapon_f( void ) {
 	if ( i == 16 ) {
 		cg.weaponSelect = original;
 	}
+
+	//aibsmod - ball carriers cannot change weapons
+	if (cgs.gametype == GT_FOOTBALL && cg.snap->ps.powerups[PW_CARRIER])
+		cg.weaponSelect = original;
 }
 
 /*
@@ -1629,6 +1638,10 @@ void CG_Weapon_f( void ) {
 	}
 
 	cg.weaponSelectTime = cg.time;
+
+	//aibsmod - ball carriers cannot change weapons
+	if (cgs.gametype == GT_FOOTBALL && cg.snap->ps.powerups[PW_CARRIER])
+		return;
 
 	if ( ! ( cg.snap->ps.stats[STAT_WEAPONS] & ( 1 << num ) ) ) {
 		return;		// don't have the weapon

@@ -812,6 +812,11 @@ typedef struct {
 	//aibsmod models
 	qhandle_t	footballModel;
 
+	qhandle_t	goalpostTopModel;
+	qhandle_t	goalpostBackModel;
+	qhandle_t	goalpostLeftModel;
+	qhandle_t	goalpostRightModel;
+
 	//aibsmod shaders
 	qhandle_t	ramboShader;
 	qhandle_t	ramboWeaponShader;

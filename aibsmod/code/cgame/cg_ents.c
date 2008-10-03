@@ -964,8 +964,12 @@ static void CG_AddCEntity( centity_t *cent ) {
 	case ET_FOOTBALL:
 		CG_Football(cent);
 		break;
-	case ET_FOOTBALL_GOAL:
+
 	case ET_FOOTBALL_SOLID:
+		CG_FootballGoalpost(cent);
+		break;
+
+	case ET_FOOTBALL_GOAL:
 		break;
 	}
 }
@@ -1027,7 +1031,7 @@ void CG_AddPacketEntities( void ) {
 //draw the football
 void CG_Football(centity_t *cent)
 {
-	refEntity_t			ent;
+	refEntity_t ent;
 
 	memset(&ent, 0, sizeof(ent));
 
@@ -1040,6 +1044,48 @@ void CG_Football(centity_t *cent)
 	VectorCopy(cent->lerpOrigin, ent.oldorigin);
 
 	ent.hModel = cgs.media.footballModel;
+
+	//convert angles to axis
+	AnglesToAxis(cent->lerpAngles, ent.axis);
+
+	//add to refresh list
+	trap_R_AddRefEntityToScene(&ent);
+}
+
+void CG_FootballGoalpost(centity_t *cent)
+{
+	refEntity_t ent;
+
+	memset(&ent, 0, sizeof(ent));
+
+	//set frame
+	ent.frame = cent->currentState.frame;//s1->frame;
+	ent.oldframe = ent.frame;
+	ent.backlerp = 0;
+
+	VectorCopy(cent->lerpOrigin, ent.origin);
+	VectorCopy(cent->lerpOrigin, ent.oldorigin);
+
+	switch (cent->currentState.modelindex) {
+		case 1: //top
+			ent.hModel = cgs.media.goalpostTopModel;
+			break;
+
+		case 2: //back
+			ent.hModel = cgs.media.goalpostBackModel;
+			break;
+
+		case 3: //left
+			ent.hModel = cgs.media.goalpostLeftModel;
+			break;
+
+		case 4: //right
+			ent.hModel = cgs.media.goalpostRightModel;
+			break;
+
+		default:
+			return;
+	}
 
 	//convert angles to axis
 	AnglesToAxis(cent->lerpAngles, ent.axis);

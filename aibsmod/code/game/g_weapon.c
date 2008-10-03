@@ -56,12 +56,6 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 	// set aiming directions
 	AngleVectors (ent->client->ps.viewangles, forward, right, up);
 
-	//aibsmod - shoot the ball if we have it
-	if (level.ballCarrier == ent) {
-		football_shoot(level.football, ent, forward);
-		return qfalse;
-	}
-
 	CalcMuzzlePoint ( ent, forward, right, up, muzzle );
 
 	VectorMA (muzzle, 32, forward, end);
@@ -81,6 +75,11 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 		tent->s.weapon = ent->s.weapon;
 	}
 
+	if (traceEnt->client && traceEnt == level.ballCarrier) {
+		football_steal(ent);
+		return qfalse;
+	}
+
 	if ( !traceEnt->takedamage) {
 		return qfalse;
 	}
@@ -97,7 +96,8 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 	}
 #endif
 
-	if ((ent->client->ps.powerups[PW_RAMBO]) || (am_hyperGauntlet.integer))
+	//rambo in rambomatch and everyone in am_hyperGauntlet 1 do instant-kill damage
+	if (am_hyperGauntlet.integer || ((g_gametype.integer == GT_RAMBO || g_gametype.integer == GT_RAMBO_TEAM) && ent->client->ps.powerups[PW_CARRIER]))
 		damage = 1000;
 	else
 		damage = 50 * s_quadFactor;
@@ -460,7 +460,7 @@ void weapon_railgun_fire (gentity_t *ent) {
 		trap_Trace (&trace, traceResume, NULL, NULL, end, ent->s.number, MASK_SHOT );
 		if ( trace.entityNum >= ENTITYNUM_MAX_NORMAL ) {
 			//break if piercing is disabled
-			if (am_piercingRail.integer == 0)
+			if (!am_piercingRail.integer)
 				break;
 
 			//break if we hit the sky
@@ -478,6 +478,10 @@ void weapon_railgun_fire (gentity_t *ent) {
 		}
 
 		traceEnt = &g_entities[ trace.entityNum ];
+
+		if (!am_piercingRail.integer && traceEnt->s.eType == ET_FOOTBALL_SOLID)
+			break;
+
 		if ( traceEnt->takedamage ) {
 #ifdef MISSIONPACK
 			if ( traceEnt->client && traceEnt->client->invulnerabilityTime > level.time ) {

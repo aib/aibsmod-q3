@@ -1324,6 +1324,10 @@ void ClientDisconnect( int clientNum ) {
 	if (level.rambo == ent)
 		aibsmod_switchRambo(ent, NULL);
 
+	//aibsmod - lose the ball
+	if (level.ballCarrier == ent)
+		football_drop(level.football, ent, NULL);
+
 	G_LogPrintf( "ClientDisconnect: %i\n", clientNum );
 
 	// if we are playing in tourney mode and losing, give a win to the other player
@@ -1367,10 +1371,10 @@ void aibsmod_switchRambo(gentity_t *oldrambo, gentity_t *newrambo)
 		return;
 
 	if (oldrambo && oldrambo->client)
-		oldrambo->client->ps.powerups[PW_RAMBO] = 0;
+		oldrambo->client->ps.powerups[PW_CARRIER] = 0;
 
 	if (newrambo && newrambo->client && (newrambo->health > 0)) { //player stole rambo
-		newrambo->client->ps.powerups[PW_RAMBO] = INT_MAX;
+		newrambo->client->ps.powerups[PW_CARRIER] = INT_MAX;
 
 		tmpent = G_TempEntity(newrambo->r.currentOrigin, EV_RAMBO_STEAL);
 		if (g_gametype.integer == GT_RAMBO_TEAM)

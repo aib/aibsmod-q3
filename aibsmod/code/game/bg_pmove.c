@@ -1528,6 +1528,10 @@ static void PM_Weapon( void ) {
 		return;
 	}
 
+	//also don't allow attack if we've just got the football
+	if (pm->ps->pm_flags & PMF_GOTFOOTBALL)
+		return;
+
 	// ignore if spectator
 	if ( pm->ps->persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
 		return;
@@ -1652,7 +1656,7 @@ static void PM_Weapon( void ) {
 		addTime = 100;
 		break;
 	case WP_RAILGUN:
-		addTime = 1500;
+		addTime = 100;//1500;
 		break;
 	case WP_BFG:
 		addTime = 200;
@@ -1852,8 +1856,10 @@ void PmoveSingle (pmove_t *pmove) {
 		pm->ps->eFlags &= ~EF_TALK;
 	}
 
+	//aibsmod - added PMF_GOTFOOTBALL flags to the following two statements
+
 	// set the firing flag for continuous beam weapons
-	if ( !(pm->ps->pm_flags & PMF_RESPAWNED) && pm->ps->pm_type != PM_INTERMISSION
+	if ( !(pm->ps->pm_flags & PMF_RESPAWNED) && !(pm->ps->pm_flags & PMF_GOTFOOTBALL) && pm->ps->pm_type != PM_INTERMISSION
 		&& ( pm->cmd.buttons & BUTTON_ATTACK ) && pm->ps->ammo[ pm->ps->weapon ] ) {
 		pm->ps->eFlags |= EF_FIRING;
 	} else {
@@ -1863,7 +1869,7 @@ void PmoveSingle (pmove_t *pmove) {
 	// clear the respawned flag if attack and use are cleared
 	if ( pm->ps->stats[STAT_HEALTH] > 0 &&
 		!( pm->cmd.buttons & (BUTTON_ATTACK | BUTTON_USE_HOLDABLE) ) ) {
-		pm->ps->pm_flags &= ~PMF_RESPAWNED;
+		pm->ps->pm_flags &= ~(PMF_RESPAWNED | PMF_GOTFOOTBALL);
 	}
 
 	// if talk button is down, dissallow all other input

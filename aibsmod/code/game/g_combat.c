@@ -691,6 +691,9 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		aibsmod_switchRambo(self, self->client->lastAttacker);
 	}
 
+	if (level.ballCarrier == self) { //aibsmod - ball carrier died
+		football_drop(level.football, self, NULL);
+	}
 
 	trap_LinkEntity (self);
 
@@ -1019,8 +1022,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	//aibsmod - also half damage if rambo
-	if (targ->client && targ->client->ps.powerups[PW_RAMBO]) {
-		damage *= 0.5;
+	if (g_gametype.integer == GT_RAMBO || g_gametype.integer == GT_RAMBO_TEAM) {
+		if (targ->client && targ->client->ps.powerups[PW_CARRIER])
+			damage *= 0.5;
 	}
 
 	if ( damage < 1 ) {

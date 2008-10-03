@@ -1115,6 +1115,11 @@ static void CG_RegisterGraphics( void ) {
 	//aibsmod models
 	cgs.media.footballModel = trap_R_RegisterModel("models/football/ball.md3");
 
+	cgs.media.goalpostTopModel = trap_R_RegisterModel("models/football/goalpost_top.md3");
+	cgs.media.goalpostBackModel = trap_R_RegisterModel("models/football/goalpost_back.md3");
+	cgs.media.goalpostLeftModel = trap_R_RegisterModel("models/football/goalpost_left.md3");
+	cgs.media.goalpostRightModel = trap_R_RegisterModel("models/football/goalpost_right.md3");
+
 	//aibsmod shaders
 	cgs.media.ramboShader = trap_R_RegisterShader("powerups/rambo");
 	cgs.media.ramboWeaponShader = trap_R_RegisterShader("powerups/ramboWeapon");

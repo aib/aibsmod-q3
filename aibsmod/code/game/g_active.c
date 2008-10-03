@@ -436,14 +436,14 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 		} else {
 			// count down health when over max
 			if ( ent->health > client->ps.stats[STAT_MAX_HEALTH] ) {
-				if (!(client->ps.powerups[PW_RAMBO])) //doesn't apply to rambo
+				if (!(((g_gametype.integer == GT_RAMBO) || (g_gametype.integer == GT_RAMBO_TEAM)) && client->ps.powerups[PW_CARRIER])) //doesn't apply to rambo
 					ent->health--;
 			}
 		}
 
 		// count down armor when over max
 		if ( client->ps.stats[STAT_ARMOR] > client->ps.stats[STAT_MAX_HEALTH] ) {
-			if (!(client->ps.powerups[PW_RAMBO])) //doesn't apply to rambo
+			if (!(((g_gametype.integer == GT_RAMBO) || (g_gametype.integer == GT_RAMBO_TEAM)) && client->ps.powerups[PW_CARRIER])) //doesn't apply to rambo
 				client->ps.stats[STAT_ARMOR]--;
 		}
 	}
@@ -741,6 +741,7 @@ void ClientThink_real( gentity_t *ent ) {
 	int			oldEventSequence;
 	int			msec;
 	usercmd_t	*ucmd;
+	vec3_t		forward, right, up; //used to shoot the football
 
 	client = ent->client;
 
@@ -849,7 +850,14 @@ void ClientThink_real( gentity_t *ent ) {
 	// go through as an attack unless it actually hits something
 	if ( client->ps.weapon == WP_GAUNTLET && !( ucmd->buttons & BUTTON_TALK ) &&
 		( ucmd->buttons & BUTTON_ATTACK ) && client->ps.weaponTime <= 0 ) {
-		pm.gauntletHit = CheckGauntletAttack( ent );
+
+		//aibsmod - shoot the football if we're carrying it
+		if (g_gametype.integer == GT_FOOTBALL && client->ps.powerups[PW_CARRIER] && !(client->ps.pm_flags & PMF_GOTFOOTBALL)) {
+			AngleVectors(client->ps.viewangles, forward, right, up);
+			football_shoot(level.football, ent, forward);
+		} else {
+			pm.gauntletHit = CheckGauntletAttack( ent );
+		}
 	}
 
 	if ( ent->flags & FL_FORCE_GESTURE ) {

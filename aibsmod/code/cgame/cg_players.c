@@ -1821,7 +1821,7 @@ static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 	}
 
 	//aibsmod - rambo gives a dlight too
-	if (powerups & (1<<PW_RAMBO)) {
+	if ((cgs.gametype == GT_RAMBO || cgs.gametype == GT_RAMBO_TEAM) && (powerups & (1<<PW_CARRIER))) {
 		trap_R_AddLightToScene(cent->lerpOrigin, 200+(rand()&31), 0.2f, 1.0f, 0.2f);
 	}
 
@@ -2158,7 +2158,7 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, int te
 		}
 
 		//aibsmod - rambo powerup
-		if (state->powerups & (1<<PW_RAMBO)) {
+		if ((cgs.gametype == GT_RAMBO || cgs.gametype == GT_RAMBO_TEAM) && (state->powerups & (1<<PW_CARRIER))) {
 			ent->customShader = cgs.media.ramboShader;
 			trap_R_AddRefEntityToScene(ent);
 		}
