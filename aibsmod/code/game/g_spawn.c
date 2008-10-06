@@ -425,12 +425,14 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 		//aibsmod - find spawn points for the goal posts
 		if ((level.goalSpawnPointsFound < 10) && (!strcmp(ent->classname, "team_CTF_redflag"))) {
 			VectorCopy(ent->s.origin, level.redGoalSpawnPoint);
+			level.redGoalYaw = ent->s.angles[1];
 			level.goalSpawnPointsFound += 1;
 			G_FreeEntity(ent);
 		}
 
 		if ((level.goalSpawnPointsFound < 10) && (!strcmp(ent->classname, "team_CTF_blueflag"))) {
 			VectorCopy(ent->s.origin, level.blueGoalSpawnPoint);
+			level.blueGoalYaw = ent->s.angles[1];
 			level.goalSpawnPointsFound += 1;
 			G_FreeEntity(ent);
 		}

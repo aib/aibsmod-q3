@@ -412,8 +412,12 @@ typedef struct {
 	vec3_t		footballSpawnPoint;
 	int			footballSpawnFound;
 
+	gentity_t	*redpost_top, *redpost_back, *redpost_left, *redpost_right;
+	gentity_t	*bluepost_top, *bluepost_back, *bluepost_left, *bluepost_right;
 	vec3_t		redGoalSpawnPoint;
 	vec3_t		blueGoalSpawnPoint;
+	float		redGoalYaw;
+	float		blueGoalYaw;
 	int			goalSpawnPointsFound;
 
 	gentity_t	*redGoalTrigger;
@@ -499,7 +503,7 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm );
 void G_SetOrigin( gentity_t *ent, vec3_t origin );
 void AddRemap(const char *oldShader, const char *newShader, float timeOffset);
 const char *BuildShaderStateConfig();
-
+void G_SetAngles(gentity_t *ent, vec3_t angles); //aibsmod
 //
 // g_combat.c
 //
@@ -782,6 +786,9 @@ extern	vmCvar_t	am_hyperGauntlet;
 extern	vmCvar_t	am_selfDamage;
 extern	vmCvar_t	am_nonRamboKill;
 
+extern	vmCvar_t	am_redGoalRotation;
+extern	vmCvar_t	am_blueGoalRotation;
+
 void	trap_Printf( const char *fmt );
 void	trap_Error( const char *fmt );
 int		trap_Milliseconds( void );
@@ -991,6 +998,7 @@ void	trap_SnapVector( float *v );
 //g_football.c
 void football_create(vec3_t origin);
 void goalpost_create(vec3_t origin, int color);
+void goalpost_rotate(float yaw, int color);
 void football_reset(gentity_t *ball);
 void football_catch(gentity_t *player);
 void football_steal(gentity_t *player);

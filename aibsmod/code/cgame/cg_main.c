@@ -309,14 +309,16 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_trueLightning, "cg_trueLightning", "0.0", CVAR_ARCHIVE},
 //	{ &cg_pmove_fixed, "cg_pmove_fixed", "0", CVAR_USERINFO | CVAR_ARCHIVE }
 
+	//aibsmod shared cvars (bg_public.h)
+	{ &am_fastWeaponSwitch, "am_fastWeaponSwitch", "0", CVAR_SERVERINFO | CVAR_ARCHIVE },
+	{ &am_trainingMode, "am_trainingMode", "0", CVAR_SERVERINFO | CVAR_ARCHIVE },
+
+	//aibsmod client-side cvars
 	{ &am_showKillNotice, "am_showKillNotice", "1", CVAR_ARCHIVE },
 	{ &am_drawSpeed, "am_drawSpeed", "0", CVAR_ARCHIVE },
 	{ &am_drawSpeedMethod, "am_drawSpeedMethod", "0", CVAR_ARCHIVE },
 	{ &am_drawSpeedFrames, "am_drawSpeedFrames", "1", CVAR_ARCHIVE },
-	{ &am_drawButtons, "am_drawButtons", "0", CVAR_ARCHIVE | CVAR_USERINFO },
-
-	{ &am_fastWeaponSwitch, "am_fastWeaponSwitch", "0", CVAR_SERVERINFO | CVAR_ARCHIVE },
-	{ &am_trainingMode, "am_trainingMode", "0", CVAR_SERVERINFO | CVAR_ARCHIVE },
+	{ &am_drawButtons, "am_drawButtons", "0", CVAR_ARCHIVE },
 
 	{ &amh_depth, "amh_depth", "0", CVAR_CHEAT }
 

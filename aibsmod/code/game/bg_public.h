@@ -184,7 +184,7 @@ void Pmove (pmove_t *pmove);
 
 //===================================================================================
 
-//aibsmod - shared cvars (via CVAR_SERVERINFO)
+//aibsmod - shared cvars (must set these CVAR_SERVERINFO so clients can be notified of changes)
 extern	vmCvar_t	am_fastWeaponSwitch;
 extern	vmCvar_t	am_trainingMode;
 

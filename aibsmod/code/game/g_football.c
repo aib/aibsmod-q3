@@ -14,11 +14,14 @@
 //how much the ball should turn per unit traveled
 #define BALL_ANGLE_SPEED		0.1
 
-#define CONTENTS_GOALPOST		-1/*(CONTENTS_SOLID | CONTENTS_PLAYERCLIP)*/
+#define CONTENTS_GOALPOST		(CONTENTS_SOLID | CONTENTS_PLAYERCLIP)
 #define CONTENTS_GOALCLIP		CONTENTS_PLAYERCLIP
 
-const vec3_t goalpost_top_mins = { -100.0f, -100.0f, -100.0f };
-const vec3_t goalpost_top_maxs = { +100.0f, +100.0f, +100.0f };
+#define MIN(x,y) ((x < y) ? (x) : (y))
+#define MAX(x,y) ((x > y) ? (x) : (y))
+
+const vec3_t goalpost_top_mins = { -20.0f, -100.0f, -10.0f };
+const vec3_t goalpost_top_maxs = { +20.0f, +100.0f, +10.0f };
 
 const vec3_t goalpost_back_mins = { 0.0f, 0.0f, 0.0f };
 const vec3_t goalpost_back_maxs = { 0.0f, 0.0f, 0.0f };
@@ -28,6 +31,9 @@ const vec3_t goalpost_left_maxs = { 0.0f, 0.0f, 0.0f };
 
 const vec3_t goalpost_right_mins = { 0.0f, 0.0f, 0.0f };
 const vec3_t goalpost_right_maxs = { 0.0f, 0.0f, 0.0f };
+
+const vec3_t goalpost_inside_mins = { -10.0f, -10.0f, -10.0f };
+const vec3_t goalpost_inside_maxs = { +10.0f, +10.0f, +10.0f };
 
 void football_create(vec3_t origin)
 {
@@ -50,7 +56,7 @@ void football_create(vec3_t origin)
 	ball->s.pos.trType = TR_GRAVITY;
 	ball->s.pos.trTime = level.time;// - 50;		//move a bit on the very first frame
 	VectorCopy(origin, ball->s.pos.trBase);
-	VectorSet(ball->s.pos.trDelta, 0, 0, 0);
+	VectorClear(ball->s.pos.trDelta);
 
 	VectorCopy(origin, ball->r.currentOrigin);
 
@@ -61,7 +67,8 @@ void football_create(vec3_t origin)
 
 void goalpost_create(vec3_t origin, int color) //1=red 2=blue
 {
-	gentity_t *post_back, *post_top, *post_left, *post_right;
+	gentity_t	*post_back, *post_top, *post_left, *post_right, *post_goal;
+	float		yaw;
 
 	//top
 	post_top = G_Spawn();
@@ -70,8 +77,8 @@ void goalpost_create(vec3_t origin, int color) //1=red 2=blue
 	post_top->s.eType = ET_FOOTBALL_SOLID;
 	post_top->s.modelindex = 1;
 	post_top->s.generic1 = color;
-//	post_top->clipmask = MASK_SHOT;
 
+	post_top->r.bmodel = qfalse;
 	VectorCopy(goalpost_top_mins, post_top->r.mins);
 	VectorCopy(goalpost_top_maxs, post_top->r.maxs);
 	post_top->r.contents = CONTENTS_GOALPOST;
@@ -82,11 +89,12 @@ void goalpost_create(vec3_t origin, int color) //1=red 2=blue
 	//back
 	post_back = G_Spawn();
 	post_back->classname = "goalpost_back";
+
 	post_back->s.eType = ET_FOOTBALL_SOLID;
 	post_back->s.modelindex = 2;
 	post_back->s.generic1 = color;
-//	post_back->clipmask = MASK_SHOT;
 
+	post_back->r.bmodel = qfalse;
 	VectorCopy(goalpost_back_mins, post_back->r.mins);
 	VectorCopy(goalpost_back_maxs, post_back->r.maxs);
 	post_back->r.contents = CONTENTS_GOALPOST;
@@ -97,11 +105,12 @@ void goalpost_create(vec3_t origin, int color) //1=red 2=blue
 	//left
 	post_left = G_Spawn();
 	post_left->classname = "goalpost_left";
+
 	post_left->s.eType = ET_FOOTBALL_SOLID;
 	post_left->s.modelindex = 3;
 	post_left->s.generic1 = color;
-//	post_left->clipmask = MASK_SHOT;
 
+	post_left->r.bmodel = qfalse;
 	VectorCopy(goalpost_left_mins, post_left->r.mins);
 	VectorCopy(goalpost_left_maxs, post_left->r.maxs);
 	post_left->r.contents = CONTENTS_GOALPOST;
@@ -112,18 +121,104 @@ void goalpost_create(vec3_t origin, int color) //1=red 2=blue
 	//right
 	post_right = G_Spawn();
 	post_right->classname = "goalpost_right";
+
 	post_right->s.eType = ET_FOOTBALL_SOLID;
 	post_right->s.modelindex = 4;
 	post_right->s.generic1 = color;
-//	post_right->clipmask = MASK_SHOT;
 
+	post_right->r.bmodel = qfalse;
 	VectorCopy(goalpost_right_mins, post_right->r.mins);
 	VectorCopy(goalpost_right_maxs, post_right->r.maxs);
 	post_right->r.contents = CONTENTS_GOALPOST;
 
-//	post_right->r.contents = CONTENTS_SOLID;
 	G_SetOrigin(post_right, origin);
 	trap_LinkEntity(post_right);
+
+	//goal area
+	post_goal = G_Spawn();
+	post_goal->classname = "goalpost_inside";
+
+	post_goal->s.eType = ET_FOOTBALL_GOAL;
+	post_goal->s.generic1 = color;
+
+	post_goal->r.bmodel = qfalse;
+	VectorCopy(goalpost_inside_mins, post_goal->r.mins);
+	VectorCopy(goalpost_inside_maxs, post_goal->r.maxs);
+	post_goal->r.contents = CONTENTS_GOALCLIP; //Note: different
+
+	G_SetOrigin(post_goal, origin);
+	trap_LinkEntity(post_goal);
+
+	if (color == 1) {
+		level.redpost_top = post_top;
+		level.redpost_back = post_back;
+		level.redpost_left = post_left;
+		level.redpost_right = post_right;
+		level.redGoalTrigger = post_goal;
+		yaw = level.redGoalYaw;
+	} else if (color == 2) {
+		level.bluepost_top = post_top;
+		level.bluepost_back = post_back;
+		level.bluepost_left = post_left;
+		level.bluepost_right = post_right;
+		level.blueGoalTrigger = post_goal;
+		yaw = level.blueGoalYaw;
+	}
+
+	goalpost_rotate(yaw, color);
+}
+
+void goalpost_rotate(float yaw, int color)
+{
+	gentity_t	*post_back, *post_top, *post_left, *post_right, *post_goal;
+	vec3_t		tmpvec1, tmpvec2;
+
+	if (color == 1) {
+		post_top = level.redpost_top;
+		post_back = level.redpost_back;
+		post_left = level.redpost_left;
+		post_right = level.redpost_right;
+		post_goal = level.redGoalTrigger;
+	} else if (color == 2) {
+		post_top = level.bluepost_top;
+		post_back = level.bluepost_back;
+		post_left = level.bluepost_left;
+		post_right = level.bluepost_right;
+		post_goal = level.blueGoalTrigger;
+	}
+
+	VectorSet(tmpvec1, 0, yaw, 0);
+	G_SetAngles(post_top, tmpvec1);
+	G_SetAngles(post_back, tmpvec1);
+	G_SetAngles(post_left, tmpvec1);
+	G_SetAngles(post_right, tmpvec1);
+	G_SetAngles(post_goal, tmpvec1);
+
+	//Rotate top part's bounding box
+/*	VectorCopy(goalpost_top_mins, tmpvec1);
+	VectorCopy(goalpost_top_maxs, tmpvec2);
+	RotatePointAroundVector(tmpvec1, axisDefault[2], goalpost_top_mins, yaw);
+	RotatePointAroundVector(tmpvec2, axisDefault[2], goalpost_top_maxs, yaw);
+	post_top->r.mins[0] = MIN(tmpvec1[0], tmpvec2[0]);
+	post_top->r.maxs[0] = MAX(tmpvec1[0], tmpvec2[0]);
+	post_top->r.mins[1] = MIN(tmpvec1[1], tmpvec2[1]);
+	post_top->r.maxs[1] = MAX(tmpvec1[1], tmpvec2[1]);
+	post_top->r.mins[2] = MIN(tmpvec1[2], tmpvec2[2]);
+	post_top->r.maxs[2] = MAX(tmpvec1[2], tmpvec2[2]);*/
+
+	//Rotate back part's bounding box
+
+	//Rotate left part's bounding box
+
+	//Rotate right part's bounding box
+
+	//Rotate goal area bounding box
+
+	trap_LinkEntity(post_top);
+	trap_LinkEntity(post_back);
+	trap_LinkEntity(post_left);
+	trap_LinkEntity(post_right);
+	trap_LinkEntity(post_goal);
 }
 
 void football_reset(gentity_t *ball)
@@ -146,7 +241,7 @@ void football_reset(gentity_t *ball)
 	ball->s.pos.trTime = level.time;
 
 	VectorCopy(level.footballSpawnPoint, ball->s.pos.trBase);
-	VectorSet(ball->s.pos.trDelta, 0, 0, 0);
+	VectorClear(ball->s.pos.trDelta);
 	VectorCopy(level.footballSpawnPoint, ball->r.currentOrigin);
 
 	//send event

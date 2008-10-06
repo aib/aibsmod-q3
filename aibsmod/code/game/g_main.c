@@ -82,6 +82,9 @@ vmCvar_t	am_hyperGauntlet;
 vmCvar_t	am_selfDamage;
 vmCvar_t	am_nonRamboKill;
 
+vmCvar_t	am_redGoalRotation;
+vmCvar_t	am_blueGoalRotation;
+
 // bk001129 - made static to avoid aliasing
 static cvarTable_t		gameCvarTable[] = {
 	// don't override the cheat state set by the system
@@ -167,12 +170,18 @@ static cvarTable_t		gameCvarTable[] = {
 
 	{ &g_rankings, "g_rankings", "0", 0, 0, qfalse},
 
+	//aibsmod shared cvars (bg_public.h)
 	{ &am_fastWeaponSwitch, "am_fastWeaponSwitch", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue},
 	{ &am_trainingMode, "am_trainingMode", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue},
+
+	//aibsmod server-side cvars
 	{ &am_piercingRail, "am_piercingRail", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_hyperGauntlet, "am_hyperGauntlet", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_selfDamage, "am_selfDamage", "1", CVAR_ARCHIVE, 0, qtrue },
-	{ &am_nonRamboKill, "am_nonRamboKill", "2", CVAR_ARCHIVE, 0, qtrue }
+	{ &am_nonRamboKill, "am_nonRamboKill", "2", CVAR_ARCHIVE, 0, qtrue },
+
+	{ &am_redGoalRotation, "am_redGoalRotation", "0.0", 0, 0, qtrue },
+	{ &am_blueGoalRotation, "am_blueGoalRotation", "0.0", 0, 0, qtrue },
 };
 
 // bk001129 - made static to avoid aliasing
@@ -393,6 +402,13 @@ void G_UpdateCvars( void ) {
 
 						aibsmod_giveAllWeapons(level.clients + j);
 					}
+				}
+
+				//aibsmod - check if goalpost rotations were changed
+				if (cv->vmCvar == &am_redGoalRotation) {
+					goalpost_rotate(level.redGoalYaw - am_redGoalRotation.value, 1);
+				} else if (cv->vmCvar == &am_blueGoalRotation) {
+					goalpost_rotate(level.blueGoalYaw - am_blueGoalRotation.value, 2);
 				}
 			}
 		}
