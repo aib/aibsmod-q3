@@ -506,8 +506,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	if (g_gametype.integer == GT_FOOTBALL) {
 		football_create(level.footballSpawnPoint);
 		if (level.goalSpawnPointsFound == 2) { //found CTF flag posts we should convert to goal posts
-			goalpost_create(level.redGoalSpawnPoint, 1);
-			goalpost_create(level.blueGoalSpawnPoint, 2);
+			goalpost_create(level.redGoalSpawnPoint, TEAM_RED);
+			goalpost_create(level.blueGoalSpawnPoint, TEAM_BLUE);
 		}
 	} else {
 		level.football = NULL;

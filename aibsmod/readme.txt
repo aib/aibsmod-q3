@@ -22,8 +22,8 @@ Installing:
 
 	Extract the archive file (probably the one you found this file in) to your Quake 3 directory. The archive contains a directory itself, so you should have:
 
-	* X:\Quake3\aibsmod_test7\readme.txt
-	* X:\Quake3\aibsmod_test7\pak0.pk3
+	* X:\Quake3\aibsmod\readme.txt
+	* X:\Quake3\aibsmod\pak0.pk3
 
 	Where X:\Quake3 is your Quake 3 directory.
 
@@ -97,7 +97,7 @@ Gametypes:
 	* Team Rambomatch (g_gametype 5):
 		Same as above, team scores are the sum of the indiviuals' scores. Attacking a teammate rambo doesn't count, so if the rambo dies, rambo status goes to the last enemy to attack the rambo, or to the next person to spawn. Normal kills count as 1 point, rambo kills as 2 points, and a team that steals rambo from the other team gets 10 points, awarded to the person to become the new rambo.
 		
-	* Football (g_gametype 6):
+	* Football (g_gametype 10):
 		The Quake version of football (or handball, or soccer, etc. --point being, there is a ball.) The players' aim is, of course, to shoot it through the opposing team's goalpost. If maps have custom goalposts (see the Mapmaking section below) and/or a custom football spawn point, they will be used. If not, the ball will spawn at the white flag's spawn point and red/blue flags will be replaced by premade goal posts.
 
 

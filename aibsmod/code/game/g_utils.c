@@ -655,4 +655,6 @@ void G_SetAngles(gentity_t *ent, vec3_t angles)
 	VectorClear(ent->s.apos.trDelta);
 
 	VectorCopy(angles, ent->r.currentAngles);
+
+	VectorCopy(angles, ent->s.angles);
 }

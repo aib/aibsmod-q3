@@ -638,6 +638,9 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.ballKick2Sound = trap_S_RegisterSound("sound/football/kick2.wav", qtrue);
 	cgs.media.ballKick3Sound = trap_S_RegisterSound("sound/football/kick3.wav", qtrue);
 
+	cgs.media.ballResetSound = trap_S_RegisterSound("sound/football/ballreset.wav", qtrue);
+	cgs.media.youHaveTheBallSound = trap_S_RegisterSound("sound/football/gotball.wav", qtrue);
+
 	cgs.media.yourTeamGoalSound = trap_S_RegisterSound("sound/football/goal_yourteam.wav", qtrue);
 	cgs.media.opponentGoalSound = trap_S_RegisterSound("sound/football/goal_opponent.wav", qtrue);
 

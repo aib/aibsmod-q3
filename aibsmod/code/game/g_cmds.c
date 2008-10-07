@@ -1183,11 +1183,11 @@ static const char *gameNames[] = {
 	"Rambomatch",
 	"Team Deathmatch",
 	"Team Rambomatch",
-	"Football",
 	"Capture the Flag",
 	"One Flag CTF",
 	"Overload",
-	"Harvester"
+	"Harvester",
+	"Football"
 };
 
 /*

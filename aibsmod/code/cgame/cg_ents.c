@@ -971,6 +971,10 @@ static void CG_AddCEntity( centity_t *cent ) {
 
 	case ET_FOOTBALL_GOAL:
 		break;
+
+	case ET_BBOX:
+		CG_BBox(cent);
+		break;
 	}
 }
 
@@ -1052,6 +1056,7 @@ void CG_Football(centity_t *cent)
 	trap_R_AddRefEntityToScene(&ent);
 }
 
+//draw goal posts
 void CG_FootballGoalpost(centity_t *cent)
 {
 	refEntity_t ent;
@@ -1092,4 +1097,51 @@ void CG_FootballGoalpost(centity_t *cent)
 
 	//add to refresh list
 	trap_R_AddRefEntityToScene(&ent);
+}
+
+//draw a bounding box (mins=origin2 and maxs=angles2)
+void CG_BBox(centity_t *cent)
+{
+	clientInfo_t	ci;
+	vec3_t			mins, maxs;
+	vec3_t			p1, p2;
+
+	VectorAdd(cent->currentState.origin, cent->currentState.origin2, mins);
+	VectorAdd(cent->currentState.origin, cent->currentState.angles2, maxs);
+
+	VectorSet(ci.color1, 0.5f, 0, 1.0f);
+	VectorSet(ci.color2, 0.5f, 0, 1.0f);
+
+	VectorSet(p1, mins[0], mins[1], mins[2]);
+	VectorSet(p2, mins[0], maxs[1], mins[2]);
+	CG_RailTrail(&ci, p1, p2);
+	VectorSet(p1, maxs[0], maxs[1], mins[2]);
+	CG_RailTrail(&ci, p2, p1);
+	VectorSet(p2, maxs[0], mins[1], mins[2]);
+	CG_RailTrail(&ci, p1, p2);
+	VectorSet(p1, mins[0], mins[1], mins[2]);
+	CG_RailTrail(&ci, p2, p1);
+
+	VectorSet(p1, mins[0], mins[1], maxs[2]);
+	VectorSet(p2, mins[0], maxs[1], maxs[2]);
+	CG_RailTrail(&ci, p1, p2);
+	VectorSet(p1, maxs[0], maxs[1], maxs[2]);
+	CG_RailTrail(&ci, p2, p1);
+	VectorSet(p2, maxs[0], mins[1], maxs[2]);
+	CG_RailTrail(&ci, p1, p2);
+	VectorSet(p1, mins[0], mins[1], maxs[2]);
+	CG_RailTrail(&ci, p2, p1);
+
+	VectorSet(p1, mins[0], mins[1], mins[2]);
+	VectorSet(p2, mins[0], mins[1], maxs[2]);
+	CG_RailTrail(&ci, p1, p2);
+	VectorSet(p1, mins[0], maxs[1], mins[2]);
+	VectorSet(p2, mins[0], maxs[1], maxs[2]);
+	CG_RailTrail(&ci, p1, p2);
+	VectorSet(p1, maxs[0], mins[1], mins[2]);
+	VectorSet(p2, maxs[0], mins[1], maxs[2]);
+	CG_RailTrail(&ci, p1, p2);
+	VectorSet(p1, maxs[0], maxs[1], mins[2]);
+	VectorSet(p2, maxs[0], maxs[1], maxs[2]);
+	CG_RailTrail(&ci, p1, p2);
 }

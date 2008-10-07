@@ -1240,28 +1240,30 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		switch (es->eventParm) {
 			case 0: //reset
 				CG_Printf(S_COLOR_YELLOW "The ball has reset.\n");
-//				sound?
+				CG_AddBufferedSound(cgs.media.ballResetSound);
 				cg.carrierNum = -1;
 				break;
 
 			case 1: //passed to red
 //				CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_RED "red team" S_COLOR_WHITE ") has the ball.\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
-//				sound?
 				cg.carrierNum = es->otherEntityNum2;
 
-				//if us, switch to gauntlet
-				if (cg.carrierNum == cg.snap->ps.clientNum)
+				//if us, switch to gauntlet and play warning sound
+				if (cg.carrierNum == cg.snap->ps.clientNum) {
 					cg.weaponSelect = WP_GAUNTLET;
+					CG_AddBufferedSound(cgs.media.youHaveTheBallSound);
+				}
 				break;
 
 			case 2: //passed to blue
 //				CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_BLUE "blue team" S_COLOR_WHITE ") has the ball.\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
-//				sound?
 				cg.carrierNum = es->otherEntityNum2;
 
-				//if us, switch to gauntlet
-				if (cg.carrierNum == cg.snap->ps.clientNum)
+				//if us, switch to gauntlet and play warning sound
+				if (cg.carrierNum == cg.snap->ps.clientNum) {
 					cg.weaponSelect = WP_GAUNTLET;
+					CG_AddBufferedSound(cgs.media.youHaveTheBallSound);
+				}
 				break;
 
 			case 4: //shot

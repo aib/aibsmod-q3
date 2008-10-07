@@ -86,12 +86,13 @@ typedef enum {
 
 	GT_TEAM,			// team deathmatch
 	GT_RAMBO_TEAM,
-	GT_FOOTBALL,
 	GT_CTF,				// capture the flag
 	GT_1FCTF,
 	GT_OBELISK,
 	GT_HARVESTER,
-	GT_MAX_GAME_TYPE
+	GT_FOOTBALL,
+	GT_MAX_GAME_TYPE,
+
 } gametype_t;
 
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
@@ -694,6 +695,7 @@ typedef enum {
 	ET_FOOTBALL,
 	ET_FOOTBALL_GOAL,
 	ET_FOOTBALL_SOLID,
+	ET_BBOX,
 
 	ET_EVENTS				// any of the EV_* events can be added freestanding
 							// by setting eType to ET_EVENTS + eventNum

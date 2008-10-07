@@ -20,20 +20,28 @@
 #define MIN(x,y) ((x < y) ? (x) : (y))
 #define MAX(x,y) ((x > y) ? (x) : (y))
 
-const vec3_t goalpost_top_mins = { -20.0f, -100.0f, -10.0f };
-const vec3_t goalpost_top_maxs = { +20.0f, +100.0f, +10.0f };
+const vec3_t goalpost_top_mins = { -52.5f, -32.5f, +44.0f };
+const vec3_t goalpost_top_maxs = { +52.5f, +30.0f, +46.5f };
 
-const vec3_t goalpost_back_mins = { 0.0f, 0.0f, 0.0f };
-const vec3_t goalpost_back_maxs = { 0.0f, 0.0f, 0.0f };
+const vec3_t goalpost_back_mins = { -52.5f, -32.5f, -16.0f };
+const vec3_t goalpost_back_maxs = { +52.5f, -30.0f, +44.0f };
 
-const vec3_t goalpost_left_mins = { 0.0f, 0.0f, 0.0f };
-const vec3_t goalpost_left_maxs = { 0.0f, 0.0f, 0.0f };
+const vec3_t goalpost_left_mins = { -52.5f, -30.0f, -16.0f };
+const vec3_t goalpost_left_maxs = { -50.0f, +30.0f, +44.0f };
 
-const vec3_t goalpost_right_mins = { 0.0f, 0.0f, 0.0f };
-const vec3_t goalpost_right_maxs = { 0.0f, 0.0f, 0.0f };
+const vec3_t goalpost_right_mins = { +50.0f, -30.0f, -16.0f };
+const vec3_t goalpost_right_maxs = { +52.5f, +30.0f, +44.0f };
 
-const vec3_t goalpost_inside_mins = { -10.0f, -10.0f, -10.0f };
-const vec3_t goalpost_inside_maxs = { +10.0f, +10.0f, +10.0f };
+//goal area is 1 BALL_RADIUS inside the outer regions
+//use the formula below, or just find the smallest magnitude numbers and add/subtract BALL_RADIUS
+//could also use anywhere from 0 to ~2 x BALL_RADIUS
+const vec3_t goalpost_inside_mins = { -50.0f+BALL_RADIUS, -30.0f+BALL_RADIUS, -16.0f+BALL_RADIUS };
+const vec3_t goalpost_inside_maxs = { +50.0f-BALL_RADIUS, +30.0f-BALL_RADIUS, +44.0f-BALL_RADIUS };
+
+//const vec3_t goalpost_inside_mins = { goalpost_left_maxs[0] + BALL_RADIUS, goalpost_back_maxs[1] + BALL_RADIUS, goalpost_back_mins[2] + BALL_RADIUS};
+//const vec3_t goalpost_inside_maxs = { goalpost_right_mins[0] - BALL_RADIUS, goalpost_top_maxs[1] - BALL_RADIUS, goalpost_back_maxs[2] - BALL_RADIUS };
+
+void RotateBoundingBox(gentity_t *ent, float yaw, const vec3_t orgmins, const vec3_t orgmaxs);
 
 void football_create(vec3_t origin)
 {
@@ -65,7 +73,7 @@ void football_create(vec3_t origin)
 	level.ballLastTouchTime = 0;
 }
 
-void goalpost_create(vec3_t origin, int color) //1=red 2=blue
+void goalpost_create(vec3_t origin, int color)
 {
 	gentity_t	*post_back, *post_top, *post_left, *post_right, *post_goal;
 	float		yaw;
@@ -79,8 +87,6 @@ void goalpost_create(vec3_t origin, int color) //1=red 2=blue
 	post_top->s.generic1 = color;
 
 	post_top->r.bmodel = qfalse;
-	VectorCopy(goalpost_top_mins, post_top->r.mins);
-	VectorCopy(goalpost_top_maxs, post_top->r.maxs);
 	post_top->r.contents = CONTENTS_GOALPOST;
 
 	G_SetOrigin(post_top, origin);
@@ -95,8 +101,6 @@ void goalpost_create(vec3_t origin, int color) //1=red 2=blue
 	post_back->s.generic1 = color;
 
 	post_back->r.bmodel = qfalse;
-	VectorCopy(goalpost_back_mins, post_back->r.mins);
-	VectorCopy(goalpost_back_maxs, post_back->r.maxs);
 	post_back->r.contents = CONTENTS_GOALPOST;
 
 	G_SetOrigin(post_back, origin);
@@ -111,8 +115,6 @@ void goalpost_create(vec3_t origin, int color) //1=red 2=blue
 	post_left->s.generic1 = color;
 
 	post_left->r.bmodel = qfalse;
-	VectorCopy(goalpost_left_mins, post_left->r.mins);
-	VectorCopy(goalpost_left_maxs, post_left->r.maxs);
 	post_left->r.contents = CONTENTS_GOALPOST;
 
 	G_SetOrigin(post_left, origin);
@@ -127,8 +129,6 @@ void goalpost_create(vec3_t origin, int color) //1=red 2=blue
 	post_right->s.generic1 = color;
 
 	post_right->r.bmodel = qfalse;
-	VectorCopy(goalpost_right_mins, post_right->r.mins);
-	VectorCopy(goalpost_right_maxs, post_right->r.maxs);
 	post_right->r.contents = CONTENTS_GOALPOST;
 
 	G_SetOrigin(post_right, origin);
@@ -142,21 +142,19 @@ void goalpost_create(vec3_t origin, int color) //1=red 2=blue
 	post_goal->s.generic1 = color;
 
 	post_goal->r.bmodel = qfalse;
-	VectorCopy(goalpost_inside_mins, post_goal->r.mins);
-	VectorCopy(goalpost_inside_maxs, post_goal->r.maxs);
 	post_goal->r.contents = CONTENTS_GOALCLIP; //Note: different
 
 	G_SetOrigin(post_goal, origin);
 	trap_LinkEntity(post_goal);
 
-	if (color == 1) {
+	if (color == TEAM_RED) {
 		level.redpost_top = post_top;
 		level.redpost_back = post_back;
 		level.redpost_left = post_left;
 		level.redpost_right = post_right;
 		level.redGoalTrigger = post_goal;
 		yaw = level.redGoalYaw;
-	} else if (color == 2) {
+	} else if (color == TEAM_BLUE) {
 		level.bluepost_top = post_top;
 		level.bluepost_back = post_back;
 		level.bluepost_left = post_left;
@@ -171,15 +169,15 @@ void goalpost_create(vec3_t origin, int color) //1=red 2=blue
 void goalpost_rotate(float yaw, int color)
 {
 	gentity_t	*post_back, *post_top, *post_left, *post_right, *post_goal;
-	vec3_t		tmpvec1, tmpvec2;
+	vec3_t		tangles;
 
-	if (color == 1) {
+	if (color == TEAM_RED) {
 		post_top = level.redpost_top;
 		post_back = level.redpost_back;
 		post_left = level.redpost_left;
 		post_right = level.redpost_right;
 		post_goal = level.redGoalTrigger;
-	} else if (color == 2) {
+	} else if (color == TEAM_BLUE) {
 		post_top = level.bluepost_top;
 		post_back = level.bluepost_back;
 		post_left = level.bluepost_left;
@@ -187,32 +185,20 @@ void goalpost_rotate(float yaw, int color)
 		post_goal = level.blueGoalTrigger;
 	}
 
-	VectorSet(tmpvec1, 0, yaw, 0);
-	G_SetAngles(post_top, tmpvec1);
-	G_SetAngles(post_back, tmpvec1);
-	G_SetAngles(post_left, tmpvec1);
-	G_SetAngles(post_right, tmpvec1);
-	G_SetAngles(post_goal, tmpvec1);
+	//Rotate models
+	VectorSet(tangles, 0, yaw, 0);
+	G_SetAngles(post_top, tangles);
+	G_SetAngles(post_back, tangles);
+	G_SetAngles(post_left, tangles);
+	G_SetAngles(post_right, tangles);
+	G_SetAngles(post_goal, tangles);
 
-	//Rotate top part's bounding box
-/*	VectorCopy(goalpost_top_mins, tmpvec1);
-	VectorCopy(goalpost_top_maxs, tmpvec2);
-	RotatePointAroundVector(tmpvec1, axisDefault[2], goalpost_top_mins, yaw);
-	RotatePointAroundVector(tmpvec2, axisDefault[2], goalpost_top_maxs, yaw);
-	post_top->r.mins[0] = MIN(tmpvec1[0], tmpvec2[0]);
-	post_top->r.maxs[0] = MAX(tmpvec1[0], tmpvec2[0]);
-	post_top->r.mins[1] = MIN(tmpvec1[1], tmpvec2[1]);
-	post_top->r.maxs[1] = MAX(tmpvec1[1], tmpvec2[1]);
-	post_top->r.mins[2] = MIN(tmpvec1[2], tmpvec2[2]);
-	post_top->r.maxs[2] = MAX(tmpvec1[2], tmpvec2[2]);*/
-
-	//Rotate back part's bounding box
-
-	//Rotate left part's bounding box
-
-	//Rotate right part's bounding box
-
-	//Rotate goal area bounding box
+	//Rotate bounding boxes
+	RotateBoundingBox(post_top, yaw, goalpost_top_mins, goalpost_top_maxs);
+	RotateBoundingBox(post_back, yaw, goalpost_back_mins, goalpost_back_maxs);
+	RotateBoundingBox(post_left, yaw, goalpost_left_mins, goalpost_left_maxs);
+	RotateBoundingBox(post_right, yaw, goalpost_right_mins, goalpost_right_maxs);
+	RotateBoundingBox(post_goal, yaw, goalpost_inside_mins, goalpost_inside_maxs);
 
 	trap_LinkEntity(post_top);
 	trap_LinkEntity(post_back);
@@ -344,7 +330,7 @@ void football_shoot(gentity_t *ball, gentity_t *player, vec3_t direction)
 	tmpent->r.svFlags = SVF_BROADCAST;
 }
 
-void football_goal(gentity_t *ball, int color) //1=red 2=blue
+void football_goal(gentity_t *ball, int color)
 {
 	gentity_t *scorer;
 	gentity_t *tmpent;
@@ -359,22 +345,31 @@ void football_goal(gentity_t *ball, int color) //1=red 2=blue
 	//send event
 	tmpent = G_TempEntity(scorer->r.currentOrigin, EV_FOOTBALL_GOAL);
 	if (scorer->client->sess.sessionTeam == TEAM_RED) {
-		if (color == 2) {
+		if (color == TEAM_RED) {
+			tmpent->s.eventParm = 3;
+		} else if (color == TEAM_BLUE) {
 			tmpent->s.eventParm = 1;
 			scorer->flags |= FL_FORCE_GESTURE;
-		} else {
-			tmpent->s.eventParm = 3;
 		}
 	} else {
-		if (color == 1) {
+		if (color == TEAM_BLUE) {
+			tmpent->s.eventParm = 4;
+		} else if (color == TEAM_RED) {
 			tmpent->s.eventParm = 2;
 			scorer->flags |= FL_FORCE_GESTURE;
-		} else {
-			tmpent->s.eventParm = 4;
 		}
 	}
 	tmpent->s.otherEntityNum2 = scorer->s.number;
 	tmpent->r.svFlags = SVF_BROADCAST;
+
+	//award team score
+	if (color == TEAM_RED)
+		AddTeamScore(ball->r.currentOrigin, TEAM_BLUE, 1);
+	else
+		AddTeamScore(ball->r.currentOrigin, TEAM_RED, 1);
+
+	//update client team scores
+	CalculateRanks();
 }
 
 void G_RunFootball(gentity_t *ball)
@@ -549,7 +544,7 @@ void G_BounceFootball(gentity_t *ball, trace_t *trace)
 void SP_football_redgoal(gentity_t *ent)
 {
 	ent->s.eType = ET_FOOTBALL_GOAL;
-	ent->s.generic1 = 1;
+	ent->s.generic1 = TEAM_RED;
 
 	trap_SetBrushModel(ent, ent->model);
 	ent->r.contents = CONTENTS_GOALCLIP;
@@ -560,10 +555,25 @@ void SP_football_redgoal(gentity_t *ent)
 void SP_football_bluegoal(gentity_t *ent)
 {
 	ent->s.eType = ET_FOOTBALL_GOAL;
-	ent->s.generic1 = 2;
+	ent->s.generic1 = TEAM_BLUE;
 
 	trap_SetBrushModel(ent, ent->model);
 	ent->r.contents = CONTENTS_GOALCLIP;
 
 	trap_LinkEntity(ent);
+}
+
+void RotateBoundingBox(gentity_t *ent, float yaw, const vec3_t orgmins, const vec3_t orgmaxs)
+{
+	vec3_t	tmins, tmaxs;
+
+	RotatePointAroundVector(tmins, axisDefault[2], orgmins, yaw);
+	RotatePointAroundVector(tmaxs, axisDefault[2], orgmaxs, yaw);
+
+	ent->r.mins[0] = MIN(tmins[0], tmaxs[0]);
+	ent->r.maxs[0] = MAX(tmins[0], tmaxs[0]);
+	ent->r.mins[1] = MIN(tmins[1], tmaxs[1]);
+	ent->r.maxs[1] = MAX(tmins[1], tmaxs[1]);
+	ent->r.mins[2] = MIN(tmins[2], tmaxs[2]);
+	ent->r.maxs[2] = MAX(tmins[2], tmaxs[2]);
 }

@@ -967,6 +967,9 @@ typedef struct {
 	sfxHandle_t ballKick2Sound;
 	sfxHandle_t ballKick3Sound;
 
+	sfxHandle_t	ballResetSound;
+	sfxHandle_t	youHaveTheBallSound;
+
 	sfxHandle_t yourTeamGoalSound;
 	sfxHandle_t opponentGoalSound;
 
@@ -1374,7 +1377,10 @@ void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 							qhandle_t parentModel, char *tagName );
 void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 							qhandle_t parentModel, char *tagName );
-void CG_Football(centity_t *cent); //aibsmod
+//aibsmod stuff
+void CG_Football(centity_t *cent);
+void CG_FootballGoalpost(centity_t *cent);
+void CG_BBox(centity_t *cent);
 
 
 //
