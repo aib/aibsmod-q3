@@ -17,6 +17,10 @@
 #define CONTENTS_GOALPOST		(CONTENTS_SOLID | CONTENTS_PLAYERCLIP)
 #define CONTENTS_GOALCLIP		CONTENTS_PLAYERCLIP
 
+#define GOAL_SCORE				10
+#define OWN_GOAL_SCORE			-10
+#define GOAL_ASSIST_SCORE		5
+
 #define MIN(x,y) ((x < y) ? (x) : (y))
 #define MAX(x,y) ((x > y) ? (x) : (y))
 
@@ -70,6 +74,10 @@ void football_create(vec3_t origin)
 
 	level.football = ball;
 	level.goalTime = 0;
+
+	level.ballCarrier = NULL;
+	level.ballShooter = NULL;
+	level.ballPasser = NULL;
 	level.ballLastTouchTime = 0;
 }
 
@@ -211,12 +219,12 @@ void football_reset(gentity_t *ball)
 {
 	gentity_t *tmpent;
 
-	if (level.ballCarrier) {
+	if (level.ballCarrier)
 		level.ballCarrier->client->ps.powerups[PW_CARRIER] = 0;
-		level.ballCarrier->client->ps.pm_flags &= ~PMF_GOTFOOTBALL;
-	}
 
 	level.ballCarrier = NULL;
+	level.ballShooter = NULL;
+	level.ballPasser = NULL;
 	level.ballLastTouchTime = 0;
 	level.goalTime = 0;
 
@@ -243,7 +251,9 @@ void football_catch(gentity_t *player)
 	if (player == level.ballCarrier) //player is already carrying the ball
 		return;
 
+	level.ballPasser = level.ballShooter;
 	level.ballCarrier = player;
+
 	player->client->ps.powerups[PW_CARRIER] = INT_MAX;
 	if (player->client->ps.weapon != WP_GAUNTLET)
 		player->client->ps.pm_flags |= PMF_GOTFOOTBALL;
@@ -267,24 +277,23 @@ void football_catch(gentity_t *player)
 
 void football_steal(gentity_t *player)
 {
-	if (level.ballCarrier) {
+	if (level.ballCarrier)
 		level.ballCarrier->client->ps.powerups[PW_CARRIER] = 0;
-		level.ballCarrier->client->ps.pm_flags &= ~PMF_GOTFOOTBALL;
-	}
 
+	level.ballShooter = NULL;
 	football_catch(player);
 	player->client->ps.pm_flags |= PMF_GOTFOOTBALL; //don't let the stealer shoot it back to the old carrier
 }
 
-void football_drop(gentity_t *ball, gentity_t *player, vec3_t extraVelocity)
+void football_drop(gentity_t *ball, gentity_t *player, vec3_t extraVelocity, gentity_t *cause)
 {
 	gentity_t *tmpent;
 
-	if (level.ballCarrier) {
+	if (level.ballCarrier)
 		level.ballCarrier->client->ps.powerups[PW_CARRIER] = 0;
-		level.ballCarrier->client->ps.pm_flags &= ~PMF_GOTFOOTBALL;
-	}
 
+	level.ballPasser = NULL;
+	level.ballShooter = cause;
 	level.ballCarrier = NULL;
 	level.ballLastTouchTime = level.time;
 
@@ -308,10 +317,12 @@ void football_shoot(gentity_t *ball, gentity_t *player, vec3_t direction)
 
 	if (level.ballCarrier) {
 		level.ballCarrier->client->ps.powerups[PW_CARRIER] = 0;
-		level.ballCarrier->client->ps.pm_flags &= ~PMF_GOTFOOTBALL;
+		level.ballCarrier->client->ps.pm_flags |= PMF_GOTFOOTBALL; //set PMF_GOTFOOTBALL so they can't attack immediately
+
+		level.ballShooter = level.ballCarrier;
+		level.ballCarrier = NULL;
 	}
 
-	level.ballCarrier = NULL;
 	level.ballLastTouchTime = level.time;
 
 	ball->count = 0;
@@ -321,7 +332,12 @@ void football_shoot(gentity_t *ball, gentity_t *player, vec3_t direction)
 	direction[2] += 0.2f; //extra vertical velocity
 	VectorNormalize(direction);
 
-	VectorScale(direction, BALL_SHOOT_SPEED, ball->s.pos.trDelta);
+	if (player && player->client && player->client->ps.powerups[PW_QUAD]) {
+		G_AddEvent(player, EV_POWERUP_QUAD, 0);
+		VectorScale(direction, g_quadfactor.value * BALL_SHOOT_SPEED, ball->s.pos.trDelta);
+	} else {
+		VectorScale(direction, BALL_SHOOT_SPEED, ball->s.pos.trDelta);
+	}
 
 	//send event
 	tmpent = G_TempEntity(player->r.currentOrigin, EV_FOOTBALL_PASS);
@@ -332,41 +348,89 @@ void football_shoot(gentity_t *ball, gentity_t *player, vec3_t direction)
 
 void football_goal(gentity_t *ball, int color)
 {
-	gentity_t *scorer;
-	gentity_t *tmpent;
+	gentity_t	*scorer;
+	gentity_t	*tmpent;
+	qboolean	ownGoal;
 
 	level.goalTime = level.time;
 
-	if (ball->r.ownerNum == ENTITYNUM_NONE) //noone scored the goal
-		return;
+//	if (ball->r.ownerNum == ENTITYNUM_NONE) //noone scored the goal
+//		return;
 
-	scorer = &g_entities[ball->r.ownerNum];
+	//scorer = &g_entities[ball->r.ownerNum];
+	scorer = level.ballShooter;
+
+	if (!scorer || !scorer->client) //noone scored the goal
+		return;
 
 	//send event
 	tmpent = G_TempEntity(scorer->r.currentOrigin, EV_FOOTBALL_GOAL);
 	if (scorer->client->sess.sessionTeam == TEAM_RED) {
 		if (color == TEAM_RED) {
 			tmpent->s.eventParm = 3;
+			ownGoal = qtrue;
 		} else if (color == TEAM_BLUE) {
 			tmpent->s.eventParm = 1;
-			scorer->flags |= FL_FORCE_GESTURE;
+			ownGoal = qfalse;
 		}
 	} else {
 		if (color == TEAM_BLUE) {
 			tmpent->s.eventParm = 4;
+			ownGoal = qtrue;
 		} else if (color == TEAM_RED) {
 			tmpent->s.eventParm = 2;
-			scorer->flags |= FL_FORCE_GESTURE;
+			ownGoal = qfalse;
 		}
 	}
 	tmpent->s.otherEntityNum2 = scorer->s.number;
 	tmpent->r.svFlags = SVF_BROADCAST;
 
 	//award team score
-	if (color == TEAM_RED)
+	if (color == TEAM_RED) {
 		AddTeamScore(ball->r.currentOrigin, TEAM_BLUE, 1);
-	else
+		Team_ForceGesture(TEAM_BLUE);
+	} else {
 		AddTeamScore(ball->r.currentOrigin, TEAM_RED, 1);
+		Team_ForceGesture(TEAM_RED);
+	}
+
+	//award personal score
+	if (ownGoal) {
+		AddScore(scorer, ball->r.currentOrigin, OWN_GOAL_SCORE);
+
+		//play humiliation on player, increase gauntlet count
+		scorer->client->ps.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
+
+		//add the sprite over the player's head
+		scorer->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+		scorer->client->ps.eFlags |= EF_AWARD_GAUNTLET;
+		scorer->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+
+	} else {
+		AddScore(scorer, ball->r.currentOrigin, GOAL_SCORE);
+		scorer->client->pers.teamState.captures++;
+
+		//add the sprite over the player's head
+		scorer->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_GOAL);
+		scorer->client->ps.eFlags |= EF_AWARD_GOAL;
+		scorer->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+		scorer->client->ps.persistant[PERS_CAPTURES]++;
+	}
+
+	//award assist
+	if (level.ballPasser && level.ballPasser->client) {
+		if (!ownGoal && (scorer != level.ballPasser) && OnSameTeam(scorer, level.ballPasser)) {
+			AddScore(level.ballPasser, ball->r.currentOrigin, GOAL_ASSIST_SCORE);
+
+			scorer->client->pers.teamState.assists++;
+			level.ballPasser->client->ps.persistant[PERS_ASSIST_COUNT]++;
+
+			//add the sprite over the player's head
+			level.ballPasser->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_GOAL);
+			level.ballPasser->client->ps.eFlags |= EF_AWARD_ASSIST;
+			level.ballPasser->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+		}
+	}
 
 	//update client team scores
 	CalculateRanks();
@@ -380,6 +444,13 @@ void G_RunFootball(gentity_t *ball)
 	int			passent;
 	gentity_t	*hitent;
 	float		xyspeed;
+
+	if (am_piercingRail.integer == 1 && ((rand()&31) == 1))
+		G_Printf("Carrier: %s, Shooter: %s, Passer: %s\n",
+			(level.ballCarrier ? level.ballCarrier->client->pers.netname : "N/A"),
+			(level.ballShooter ? level.ballShooter->client->pers.netname : "N/A"),
+			(level.ballPasser ? level.ballPasser->client->pers.netname : "N/A")
+		);
 
 	if (level.goalTime && ((level.time - level.goalTime) >= BALL_GOAL_RESET_TIME))
 		football_reset(ball);
@@ -404,8 +475,9 @@ void G_RunFootball(gentity_t *ball)
 				hitent = &g_entities[tr.entityNum];
 
 				if (hitent->s.eType == ET_FOOTBALL_GOAL) {
+					level.ballShooter = level.ballCarrier;
 					football_goal(ball, hitent->s.generic1);
-					football_drop(ball, level.ballCarrier, NULL);
+					football_drop(ball, level.ballCarrier, NULL, NULL);
 				}
 			}
 		}

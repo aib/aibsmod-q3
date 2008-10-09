@@ -496,7 +496,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	InitBodyQue();
 
 	ClearRegisteredItems();
-
+VectorSet(level.footballSpawnPoint, 0, 0, 100);
 	// parse the key/value pairs and spawn gentities
 	//aibsmod - also look for football and goal post spawn points
 	G_SpawnEntitiesFromString();

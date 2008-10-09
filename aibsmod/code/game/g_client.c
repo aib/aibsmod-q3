@@ -1326,7 +1326,7 @@ void ClientDisconnect( int clientNum ) {
 
 	//aibsmod - lose the ball
 	if (level.ballCarrier == ent)
-		football_drop(level.football, ent, NULL);
+		football_drop(level.football, ent, NULL, NULL);
 
 	G_LogPrintf( "ClientDisconnect: %i\n", clientNum );
 

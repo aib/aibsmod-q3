@@ -562,9 +562,9 @@ static void CG_DrawStatusBar( void ) {
 
 	else if (cg.predictedPlayerState.powerups[PW_CARRIER]) {
 		/*if (cgs.gametype == GT_RAMBO || cgs.gametype == GT_RAMBO_TEAM)
-
-		else*/ if (cgs.gametype == GT_FOOTBALL)
-			CG_DrawStatusBarFlag(185 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, TEAM_RED);
+//TODO
+//		else if (cgs.gametype == GT_FOOTBALL)*/
+//			CG_DrawStatusBarFlag(185 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, TEAM_RED);
 	}
 
 	if ( ps->stats[ STAT_ARMOR ] ) {

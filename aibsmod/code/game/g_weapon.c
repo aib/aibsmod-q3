@@ -67,17 +67,18 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 
 	traceEnt = &g_entities[ tr.entityNum ];
 
+	//aibsmod - check if we can steal the football
+	if (traceEnt->client && traceEnt == level.ballCarrier) {
+		football_steal(ent);
+		return qfalse;
+	}
+
 	// send blood impact
 	if ( traceEnt->takedamage && traceEnt->client ) {
 		tent = G_TempEntity( tr.endpos, EV_MISSILE_HIT );
 		tent->s.otherEntityNum = traceEnt->s.number;
 		tent->s.eventParm = DirToByte( tr.plane.normal );
 		tent->s.weapon = ent->s.weapon;
-	}
-
-	if (traceEnt->client && traceEnt == level.ballCarrier) {
-		football_steal(ent);
-		return qfalse;
 	}
 
 	if ( !traceEnt->takedamage) {

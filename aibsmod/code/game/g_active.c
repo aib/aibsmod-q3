@@ -849,10 +849,10 @@ void ClientThink_real( gentity_t *ent ) {
 	// check for the hit-scan gauntlet, don't let the action
 	// go through as an attack unless it actually hits something
 	if ( client->ps.weapon == WP_GAUNTLET && !( ucmd->buttons & BUTTON_TALK ) &&
-		( ucmd->buttons & BUTTON_ATTACK ) && client->ps.weaponTime <= 0 ) {
+		( ucmd->buttons & BUTTON_ATTACK ) && client->ps.weaponTime <= 0 && !(client->ps.pm_flags & PMF_GOTFOOTBALL) ) {
 
 		//aibsmod - shoot the football if we're carrying it
-		if (g_gametype.integer == GT_FOOTBALL && client->ps.powerups[PW_CARRIER] && !(client->ps.pm_flags & PMF_GOTFOOTBALL)) {
+		if (g_gametype.integer == GT_FOOTBALL && client->ps.powerups[PW_CARRIER]) {
 			AngleVectors(client->ps.viewangles, forward, right, up);
 			football_shoot(level.football, ent, forward);
 		} else {

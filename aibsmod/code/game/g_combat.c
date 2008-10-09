@@ -692,7 +692,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	}
 
 	if (level.ballCarrier == self) { //aibsmod - ball carrier died
-		football_drop(level.football, self, NULL);
+		football_drop(level.football, self, NULL, attacker);
 	}
 
 	trap_LinkEntity (self);
@@ -1038,6 +1038,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	//aibsmod - in training mode, don't allow any protectable damage except telefrag damage
 	if (am_trainingMode.integer && ((mod == MOD_TELEFRAG) || !(dflags & DAMAGE_NO_PROTECTION)))
+		damage = 0;
+
+	//aibsmod - no gauntlet damage in Football (only knockback)
+	if (mod == MOD_GAUNTLET && g_gametype.integer == GT_FOOTBALL)
 		damage = 0;
 
 	take = damage;

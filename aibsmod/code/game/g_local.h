@@ -407,6 +407,8 @@ typedef struct {
 	gentity_t	*rambo;
 	gentity_t	*ballCarrier;
 	gentity_t	*football;
+	gentity_t	*ballShooter;
+	gentity_t	*ballPasser;
 
 	int			goalTime;
 	vec3_t		footballSpawnPoint;
@@ -1002,7 +1004,7 @@ void goalpost_rotate(float yaw, int color);
 void football_reset(gentity_t *ball);
 void football_catch(gentity_t *player);
 void football_steal(gentity_t *player);
-void football_drop(gentity_t *ball, gentity_t *player, vec3_t extraVelocity);
+void football_drop(gentity_t *ball, gentity_t *player, vec3_t extraVelocity, gentity_t *cause);
 void football_shoot(gentity_t *ball, gentity_t *player, vec3_t direction);
 void football_goal(gentity_t *ball, int color);
 void G_RunFootball(gentity_t *ball);
