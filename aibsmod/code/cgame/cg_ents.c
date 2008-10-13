@@ -1072,20 +1072,36 @@ void CG_FootballGoalpost(centity_t *cent)
 	VectorCopy(cent->lerpOrigin, ent.oldorigin);
 
 	switch (cent->currentState.modelindex) {
-		case 1: //top
-			ent.hModel = cgs.media.goalpostTopModel;
+		case 11: //red top
+			ent.hModel = cgs.media.goalpostRedTopModel;
 			break;
 
-		case 2: //back
-			ent.hModel = cgs.media.goalpostBackModel;
+		case 12: //red back
+			ent.hModel = cgs.media.goalpostRedBackModel;
 			break;
 
-		case 3: //left
-			ent.hModel = cgs.media.goalpostLeftModel;
+		case 13: //red left
+			ent.hModel = cgs.media.goalpostRedLeftModel;
 			break;
 
-		case 4: //right
-			ent.hModel = cgs.media.goalpostRightModel;
+		case 14: //red right
+			ent.hModel = cgs.media.goalpostRedRightModel;
+			break;
+
+		case 21: //blue top
+			ent.hModel = cgs.media.goalpostBlueTopModel;
+			break;
+
+		case 22: //blue back
+			ent.hModel = cgs.media.goalpostBlueBackModel;
+			break;
+
+		case 23: //blue left
+			ent.hModel = cgs.media.goalpostBlueLeftModel;
+			break;
+
+		case 24: //blue right
+			ent.hModel = cgs.media.goalpostBlueRightModel;
 			break;
 
 		default:

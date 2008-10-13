@@ -1120,10 +1120,15 @@ static void CG_RegisterGraphics( void ) {
 	//aibsmod models
 	cgs.media.footballModel = trap_R_RegisterModel("models/football/ball.md3");
 
-	cgs.media.goalpostTopModel = trap_R_RegisterModel("models/football/goalpost_top.md3");
-	cgs.media.goalpostBackModel = trap_R_RegisterModel("models/football/goalpost_back.md3");
-	cgs.media.goalpostLeftModel = trap_R_RegisterModel("models/football/goalpost_left.md3");
-	cgs.media.goalpostRightModel = trap_R_RegisterModel("models/football/goalpost_right.md3");
+	cgs.media.goalpostRedTopModel = trap_R_RegisterModel("models/football/goalpost_red_top.md3");
+	cgs.media.goalpostRedBackModel = trap_R_RegisterModel("models/football/goalpost_red_back.md3");
+	cgs.media.goalpostRedLeftModel = trap_R_RegisterModel("models/football/goalpost_red_left.md3");
+	cgs.media.goalpostRedRightModel = trap_R_RegisterModel("models/football/goalpost_red_right.md3");
+
+	cgs.media.goalpostBlueTopModel = trap_R_RegisterModel("models/football/goalpost_blue_top.md3");
+	cgs.media.goalpostBlueBackModel = trap_R_RegisterModel("models/football/goalpost_blue_back.md3");
+	cgs.media.goalpostBlueLeftModel = trap_R_RegisterModel("models/football/goalpost_blue_left.md3");
+	cgs.media.goalpostBlueRightModel = trap_R_RegisterModel("models/football/goalpost_blue_right.md3");
 
 	//aibsmod shaders
 	cgs.media.ramboShader = trap_R_RegisterShader("powerups/rambo");

@@ -85,13 +85,19 @@ void goalpost_create(vec3_t origin, int color)
 {
 	gentity_t	*post_back, *post_top, *post_left, *post_right, *post_goal;
 	float		yaw;
+	int			modelBase;
+
+	if (color == TEAM_RED)
+		modelBase = 10;
+	else if (color == TEAM_BLUE)
+		modelBase = 20;
 
 	//top
 	post_top = G_Spawn();
 	post_top->classname = "goalpost_top";
 
 	post_top->s.eType = ET_FOOTBALL_SOLID;
-	post_top->s.modelindex = 1;
+	post_top->s.modelindex = modelBase + 1;
 	post_top->s.generic1 = color;
 
 	post_top->r.bmodel = qfalse;
@@ -105,7 +111,7 @@ void goalpost_create(vec3_t origin, int color)
 	post_back->classname = "goalpost_back";
 
 	post_back->s.eType = ET_FOOTBALL_SOLID;
-	post_back->s.modelindex = 2;
+	post_back->s.modelindex = modelBase + 2;
 	post_back->s.generic1 = color;
 
 	post_back->r.bmodel = qfalse;
@@ -119,7 +125,7 @@ void goalpost_create(vec3_t origin, int color)
 	post_left->classname = "goalpost_left";
 
 	post_left->s.eType = ET_FOOTBALL_SOLID;
-	post_left->s.modelindex = 3;
+	post_left->s.modelindex = modelBase + 3;
 	post_left->s.generic1 = color;
 
 	post_left->r.bmodel = qfalse;
@@ -133,7 +139,7 @@ void goalpost_create(vec3_t origin, int color)
 	post_right->classname = "goalpost_right";
 
 	post_right->s.eType = ET_FOOTBALL_SOLID;
-	post_right->s.modelindex = 4;
+	post_right->s.modelindex = modelBase + 4;
 	post_right->s.generic1 = color;
 
 	post_right->r.bmodel = qfalse;
