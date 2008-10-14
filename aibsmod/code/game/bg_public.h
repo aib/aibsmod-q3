@@ -256,6 +256,7 @@ typedef enum {
 #define EF_TEAMVOTED		0x00080000		// already cast a team vote
 
 //aibsmod stuff
+#define EF_BOUNCE_LIMITED	0x01000000		//like EF_BOUNCE, but limited times
 #define EF_AWARD_GOAL		0x00000800
 
 // NOTE: may not have more than 16
@@ -608,6 +609,8 @@ typedef enum {
 
 	//aibsmod stuff
 	MOD_RAILGUN_PIERCE,
+	MOD_ROCKET_BOUNCE,
+	MOD_ROCKET_BOUNCE_SPLASH,
 
 } meansOfDeath_t;
 

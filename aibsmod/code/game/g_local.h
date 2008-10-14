@@ -157,6 +157,8 @@ struct gentity_s {
 	float		random;
 
 	gitem_t		*item;			// for bonus items
+
+	int			bounceCount;	//for EF_BOUNCE_LIMITED
 };
 
 
@@ -785,6 +787,8 @@ extern	vmCvar_t	g_proxMineTimeout;
 //aibsmod server side cvars, also see bg_public.h
 extern	vmCvar_t	am_piercingRail;
 extern	vmCvar_t	am_hyperGauntlet;
+extern	vmCvar_t	am_rocketBounce;
+
 extern	vmCvar_t	am_selfDamage;
 extern	vmCvar_t	am_nonRamboKill;
 

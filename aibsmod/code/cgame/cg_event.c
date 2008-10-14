@@ -174,6 +174,25 @@ static void CG_Obituary( entityState_t *ent ) {
 			}
 			break;
 #endif
+		//aibsmod MODs
+		case MOD_ROCKET_BOUNCE:
+			if (gender == GENDER_FEMALE)
+				message = "caught her own rocket";
+			else if (gender == GENDER_NEUTER)
+				message = "caught its own rocket";
+			else
+				message = "caught his own rocket";
+			break;
+
+		case MOD_ROCKET_BOUNCE_SPLASH:
+			if (gender == GENDER_FEMALE)
+				message = "couldn't hide from her own rocket";
+			else if (gender == GENDER_NEUTER)
+				message = "couldn't hide from its own rocket";
+			else
+				message = "couldn't hide from his own rocket";
+			break;
+
 		default:
 			if ( gender == GENDER_FEMALE )
 				message = "killed herself";
@@ -309,6 +328,16 @@ static void CG_Obituary( entityState_t *ent ) {
 		case MOD_RAILGUN_PIERCE:
 			message = "couldn't hide from";
 			message2 = "'s piercing rail";
+			break;
+
+		case MOD_ROCKET_BOUNCE:
+			message = "caught";
+			message2 = "'s bouncy rocket";
+			break;
+
+		case MOD_ROCKET_BOUNCE_SPLASH:
+			message = "couldn't hide from";
+			message2 = "'s bouncy rocket";
 			break;
 
 		default:

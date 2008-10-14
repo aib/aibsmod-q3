@@ -75,10 +75,15 @@ vmCvar_t	g_enableBreath;
 vmCvar_t	g_proxMineTimeout;
 #endif
 
+//shared cvars, see bg_public.h
 vmCvar_t	am_fastWeaponSwitch;
 vmCvar_t	am_trainingMode;
+
+//server-side cvars
 vmCvar_t	am_piercingRail;
 vmCvar_t	am_hyperGauntlet;
+vmCvar_t	am_rocketBounce;
+
 vmCvar_t	am_selfDamage;
 vmCvar_t	am_nonRamboKill;
 
@@ -177,6 +182,8 @@ static cvarTable_t		gameCvarTable[] = {
 	//aibsmod server-side cvars
 	{ &am_piercingRail, "am_piercingRail", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_hyperGauntlet, "am_hyperGauntlet", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &am_rocketBounce, "am_rocketBounce", "0", CVAR_ARCHIVE, 0, qtrue },
+
 	{ &am_selfDamage, "am_selfDamage", "1", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_nonRamboKill, "am_nonRamboKill", "2", CVAR_ARCHIVE, 0, qtrue },
 

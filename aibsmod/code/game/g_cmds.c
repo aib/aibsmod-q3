@@ -1236,16 +1236,18 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	} else if ( !Q_stricmp( arg1, "g_doWarmup" ) ) {
 	} else if ( !Q_stricmp( arg1, "timelimit" ) ) {
 	} else if ( !Q_stricmp( arg1, "fraglimit" ) ) {
+	//aibsmod votes
 	} else if (!Q_stricmp(arg1, "piercing")) {
 	} else if (!Q_stricmp(arg1, "hypergauntlet")) {
 	} else if (!Q_stricmp(arg1, "fastswitch")) {
 	} else if (!Q_stricmp(arg1, "selfdamage")) {
 	} else if (!Q_stricmp(arg1, "nonrambokill")) {
 	} else if (!Q_stricmp(arg1, "training")) {
+	} else if (!Q_stricmp(arg1, "rocketbounce")) {
 	} else {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
 		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, g_doWarmup, timelimit <time>, fraglimit <frags>.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"aibsmod-specific commands are: piercing <0|1>, hypergauntlet <0|1>, fastswitch <0|1>, selfdamage <0|1>, nonrambokill <0|1|2>, training <0|1|2>.\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"aibsmod-specific commands are: piercing <0|1>, hypergauntlet <0|1>, fastswitch <0|1>, selfdamage <0|1>, nonrambokill <0|1|2>, training <0|1|2>, rocketbounce <n>.\n\"" );
 		return;
 	}
 
@@ -1304,6 +1306,9 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s", level.voteString);
 	} else if (!Q_stricmp(arg1, "training")) {
 		Com_sprintf(level.voteString, sizeof(level.voteString), "am_trainingMode %s", arg2);
+		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s", level.voteString);
+	} else if (!Q_stricmp(arg1, "rocketbounce")) {
+		Com_sprintf(level.voteString, sizeof(level.voteString), "am_rocketBounce %s", arg2);
 		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s", level.voteString);
 	} else {
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );

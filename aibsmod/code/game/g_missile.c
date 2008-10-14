@@ -263,6 +263,26 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 		return;
 	}
 
+	//aibsmod - check for limited bounce
+	if (!other->takedamage && (ent->s.eFlags & EF_BOUNCE_LIMITED) && ent->bounceCount) {
+		if (ent->bounceCount < 0) {
+			ent->bounceCount++;
+			ent->target_ent = ent; //set target_ent so missile will impact owner
+		} else {
+			ent->bounceCount--;
+		}
+
+		if (ent->methodOfDeath == MOD_ROCKET)
+			ent->methodOfDeath = MOD_ROCKET_BOUNCE;
+
+		if (ent->splashMethodOfDeath == MOD_ROCKET_SPLASH)
+			ent->splashMethodOfDeath = MOD_ROCKET_BOUNCE_SPLASH;
+
+		G_BounceMissile(ent, trace);
+		G_AddEvent(ent, EV_GRENADE_BOUNCE, 0);
+		return;
+	}
+
 #ifdef MISSIONPACK
 	if ( other->takedamage ) {
 		if ( ent->s.weapon != WP_PROX_LAUNCHER ) {
@@ -631,6 +651,11 @@ gentity_t *fire_rocket (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->nextthink = level.time + 15000;
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
+
+	//aibsmod - bouncy rockets
+	bolt->s.eFlags = EF_BOUNCE_LIMITED;
+	bolt->bounceCount = am_rocketBounce.integer;
+
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_ROCKET_LAUNCHER;
 	bolt->r.ownerNum = self->s.number;
