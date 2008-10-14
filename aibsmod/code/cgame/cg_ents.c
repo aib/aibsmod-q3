@@ -972,6 +972,10 @@ static void CG_AddCEntity( centity_t *cent ) {
 	case ET_FOOTBALL_GOAL:
 		break;
 
+	case ET_TRIPMINE:
+		CG_Tripmine(cent);
+		break;
+
 	case ET_BBOX:
 		CG_BBox(cent);
 		break;
@@ -1032,6 +1036,56 @@ void CG_AddPacketEntities( void ) {
 }
 
 //aibsmod stuff follows
+
+//Draw a laser beam
+void CG_Laser(const vec3_t start, const vec3_t end, const vec3_t color)
+{
+	refEntity_t ent;
+
+	memset(&ent, 0, sizeof(ent));
+
+	ent.reType = RT_RAIL_CORE;
+	ent.customShader = cgs.media.railCoreShader;
+
+	VectorCopy(start, ent.origin);
+	VectorCopy(end, ent.oldorigin);
+
+	ent.shaderRGBA[0] = color[0] * 255;
+	ent.shaderRGBA[1] = color[1] * 255;
+	ent.shaderRGBA[2] = color[2] * 255;
+	ent.shaderRGBA[3] = 255;
+
+	trap_R_AddRefEntityToScene(&ent);
+
+/*	localEntity_t *le;
+	refEntity_t   *re;
+
+	le = CG_AllocLocalEntity();
+	re = &le->refEntity;
+
+	le->leType = LE_FADE_RGB;
+	le->startTime = cg.time;
+	le->endTime = cg.time + 400;
+	le->lifeRate = 1.0 / (le->endTime - le->startTime);
+
+	re->shaderTime = cg.time / 1000.0f;
+	re->reType = RT_RAIL_CORE;
+	re->customShader = cgs.media.railCoreShader;
+
+	VectorCopy(start, re->origin);
+	VectorCopy(end, re->oldorigin);
+
+	re->shaderRGBA[0] = color[0] * 255;
+    re->shaderRGBA[1] = color[1] * 255;
+    re->shaderRGBA[2] = color[2] * 255;
+    re->shaderRGBA[3] = 255;
+
+	le->color[0] = color[0] * 0.75;
+	le->color[1] = color[1] * 0.75;
+	le->color[2] = color[2] * 0.75;
+	le->color[3] = 1.0f;*/
+}
+
 //draw the football
 void CG_Football(centity_t *cent)
 {
@@ -1040,7 +1094,7 @@ void CG_Football(centity_t *cent)
 	memset(&ent, 0, sizeof(ent));
 
 	//set frame
-	ent.frame = cent->currentState.frame;//s1->frame;
+	ent.frame = cent->currentState.frame;
 	ent.oldframe = ent.frame;
 	ent.backlerp = 0;
 
@@ -1064,7 +1118,7 @@ void CG_FootballGoalpost(centity_t *cent)
 	memset(&ent, 0, sizeof(ent));
 
 	//set frame
-	ent.frame = cent->currentState.frame;//s1->frame;
+	ent.frame = cent->currentState.frame;
 	ent.oldframe = ent.frame;
 	ent.backlerp = 0;
 
@@ -1115,12 +1169,43 @@ void CG_FootballGoalpost(centity_t *cent)
 	trap_R_AddRefEntityToScene(&ent);
 }
 
+//draw a laser tripmine
+void CG_Tripmine(centity_t *cent)
+{
+	refEntity_t		mineBody;
+	const vec3_t	laserColor = { 1.0f, 0.0f, 0.0f };
+
+	memset(&mineBody, 0, sizeof(mineBody));
+
+	//set frame
+	mineBody.frame = cent->currentState.frame;
+	mineBody.oldframe = mineBody.frame;
+	mineBody.backlerp = 0;
+
+	VectorCopy(cent->lerpOrigin, mineBody.origin);
+	VectorCopy(cent->lerpOrigin, mineBody.oldorigin);
+
+	mineBody.hModel = cgs.media.tripmineModel;
+
+	//convert angles to axis
+	AnglesToAxis(cent->lerpAngles, mineBody.axis);
+
+	//add to refresh list
+	trap_R_AddRefEntityToScene(&mineBody);
+
+	//Draw laser if armed
+	if (cent->currentState.modelindex == 1) { //armed
+		CG_Laser(cent->currentState.origin, cent->currentState.angles2, laserColor);
+	}
+}
+
 //draw a bounding box (mins=origin2 and maxs=angles2)
 void CG_BBox(centity_t *cent)
 {
 	clientInfo_t	ci;
 	vec3_t			mins, maxs;
 	vec3_t			p1, p2;
+	const vec3_t	color = { 0.5f, 0.0f, 1.0f };
 
 	VectorAdd(cent->currentState.origin, cent->currentState.origin2, mins);
 	VectorAdd(cent->currentState.origin, cent->currentState.angles2, maxs);
@@ -1130,34 +1215,34 @@ void CG_BBox(centity_t *cent)
 
 	VectorSet(p1, mins[0], mins[1], mins[2]);
 	VectorSet(p2, mins[0], maxs[1], mins[2]);
-	CG_RailTrail(&ci, p1, p2);
+	CG_Laser(p1, p2, color);
 	VectorSet(p1, maxs[0], maxs[1], mins[2]);
-	CG_RailTrail(&ci, p2, p1);
+	CG_Laser(p1, p2, color);
 	VectorSet(p2, maxs[0], mins[1], mins[2]);
-	CG_RailTrail(&ci, p1, p2);
+	CG_Laser(p1, p2, color);
 	VectorSet(p1, mins[0], mins[1], mins[2]);
-	CG_RailTrail(&ci, p2, p1);
+	CG_Laser(p1, p2, color);
 
 	VectorSet(p1, mins[0], mins[1], maxs[2]);
 	VectorSet(p2, mins[0], maxs[1], maxs[2]);
-	CG_RailTrail(&ci, p1, p2);
+	CG_Laser(p1, p2, color);
 	VectorSet(p1, maxs[0], maxs[1], maxs[2]);
-	CG_RailTrail(&ci, p2, p1);
+	CG_Laser(p1, p2, color);
 	VectorSet(p2, maxs[0], mins[1], maxs[2]);
-	CG_RailTrail(&ci, p1, p2);
+	CG_Laser(p1, p2, color);
 	VectorSet(p1, mins[0], mins[1], maxs[2]);
-	CG_RailTrail(&ci, p2, p1);
+	CG_Laser(p1, p2, color);
 
 	VectorSet(p1, mins[0], mins[1], mins[2]);
 	VectorSet(p2, mins[0], mins[1], maxs[2]);
-	CG_RailTrail(&ci, p1, p2);
+	CG_Laser(p1, p2, color);
 	VectorSet(p1, mins[0], maxs[1], mins[2]);
 	VectorSet(p2, mins[0], maxs[1], maxs[2]);
-	CG_RailTrail(&ci, p1, p2);
+	CG_Laser(p1, p2, color);
 	VectorSet(p1, maxs[0], mins[1], mins[2]);
 	VectorSet(p2, maxs[0], mins[1], maxs[2]);
-	CG_RailTrail(&ci, p1, p2);
+	CG_Laser(p1, p2, color);
 	VectorSet(p1, maxs[0], maxs[1], mins[2]);
 	VectorSet(p2, maxs[0], maxs[1], maxs[2]);
-	CG_RailTrail(&ci, p1, p2);
+	CG_Laser(p1, p2, color);
 }

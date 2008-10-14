@@ -1,26 +1,5 @@
 #include "g_local.h"
 
-#define BALL_RADIUS				8.0f
-#define BALL_SHOOT_SPEED		1000
-
-#define BALL_BOUNCE_FACTOR		0.90f
-#define BALL_BOUNCE_GOAL		0.50f
-#define BALL_AIR_FRICTION		0.995f
-
-#define BALL_IDLE_RESET_TIME	30000
-#define BALL_GOAL_RESET_TIME	10000
-#define BALL_RECATCH_TIME		500
-
-//how much the ball should turn per unit traveled
-#define BALL_ANGLE_SPEED		0.1
-
-#define CONTENTS_GOALPOST		(CONTENTS_SOLID | CONTENTS_PLAYERCLIP)
-#define CONTENTS_GOALCLIP		CONTENTS_PLAYERCLIP
-
-#define GOAL_SCORE				10
-#define OWN_GOAL_SCORE			-10
-#define GOAL_ASSIST_SCORE		5
-
 #define MIN(x,y) ((x < y) ? (x) : (y))
 #define MAX(x,y) ((x > y) ? (x) : (y))
 

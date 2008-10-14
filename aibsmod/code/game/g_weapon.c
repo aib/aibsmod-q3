@@ -1164,3 +1164,121 @@ void G_StartKamikaze( gentity_t *ent ) {
 	te->s.eventParm = GTS_KAMIKAZE;
 }
 #endif
+
+//aibsmod
+void Tripmine_Arm(gentity_t *ent)
+{
+	trace_t tr;
+	vec3_t	end;
+
+	VectorMA(ent->s.origin, TRIPMINE_RANGE, ent->s.origin2, end);
+
+	trap_Trace(&tr, ent->s.origin, NULL, NULL, end, ent->s.number, MASK_SHOT);
+	ent->laserDistance = tr.fraction * TRIPMINE_RANGE;
+
+	ent->s.modelindex = 1; //armed
+
+	//Set beam's end
+	VectorMA(ent->s.origin, ent->laserDistance, ent->s.origin2, ent->s.angles2);
+
+	ent->think = Tripmine_Think;
+	ent->nextthink = level.time + TRIPMINE_THINK_DELAY;
+}
+
+void Tripmine_Think(gentity_t *ent)
+{
+	gentity_t *tent;
+	trace_t	tr;
+	vec3_t	end;
+	float	currentDistance;
+
+	VectorMA(ent->s.origin, TRIPMINE_RANGE, ent->s.origin2, end);
+
+	trap_Trace(&tr, ent->s.origin, NULL, NULL, end, ent->s.number, MASK_SHOT);
+	currentDistance = tr.fraction * TRIPMINE_RANGE;
+
+	//explode if life expires or laser distance changes too much
+	if ((level.time > ent->dieTime) || (fabs(currentDistance - ent->laserDistance) >= TRIPMINE_TRIP_DELTA)) {
+		ent->s.modelindex = 0;
+		G_AddEvent(ent, EV_TRIPMINE, 2); //add exploding event
+
+		ent->think = Tripmine_Explode;
+		ent->nextthink = level.time + TRIPMINE_EXPLODE_DELAY;
+		return;
+	}
+
+	ent->laserDistance = currentDistance;
+	VectorMA(ent->s.origin, currentDistance, ent->s.origin2, ent->s.angles2);
+
+	ent->nextthink = level.time + TRIPMINE_THINK_DELAY;
+}
+
+void Tripmine_Explode(gentity_t *ent)
+{
+	G_AddEvent(ent, EV_TRIPMINE, 3);
+	ent->s.eType = ET_GENERAL;
+
+	if (ent->splashDamage) {
+		if (G_RadiusDamage(ent->s.origin, ent->parent, ent->splashDamage, ent->splashRadius, NULL, ent->splashMethodOfDeath))
+			g_entities[ent->r.ownerNum].client->accuracy_hits++;
+	}
+
+	ent->freeAfterEvent = qtrue;
+	return;
+}
+
+qboolean CheckTripmineAttack(gentity_t *ent)
+{
+	trace_t		tr;
+	vec3_t		end;
+
+	gentity_t	*mine;
+	vec3_t		minePos;
+	vec3_t		mineAngles;
+
+	AngleVectors(ent->client->ps.viewangles, forward, right, up);
+
+	CalcMuzzlePoint(ent, forward, right, up, muzzle);
+
+	VectorMA(muzzle, 32, forward, end);
+	trap_Trace(&tr, muzzle, NULL, NULL, end, ent->s.number, CONTENTS_SOLID);
+
+	if (tr.fraction == 1) //didn't hit a wall
+		return qfalse;
+
+	if (tr.surfaceFlags & SURF_NOIMPACT) //hit a noimpact wall
+		return qfalse;
+
+	VectorMA(muzzle, 32*tr.fraction, forward, minePos);
+	vectoangles(tr.plane.normal, mineAngles);
+
+	mine = G_Spawn();
+	mine->classname = "tripmine";
+	mine->s.eType = ET_TRIPMINE;
+
+	//Adjust callbacks
+	mine->think = Tripmine_Arm;
+	mine->nextthink = level.time + TRIPMINE_ARM_TIME;
+	mine->dieTime = level.time + TRIPMINE_LIFE;
+
+	//Adjust damages
+	mine->parent = ent;
+	mine->splashDamage = 200;
+	mine->splashRadius = 300;
+	mine->splashMethodOfDeath = MOD_TRIPMINE_SPLASH;
+
+	//Adjust graphics
+	mine->s.modelindex = 0; //unarmed
+
+	//Adjust vectors and angles
+	VectorCopy(minePos, mine->s.origin);
+	VectorCopy(tr.plane.normal, mine->s.origin2);
+
+	G_SetOrigin(mine, minePos);
+	G_SetAngles(mine, mineAngles);
+
+	trap_LinkEntity(mine);
+
+	G_AddEvent(mine, EV_TRIPMINE, 1); //add arming event
+	return qtrue;
+}

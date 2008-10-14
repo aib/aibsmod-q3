@@ -1130,7 +1130,10 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.goalpostBlueLeftModel = trap_R_RegisterModel("models/football/goalpost_blue_left.md3");
 	cgs.media.goalpostBlueRightModel = trap_R_RegisterModel("models/football/goalpost_blue_right.md3");
 
+	cgs.media.tripmineModel = cgs.media.armorModel;
+
 	//aibsmod shaders
+	cgs.media.tripmineExplosionShader = trap_R_RegisterShader("tripmineExplosion");
 	cgs.media.ramboShader = trap_R_RegisterShader("powerups/rambo");
 	cgs.media.ramboWeaponShader = trap_R_RegisterShader("powerups/ramboWeapon");
 

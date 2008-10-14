@@ -318,7 +318,8 @@ typedef enum {
 	WP_CHAINGUN,
 #endif
 
-	WP_NUM_WEAPONS
+	WP_NUM_WEAPONS,
+
 } weapon_t;
 
 // reward sounds (stored in ps->persistant[PERS_PLAYEREVENTS])
@@ -452,7 +453,9 @@ typedef enum {
 	EV_CURRENT_BUTTONS,		//button state update (sent every frame)
 
 	EV_FOOTBALL_GOAL,
-	EV_FOOTBALL_PASS
+	EV_FOOTBALL_PASS,		//used for all ball control
+
+	EV_TRIPMINE				//tripmine sounds
 
 } entity_event_t;
 
@@ -611,6 +614,7 @@ typedef enum {
 	MOD_RAILGUN_PIERCE,
 	MOD_ROCKET_BOUNCE,
 	MOD_ROCKET_BOUNCE_SPLASH,
+	MOD_TRIPMINE_SPLASH
 
 } meansOfDeath_t;
 
@@ -701,6 +705,7 @@ typedef enum {
 	ET_FOOTBALL,
 	ET_FOOTBALL_GOAL,
 	ET_FOOTBALL_SOLID,
+	ET_TRIPMINE,
 	ET_BBOX,
 
 	ET_EVENTS				// any of the EV_* events can be added freestanding

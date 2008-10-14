@@ -12,4 +12,39 @@
 
 #define VERSION_STRING	"aibsmod v0.80"
 
+//The constants below are used by game mechanics
+
+//g_football.c
+#define BALL_RADIUS				8.0f
+#define BALL_SHOOT_SPEED		1000
+
+#define BALL_BOUNCE_FACTOR		0.90f
+#define BALL_BOUNCE_GOAL		0.50f
+#define BALL_AIR_FRICTION		0.995f
+
+#define BALL_IDLE_RESET_TIME	30000
+#define BALL_GOAL_RESET_TIME	10000
+#define BALL_RECATCH_TIME		500
+
+//how much the ball should turn per unit traveled
+#define BALL_ANGLE_SPEED		0.1
+
+#define CONTENTS_GOALPOST		(CONTENTS_SOLID | CONTENTS_PLAYERCLIP)
+#define CONTENTS_GOALCLIP		CONTENTS_PLAYERCLIP
+
+#define GOAL_SCORE				10
+#define OWN_GOAL_SCORE			-10
+#define GOAL_ASSIST_SCORE		5
+
+//g_weapon.c
+#define TRIPMINE_THINK_DELAY	FRAMETIME
+#define TRIPMINE_RANGE			8192
+#define TRIPMINE_ARM_TIME		2500
+//explode if laser length changes this much in TRIPMINE_THINK_DELAY
+//to allow crawling away at 50ups, for example, this should be 50 * 1000 / TRIPMINE_THINK_DELAY
+#define TRIPMINE_TRIP_DELTA		5.0f
+//alive for this long
+#define TRIPMINE_LIFE			(30000 + TRIPMINE_ARM_TIME)
+#define TRIPMINE_EXPLODE_DELAY	1000
+
 #endif /*__AIBSMOD_H__*/

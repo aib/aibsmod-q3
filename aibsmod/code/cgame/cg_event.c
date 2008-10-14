@@ -193,6 +193,15 @@ static void CG_Obituary( entityState_t *ent ) {
 				message = "couldn't hide from his own rocket";
 			break;
 
+		case MOD_TRIPMINE_SPLASH:
+			if (gender == GENDER_FEMALE)
+				message = "tripped on her own tripmine";
+			else if (gender == GENDER_NEUTER)
+				message = "tripped on its own tripmine";
+			else
+				message = "tripped on his own tripmine";
+			break;
+
 		default:
 			if ( gender == GENDER_FEMALE )
 				message = "killed herself";
@@ -338,6 +347,11 @@ static void CG_Obituary( entityState_t *ent ) {
 		case MOD_ROCKET_BOUNCE_SPLASH:
 			message = "couldn't hide from";
 			message2 = "'s bouncy rocket";
+			break;
+
+		case MOD_TRIPMINE_SPLASH:
+			message = "tripped on";
+			message2 = "'s tripmine";
 			break;
 
 		default:
@@ -1312,6 +1326,71 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			case 5: //dropped
 				cg.carrierNum = -1;
 				break;
+		}
+		break;
+
+	case EV_TRIPMINE:
+		switch (es->eventParm) {
+			case 1: //tripmine arming
+				CG_Printf("Arming!\n");
+				break;
+
+			case 2: //tripmine exploding sound
+				CG_Printf("Beep beep beep!\n");
+				break;
+
+			case 3: //tripmine explosion
+				CG_Printf("Boom!\n");
+				break;
+/*	//aibsmod
+	case WP_TRIPMINE: //modified rocket explosion
+		mod = cgs.media.dishFlashModel;
+		shader = cgs.media.tripmineExplosionShader;
+		sfx = cgs.media.sfx_rockexp;
+		mark = cgs.media.burnMarkShader;
+		radius = 128;
+		light = 300;
+		isSprite = qtrue;
+		duration = 1000;
+		lightColor[0] = 1;
+		lightColor[1] = 0.75;
+		lightColor[2] = 0.0;
+		break;
+	}
+
+	if ( sfx ) {
+		trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, sfx );
+	}
+
+	//
+	// create the explosion
+	//
+	if ( mod ) {
+		le = CG_MakeExplosion( origin, dir,
+							   mod,	shader,
+							   duration, isSprite );
+		le->light = light;
+		VectorCopy( lightColor, le->lightColor );
+		if ( weapon == WP_RAILGUN ) {
+			// colorize with client color
+			VectorCopy( cgs.clientinfo[clientNum].color1, le->color );
+		}
+	}
+
+	//
+	// impact mark
+	//
+	alphaFade = (mark == cgs.media.energyMarkShader);	// plasma fades alpha, all others fade color
+	if ( weapon == WP_RAILGUN ) {
+		float	*color;
+
+		// colorize with client color
+		color = cgs.clientinfo[clientNum].color2;
+		CG_ImpactMark( mark, origin, dir, random()*360, color[0],color[1], color[2],1, alphaFade, radius, qfalse );
+	} else {
+		CG_ImpactMark( mark, origin, dir, random()*360, 1,1,1,1, alphaFade, radius, qfalse );
+	}*/
+
 		}
 		break;
 	//aibsmod stuff ends

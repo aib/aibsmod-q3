@@ -822,9 +822,12 @@ typedef struct {
 	qhandle_t	goalpostBlueLeftModel;
 	qhandle_t	goalpostBlueRightModel;
 
+	qhandle_t	tripmineModel;
+
 	//aibsmod shaders
 	qhandle_t	ramboShader;
 	qhandle_t	ramboWeaponShader;
+	qhandle_t	tripmineExplosionShader;
 
 	qhandle_t	button_up_upShader;
 	qhandle_t	button_up_downShader;
@@ -1383,8 +1386,10 @@ void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 							qhandle_t parentModel, char *tagName );
 //aibsmod stuff
+void CG_Laser(const vec3_t start, const vec3_t end, const vec3_t color);
 void CG_Football(centity_t *cent);
 void CG_FootballGoalpost(centity_t *cent);
+void CG_Tripmine(centity_t *cent);
 void CG_BBox(centity_t *cent);
 
 

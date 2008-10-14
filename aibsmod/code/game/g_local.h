@@ -158,7 +158,9 @@ struct gentity_s {
 
 	gitem_t		*item;			// for bonus items
 
+	int			dieTime;		//for entities with limited lifespans
 	int			bounceCount;	//for EF_BOUNCE_LIMITED
+	float		laserDistance;	//tripmine fires when this changes
 };
 
 
@@ -579,6 +581,11 @@ void SnapVectorTowards( vec3_t v, vec3_t to );
 qboolean CheckGauntletAttack( gentity_t *ent );
 void Weapon_HookFree (gentity_t *ent);
 void Weapon_HookThink (gentity_t *ent);
+//aibsmod
+void Tripmine_Arm(gentity_t *ent);
+void Tripmine_Think(gentity_t *ent);
+void Tripmine_Explode(gentity_t *ent);
+qboolean CheckTripmineAttack(gentity_t *ent);
 
 
 //
