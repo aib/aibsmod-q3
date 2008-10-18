@@ -1166,15 +1166,24 @@ void G_StartKamikaze( gentity_t *ent ) {
 #endif
 
 //aibsmod
+const vec3_t tripmine_mins = { +0.0f, -13.0f, -7.0f };
+const vec3_t tripmine_maxs = { +2.0f, +13.0f, +7.0f };
+
 void Tripmine_Arm(gentity_t *ent)
 {
 	trace_t tr;
 	vec3_t	end;
+	vec3_t	nonSolidStart;
+	float	nonSolidFraction;
 
 	VectorMA(ent->s.origin, TRIPMINE_RANGE, ent->s.origin2, end);
 
+	VectorMA(ent->s.origin, -1, ent->s.origin2, nonSolidStart);
+	trap_Trace(&tr, nonSolidStart, NULL, NULL, end, ent->s.number, MASK_SHOT & ~CONTENTS_SOLID);
+	nonSolidFraction = tr.fraction;
+
 	trap_Trace(&tr, ent->s.origin, NULL, NULL, end, ent->s.number, MASK_SHOT);
-	ent->laserDistance = tr.fraction * TRIPMINE_RANGE;
+	ent->laserDistance = TRIPMINE_RANGE * MIN(tr.fraction,nonSolidFraction);
 
 	ent->s.modelindex = 1; //armed
 
@@ -1191,17 +1200,23 @@ void Tripmine_Think(gentity_t *ent)
 	trace_t	tr;
 	vec3_t	end;
 	float	currentDistance;
+	vec3_t	nonSolidStart;
+	float	nonSolidFraction;
 
 	VectorMA(ent->s.origin, TRIPMINE_RANGE, ent->s.origin2, end);
 
+	VectorMA(ent->s.origin, -1, ent->s.origin2, nonSolidStart);
+	trap_Trace(&tr, nonSolidStart, NULL, NULL, end, ent->s.number, MASK_SHOT & ~CONTENTS_SOLID);
+	nonSolidFraction = tr.fraction;
+
 	trap_Trace(&tr, ent->s.origin, NULL, NULL, end, ent->s.number, MASK_SHOT);
-	currentDistance = tr.fraction * TRIPMINE_RANGE;
+	currentDistance = TRIPMINE_RANGE * MIN(tr.fraction,nonSolidFraction);
 
 	//explode if life expires or laser distance changes too much
 	if ((level.time > ent->dieTime) || (fabs(currentDistance - ent->laserDistance) >= TRIPMINE_TRIP_DELTA)) {
-		ent->s.modelindex = 0;
 		G_AddEvent(ent, EV_TRIPMINE, 2); //add exploding event
 
+		ent->takedamage = qfalse;
 		ent->think = Tripmine_Explode;
 		ent->nextthink = level.time + TRIPMINE_EXPLODE_DELAY;
 		return;
@@ -1213,9 +1228,17 @@ void Tripmine_Think(gentity_t *ent)
 	ent->nextthink = level.time + TRIPMINE_THINK_DELAY;
 }
 
+void Tripmine_Die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod)
+{
+	self->takedamage = qfalse;
+	self->think = Tripmine_Explode;
+	self->nextthink = level.time + TRIPMINE_EXPLODE_DELAY;
+}
+
 void Tripmine_Explode(gentity_t *ent)
 {
 	G_AddEvent(ent, EV_TRIPMINE, 3);
+	ent->s.modelindex = 0;
 	ent->s.eType = ET_GENERAL;
 
 	if (ent->splashDamage) {
@@ -1261,10 +1284,18 @@ qboolean CheckTripmineAttack(gentity_t *ent)
 	mine->nextthink = level.time + TRIPMINE_ARM_TIME;
 	mine->dieTime = level.time + TRIPMINE_LIFE;
 
+	//Killable
+	mine->health = 50;
+	mine->takedamage = qtrue;
+	mine->r.contents = CONTENTS_CORPSE;
+	VectorCopy(tripmine_mins, mine->r.mins);
+	VectorCopy(tripmine_maxs, mine->r.maxs);
+	mine->die = Tripmine_Die;
+
 	//Adjust damages
 	mine->parent = ent;
-	mine->splashDamage = 200;
-	mine->splashRadius = 300;
+	mine->splashDamage = 150;
+	mine->splashRadius = 360;
 	mine->splashMethodOfDeath = MOD_TRIPMINE_SPLASH;
 
 	//Adjust graphics

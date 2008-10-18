@@ -634,6 +634,9 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.ramboStealSound = trap_S_RegisterSound("sound/rambo/rambo_steal.wav", qtrue);
 	cgs.media.ramboKillSound = trap_S_RegisterSound("sound/rambo/rambo_kill.wav", qtrue);
 
+	cgs.media.tripmineArmSound = trap_S_RegisterSound("sound/weapons/tripmine_arm.wav", qtrue);
+	cgs.media.tripmineExplodeSound = trap_S_RegisterSound("sound/weapons/tripmine_explode.wav", qtrue);
+
 	cgs.media.ballKick1Sound = trap_S_RegisterSound("sound/football/kick1.wav", qtrue);
 	cgs.media.ballKick2Sound = trap_S_RegisterSound("sound/football/kick2.wav", qtrue);
 	cgs.media.ballKick3Sound = trap_S_RegisterSound("sound/football/kick3.wav", qtrue);
@@ -1130,7 +1133,7 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.goalpostBlueLeftModel = trap_R_RegisterModel("models/football/goalpost_blue_left.md3");
 	cgs.media.goalpostBlueRightModel = trap_R_RegisterModel("models/football/goalpost_blue_right.md3");
 
-	cgs.media.tripmineModel = cgs.media.armorModel;
+	cgs.media.tripmineModel = trap_R_RegisterModel("models/weapons/tripmine.md3");
 
 	//aibsmod shaders
 	cgs.media.tripmineExplosionShader = trap_R_RegisterShader("tripmineExplosion");

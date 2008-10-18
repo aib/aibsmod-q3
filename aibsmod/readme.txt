@@ -45,6 +45,9 @@ Server Variables/Settings:
 
 	* am_hyperGauntlet <0/1>
 		This server setting controls whether the gauntlet does 1000 (instant-kill) or 50 (normal) damage. Players can "callvote hypergauntlet 0/1" to change this setting.
+		
+	* am_rocketBounce <n>
+		This server setting controls whether rockets can bounce off of walls. 0 is the default and doesn't allow rockets to bounce off walls. Changing this setting to any number will allow rockets to bounce that many times. For example, if am_rocketBounce is 2, rockets will bounce off of the first two walls they encounter, and then explode on the third. If set to a negative number, rockets that have bounced off at least once will be able to hit their owners. Players can "callvote rocketbounce n" to change this setting.
 
 	* am_nonRamboKill <0/1/2>
 		This server setting controls whether non-rambo players can be damaged by other non-rambo players. If it is "0", non-rambo players cannot be damaged by other non-rambo players. A value of "1" will allow such damage, but will not reward (or punish) such kills in [non-team] Rambomatch mode. A value of "2" will punish non-rambo killers by subtracting a point from their score in [non-team] Rambomatch mode. In Team Rambomatch mode, settings 1 and 2 do not differ and always reward opposing team non-rambo kills with +1 and punish team kills with -1. Players can "callvote nonrambokill 0/1/2" to change this setting.

@@ -505,7 +505,10 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	const char		*s;
 	int				clientNum;
 	clientInfo_t	*ci;
+
 	int				rnd;
+	vec3_t			color;
+	localEntity_t	*le;
 
 	es = &cent->currentState;
 	event = es->event & ~EV_EVENT_BITS;
@@ -1332,64 +1335,38 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	case EV_TRIPMINE:
 		switch (es->eventParm) {
 			case 1: //tripmine arming
-				CG_Printf("Arming!\n");
+				trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.tripmineArmSound);
 				break;
 
 			case 2: //tripmine exploding sound
-				CG_Printf("Beep beep beep!\n");
+				trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.tripmineExplodeSound);
 				break;
 
 			case 3: //tripmine explosion
-				CG_Printf("Boom!\n");
+				trap_S_StartSound(es->origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.sfx_rockexp);
+
+				VectorSet(color, 1, 0.75, 0);
+
+				le = CG_MakeExplosion(es->origin, es->origin2, cgs.media.dishFlashModel, cgs.media.tripmineExplosionShader, 1000, qtrue);
+				le->light = 300;
+				VectorCopy(color, le->lightColor);
+				CG_ImpactMark(cgs.media.burnMarkShader, es->origin, dir, random()*360, 1,1,1,1, qfalse, 128, qfalse);
+
 				break;
-/*	//aibsmod
-	case WP_TRIPMINE: //modified rocket explosion
-		mod = cgs.media.dishFlashModel;
-		shader = cgs.media.tripmineExplosionShader;
-		sfx = cgs.media.sfx_rockexp;
-		mark = cgs.media.burnMarkShader;
-		radius = 128;
-		light = 300;
-		isSprite = qtrue;
-		duration = 1000;
-		lightColor[0] = 1;
-		lightColor[1] = 0.75;
-		lightColor[2] = 0.0;
-		break;
-	}
+			/*	//aibsmod
+				case WP_TRIPMINE: //modified rocket explosion
+					mod = ;
+					shader = ;
+					sfx = ;
+					mark = ;
+					radius = 128;
+					light = 300;
+					isSprite = qtrue;
+					duration = 1000;
+					lightColor[0] = 1;
+					lightColor[1] = 0.75;
+					lightColor[2] = 0.0;*/
 
-	if ( sfx ) {
-		trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, sfx );
-	}
-
-	//
-	// create the explosion
-	//
-	if ( mod ) {
-		le = CG_MakeExplosion( origin, dir,
-							   mod,	shader,
-							   duration, isSprite );
-		le->light = light;
-		VectorCopy( lightColor, le->lightColor );
-		if ( weapon == WP_RAILGUN ) {
-			// colorize with client color
-			VectorCopy( cgs.clientinfo[clientNum].color1, le->color );
-		}
-	}
-
-	//
-	// impact mark
-	//
-	alphaFade = (mark == cgs.media.energyMarkShader);	// plasma fades alpha, all others fade color
-	if ( weapon == WP_RAILGUN ) {
-		float	*color;
-
-		// colorize with client color
-		color = cgs.clientinfo[clientNum].color2;
-		CG_ImpactMark( mark, origin, dir, random()*360, color[0],color[1], color[2],1, alphaFade, radius, qfalse );
-	} else {
-		CG_ImpactMark( mark, origin, dir, random()*360, 1,1,1,1, alphaFade, radius, qfalse );
-	}*/
 
 		}
 		break;

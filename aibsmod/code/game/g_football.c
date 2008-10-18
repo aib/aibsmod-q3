@@ -1,8 +1,5 @@
 #include "g_local.h"
 
-#define MIN(x,y) ((x < y) ? (x) : (y))
-#define MAX(x,y) ((x > y) ? (x) : (y))
-
 const vec3_t goalpost_top_mins = { -52.5f, -32.5f, +44.0f };
 const vec3_t goalpost_top_maxs = { +52.5f, +30.0f, +46.5f };
 

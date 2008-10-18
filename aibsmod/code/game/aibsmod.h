@@ -12,6 +12,10 @@
 
 #define VERSION_STRING	"aibsmod v0.80"
 
+//Couldn't find a suitable place for these, didn't want to modify q_shared.h
+#define MIN(x,y) ((x < y) ? (x) : (y))
+#define MAX(x,y) ((x > y) ? (x) : (y))
+
 //The constants below are used by game mechanics
 
 //g_football.c
@@ -37,14 +41,14 @@
 #define GOAL_ASSIST_SCORE		5
 
 //g_weapon.c
-#define TRIPMINE_THINK_DELAY	FRAMETIME
+#define TRIPMINE_THINK_DELAY	1
 #define TRIPMINE_RANGE			8192
 #define TRIPMINE_ARM_TIME		2500
 //explode if laser length changes this much in TRIPMINE_THINK_DELAY
 //to allow crawling away at 50ups, for example, this should be 50 * 1000 / TRIPMINE_THINK_DELAY
 #define TRIPMINE_TRIP_DELTA		5.0f
 //alive for this long
-#define TRIPMINE_LIFE			(30000 + TRIPMINE_ARM_TIME)
-#define TRIPMINE_EXPLODE_DELAY	1000
+#define TRIPMINE_LIFE			(300000 + TRIPMINE_ARM_TIME)
+#define TRIPMINE_EXPLODE_DELAY	200
 
 #endif /*__AIBSMOD_H__*/

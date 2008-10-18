@@ -971,12 +971,15 @@ typedef struct {
 	sfxHandle_t ramboStealSound;
 	sfxHandle_t ramboKillSound;
 
+	sfxHandle_t tripmineArmSound;
+	sfxHandle_t tripmineExplodeSound;
+
 	sfxHandle_t ballKick1Sound;
 	sfxHandle_t ballKick2Sound;
 	sfxHandle_t ballKick3Sound;
 
-	sfxHandle_t	ballResetSound;
-	sfxHandle_t	youHaveTheBallSound;
+	sfxHandle_t ballResetSound;
+	sfxHandle_t youHaveTheBallSound;
 
 	sfxHandle_t yourTeamGoalSound;
 	sfxHandle_t opponentGoalSound;

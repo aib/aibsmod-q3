@@ -1017,7 +1017,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	// always give half damage if hurting self
 	// calculated after knockback, so rocket jumping works
-	if ( targ == attacker) {
+	//aibsmod - no such luck for the tripmine!
+	if ((targ == attacker) && (mod != MOD_TRIPMINE_SPLASH)) {
 		damage *= 0.5;
 	}
 
