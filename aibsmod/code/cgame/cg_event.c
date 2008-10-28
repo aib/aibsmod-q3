@@ -1245,38 +1245,38 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 
 			case 1: //red goal
 				CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_RED "red team" S_COLOR_WHITE ") has scored a goal!\n",  Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+				CG_AddBufferedSound(cgs.media.goalCheerSound);
 				if (cgs.clientinfo[cg.clientNum].team == TEAM_RED)
 					CG_AddBufferedSound(cgs.media.yourTeamGoalSound);
 				else
 					CG_AddBufferedSound(cgs.media.opponentGoalSound);
-				CG_AddBufferedSound(cgs.media.goalCheerSound);
 				break;
 
 			case 2: //blue goal
 				CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_BLUE "blue team" S_COLOR_WHITE ") has scored a goal!\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+				CG_AddBufferedSound(cgs.media.goalCheerSound);
 				if (cgs.clientinfo[cg.clientNum].team == TEAM_BLUE)
 					CG_AddBufferedSound(cgs.media.yourTeamGoalSound);
 				else
 					CG_AddBufferedSound(cgs.media.opponentGoalSound);
-				CG_AddBufferedSound(cgs.media.goalCheerSound);
 				break;
 
 			case 3: //red own goal
 				CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_RED "red team" S_COLOR_WHITE ") has scored " S_COLOR_RED "AN OWN GOAL" S_COLOR_WHITE "!\n",  Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+				CG_AddBufferedSound(cgs.media.goalSneerSound);
 				if (cgs.clientinfo[cg.clientNum].team == TEAM_RED)
 					CG_AddBufferedSound(cgs.media.yourTeamGoalSound);
 				else
 					CG_AddBufferedSound(cgs.media.opponentGoalSound);
-				CG_AddBufferedSound(cgs.media.goalSneerSound);
 				break;
 
 			case 4: //blue own goal
 				CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_BLUE "blue team" S_COLOR_WHITE ") has scored " S_COLOR_RED "AN OWN GOAL" S_COLOR_WHITE "!\n",  Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+				CG_AddBufferedSound(cgs.media.goalSneerSound);
 				if (cgs.clientinfo[cg.clientNum].team == TEAM_BLUE)
 					CG_AddBufferedSound(cgs.media.yourTeamGoalSound);
 				else
 					CG_AddBufferedSound(cgs.media.opponentGoalSound);
-				CG_AddBufferedSound(cgs.media.goalSneerSound);
 				break;
 		}
 		break;

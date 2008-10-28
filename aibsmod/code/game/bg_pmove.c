@@ -17,7 +17,7 @@ float	pm_swimScale = 0.50f;
 float	pm_wadeScale = 0.70f;
 
 float	pm_accelerate = 10.0f;
-float	pm_airaccelerate = 1.0f;
+//float	pm_airaccelerate = 1.0f;
 float	pm_wateraccelerate = 4.0f;
 float	pm_flyaccelerate = 8.0f;
 
@@ -613,7 +613,9 @@ static void PM_AirMove( void ) {
 	wishspeed *= scale;
 
 	// not on ground, so little effect on velocity
-	PM_Accelerate (wishdir, wishspeed, pm_airaccelerate);
+//	PM_Accelerate (wishdir, wishspeed, pm_airaccelerate);
+	//aibsmod - use am_airControl
+	PM_Accelerate(wishdir, wishspeed, am_airControl.value);
 
 	// we may have a ground plane that is very steep, even
 	// though we don't have a groundentity
@@ -749,7 +751,7 @@ static void PM_WalkMove( void ) {
 	// when a player gets hit, they temporarily lose
 	// full control, which allows them to be moved a bit
 	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK ) {
-		accelerate = pm_airaccelerate;
+		accelerate = am_airControl.value;
 	} else {
 		accelerate = pm_accelerate;
 	}

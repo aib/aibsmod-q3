@@ -1,22 +1,10 @@
-*** aibsmod_test7 Documentation ***
+*** aibsmod Documentation ***
 
-Notes for #sourgaming:
-
-	Cikan buglari ve onerilerinizi bana iletiyorsunuz, degil mi?
+v0.80 Notes:
+	#sourgaming:
+	Selamlar! Moda bu versiyonda futbol modu basta olmak uzere birkac yenilik ekledim!
 	
-	Moda yeni bir oyun turu koymayi dusunuyorum. Ramboyu da cok kisiyle test etmedik daha, pek oturmadi.
-	Bu release'i herkese dagitabilirsek bol bol oynama sansimiz olur.
-	
-	skos birkac yeni map cikardi, onlari da almayi unutmayin.
-	
-	Modun bi versiyonunda kurtuldugumdan emin olamadigim bir bug var gibi, harita degisiminde oyunu crash edebiliyo. Oyle bir sey oldugu takdirde pak1.pk3 seklinde bir update cikarabilirim, yeni ekleyecek bir seyim yoksa. Serverda test etmeden once 3-4 kisi soyle bikac oyun atmak istiyorum, sonucta server bu moda gectigi andan itibaren modsuz Q3'le girilemeyecek. (Gerci 26667'ye pek giren yok artik)
-	
-	
-	test6 notlari:
-	
-	Su anda aibsmod'un test6 versiyonunu denemektesiniz. Simdiye kadar tum onerileriniz, geri donusleriniz ve desteginiz icin tesekkur ederim. Yakinda modun test olmayan, duz versiyonlari cikacaktir ve duzgun bir web sitesinden indirilebilir hale gelecektir. Mod, bu versiyondan itibaren VQ3 (modsuz, duz Quake 3 clientlari) ile uyumsuzdur ve oynamak icin hem serverin hem de butun oyuncularin moda sahip olmasini gerektirir. disq'in, VQ3 sunucusunu bu moda gecirip gecirmeyecegini bilmiyorum, daha konusmadik, fakat bunu yapmasi, ben bu modu release edip web siteme koyana kadar mantiksiz olacaktir; zira sunucumuza disardan gelen insanlar mevcut.
-	
-	Bana her zamanki gibi kanaldan ulasabilirsiniz, ve hatta ulasiniz. Moda ekletmek istediginiz fikirler varsa hemen iletiniz, cunku mod test surecinden cikmak uzeredir, bundan sonra buyuk degisiklikler yapmak cok daha uzun zaman alacaktir.
+	Enjoy!
 
 Installing:
 
@@ -32,28 +20,31 @@ Variables:
 Server Variables/Settings:
 
 	* am_fastWeaponSwitch <0/1>
-		This server setting controls whether weapon switching occurs instantly (1; CPMA/3wave style) or with a delay (0; VQ3). Players can "callvote fastswitch 0/1" to change this setting.
+		This setting controls whether weapon switching occurs instantly (1; CPMA/3wave style) or with a delay (0; VQ3). Players can "callvote fastswitch 0/1" to change this setting.
 
 	* am_trainingMode <0/1/2>
-		This server setting determines whether "training mode" is active or not. If active (1 or 2), players can walk through eachother and will not telefrag one another. Weapons will cause knockback but no damage. In addition, if this setting is 1, players will be given all weapons and infinite ammo. Players can "callvote training 0/1/2" to change this setting.
+		This setting determines whether "training mode" is active or not. If active (1 or 2), players will be invulnerable. They will be able to walk through eachother and will not telefrag one another. Weapons will cause knockback but no damage. In addition, if this setting is 1, players will be given all weapons and infinite ammo. Players can "callvote training 0/1/2" to change this setting.
+
+	* am_airControl <n>
+		This setting is the acceleration constant for air movement. The default is 1.0, same as the original Quake setting. Setting it higher gives people more air control a la CPMA, but with more sensible movements. (For example, if pressing "right strafe" while going left stops you, pressing "right strafe" again for the same amount of time makes you move in the opposite direction. CPMA allows you to instantly change your direction using the "forward" key only; VQ3 (and aibsmod) allows you to *accelerate* towards any direction, making direction change more gradual. Setting this value higher makes it less gradual.)
 
 	* am_selfDamage <0/1>
-		This server setting controls whether players can damage themselves. If set to 0, players cannot damage themselves (neither health nor armorwise) but knockback still applies. Players can "callvote selfdamage 0/1" to change this setting.
+		This setting controls whether players can damage themselves. If set to 0, players cannot damage themselves (neither health nor armorwise) but knockback still applies. Players can "callvote selfdamage 0/1" to change this setting.
 
 	* am_piercingRail <0/1>
-		This server setting controls whether railgun shots go through walls. Players can "callvote piercing 0/1" to change this setting.
+		This setting controls whether railgun shots go through walls. Players can "callvote piercing 0/1" to change this setting.
 
 	* am_hyperGauntlet <0/1>
-		This server setting controls whether the gauntlet does 1000 (instant-kill) or 50 (normal) damage. Players can "callvote hypergauntlet 0/1" to change this setting.
-		
+		This server setting controls whether the gauntlet does 50 (normal) or 1000 (instant-kill) damage. Players can "callvote hypergauntlet 0/1" to change this setting.
+
 	* am_rocketBounce <n>
-		This server setting controls whether rockets can bounce off of walls. 0 is the default and doesn't allow rockets to bounce off walls. Changing this setting to any number will allow rockets to bounce that many times. For example, if am_rocketBounce is 2, rockets will bounce off of the first two walls they encounter, and then explode on the third. If set to a negative number, rockets that have bounced off at least once will be able to hit their owners. Players can "callvote rocketbounce n" to change this setting.
+		This setting controls whether rockets can bounce off of walls. 0 is the default and doesn't allow rockets to bounce off walls. Changing this setting to any number will allow rockets to bounce that many times. For example, if am_rocketBounce is 2, rockets will bounce off of the first two walls they encounter, and then explode on the third. If set to a negative number, rockets that have bounced off at least once will be able to hit their owners. Players can "callvote rocketbounce n" to change this setting.
 
 	* am_nonRamboKill <0/1/2>
-		This server setting controls whether non-rambo players can be damaged by other non-rambo players. If it is "0", non-rambo players cannot be damaged by other non-rambo players. A value of "1" will allow such damage, but will not reward (or punish) such kills in [non-team] Rambomatch mode. A value of "2" will punish non-rambo killers by subtracting a point from their score in [non-team] Rambomatch mode. In Team Rambomatch mode, settings 1 and 2 do not differ and always reward opposing team non-rambo kills with +1 and punish team kills with -1. Players can "callvote nonrambokill 0/1/2" to change this setting.
-		
+		This setting controls whether non-rambo players can be damaged by other non-rambo players. If it is "0", non-rambo players cannot be damaged by other non-rambo players. A value of "1" will allow such damage, but will not reward (or punish) such kills in [non-team] Rambomatch mode. A value of "2" will punish non-rambo killers by subtracting a point from their score in [non-team] Rambomatch mode. In Team Rambomatch mode, settings 1 and 2 do not differ and always reward opposing team non-rambo kills with +1 and punish team kills with -1. Players can "callvote nonrambokill 0/1/2" to change this setting.
+
 	* am_redGoalRotation and am_blueGoalRotation
-		These server settings rotate the red and blue goalposts respectively, if the map isn't using custom ones. They are necessary on maps where the red/blue flag orientation isn't correct, i.e. the goalposts that have replaced the flags in Football mode are facing the wrong way. They can also be used to make scoring a goal more difficult. Their values are in degrees clockwise from the original orientation. (e.g. "am_redGoalRotation 90" means "turn the red goalpost 90 degrees clockwise")
+		These settings rotate the red and blue goalposts respectively, if the map isn't using custom ones. They are necessary on maps where the red/blue flag orientation isn't correct, i.e. the goalposts that have replaced the flags in Football mode are facing the wrong way. They can also be used to make scoring a goal more difficult. Their values are in degrees clockwise from the original orientation. (e.g. "am_redGoalRotation 90" means "turn the red goalpost 90 degrees clockwise")
 
 
 Client Variables/Settings:
@@ -74,7 +65,7 @@ Client Variables/Settings:
 
 The Enhanced Scoreboard:
 	
-	aibsmod has an enhanced scoreboard: To the left of players' names, their Excellent, Impressive and Gauntlet (Humiliation) counts are listed in their respective colors (Excellent=yellow, Impressive=cyan, Gauntlet=red). Furthermore, if a Rambomatch or Team Rambomatch type game is being played, the rambo has their background highlighted in green.
+	aibsmod has an enhanced scoreboard: To the left of players' names, their Excellent, Impressive and Gauntlet (Humiliation) counts are listed in their respective colors (Excellent=yellow, Impressive=cyan, Gauntlet=red). Furthermore, the Rambo in Rambomatch and Team Rambomatch games, and the ball carrier in Football games will be highlighted green.
 
 
 The Enhanced Speed Meter:
@@ -116,7 +107,9 @@ Notes:
 
 Credits:
 
+	TODO
 	Orhan "aib" Kavrakoglu - http://aib.ftuff.com/ and aibok42 gmail.
-	Thanks to the guys at irc.freenode.net #sourgaming for helping me test the mod.
-	Thanks to gelaek/skos (same place) for making dy3ram, the first map designed for Rambomatch play!
-	Thanks to fuayfsilfm/vesc (same place) for keeping my TODO list :S and keeping me motivated.
+	Thanks to the guys at irc.freenode.net #sourgaming for helping me test the mod, and for their ideas.
+	Thanks to gelaek/skos for making dy3ram, the first map designed for Rambomatch play!
+	Thanks to cruelstroke and skos for their football maps, sounds and constant feedback.
+	Thanks to fuayfsilfm/vesc for keeping my TODO list :S and keeping me motivated.

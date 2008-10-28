@@ -1288,8 +1288,6 @@ qboolean CheckTripmineAttack(gentity_t *ent)
 	mine->health = 50;
 	mine->takedamage = qtrue;
 	mine->r.contents = CONTENTS_CORPSE;
-	VectorCopy(tripmine_mins, mine->r.mins);
-	VectorCopy(tripmine_maxs, mine->r.maxs);
 	mine->die = Tripmine_Die;
 
 	//Adjust damages
@@ -1307,6 +1305,12 @@ qboolean CheckTripmineAttack(gentity_t *ent)
 
 	G_SetOrigin(mine, minePos);
 	G_SetAngles(mine, mineAngles);
+
+	//Adjust bounding box
+	G_SetRotatedBoundingBox(mine, tripmine_mins, tripmine_maxs);
+//	mine->s.eType = ET_BBOX;
+//	VectorCopy(mine->r.mins, mine->s.origin2);
+//	VectorCopy(mine->r.maxs, mine->s.angles2);
 
 	trap_LinkEntity(mine);
 

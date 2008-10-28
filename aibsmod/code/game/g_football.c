@@ -427,12 +427,13 @@ void G_RunFootball(gentity_t *ball)
 	gentity_t	*hitent;
 	float		xyspeed;
 
-	if (am_piercingRail.integer == 1 && ((rand()&31) == 1))
+/*	if (am_piercingRail.integer == 1 && ((rand()&31) == 1))
 		G_Printf("Carrier: %s, Shooter: %s, Passer: %s\n",
 			(level.ballCarrier ? level.ballCarrier->client->pers.netname : "N/A"),
 			(level.ballShooter ? level.ballShooter->client->pers.netname : "N/A"),
 			(level.ballPasser ? level.ballPasser->client->pers.netname : "N/A")
 		);
+*/
 
 	if (level.goalTime && ((level.time - level.goalTime) >= BALL_GOAL_RESET_TIME))
 		football_reset(ball);

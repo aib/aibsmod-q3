@@ -856,8 +856,7 @@ void ClientThink_real( gentity_t *ent ) {
 			AngleVectors(client->ps.viewangles, forward, right, up);
 			football_shoot(level.football, ent, forward);
 		} else {
-//			pm.gauntletHit = CheckGauntletAttack( ent );
-			pm.gauntletHit = CheckTripmineAttack(ent); //FIXME
+			pm.gauntletHit = CheckGauntletAttack( ent );
 		}
 	}
 

@@ -78,6 +78,7 @@ vmCvar_t	g_proxMineTimeout;
 //shared cvars, see bg_public.h
 vmCvar_t	am_fastWeaponSwitch;
 vmCvar_t	am_trainingMode;
+vmCvar_t	am_airControl;
 
 //server-side cvars
 vmCvar_t	am_piercingRail;
@@ -176,8 +177,9 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_rankings, "g_rankings", "0", 0, 0, qfalse},
 
 	//aibsmod shared cvars (bg_public.h)
-	{ &am_fastWeaponSwitch, "am_fastWeaponSwitch", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue},
-	{ &am_trainingMode, "am_trainingMode", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue},
+	{ &am_fastWeaponSwitch, "am_fastWeaponSwitch", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
+	{ &am_trainingMode, "am_trainingMode", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
+	{ &am_airControl, "am_airControl", "1.0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
 
 	//aibsmod server-side cvars
 	{ &am_piercingRail, "am_piercingRail", "0", CVAR_ARCHIVE, 0, qtrue },

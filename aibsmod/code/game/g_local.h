@@ -509,7 +509,11 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm );
 void G_SetOrigin( gentity_t *ent, vec3_t origin );
 void AddRemap(const char *oldShader, const char *newShader, float timeOffset);
 const char *BuildShaderStateConfig();
-void G_SetAngles(gentity_t *ent, vec3_t angles); //aibsmod
+
+//aibsmod stuff
+void G_SetAngles(gentity_t *ent, vec3_t angles);
+void G_SetRotatedBoundingBox(gentity_t *ent, const vec3_t orgmins, const vec3_t orgmaxs);
+
 //
 // g_combat.c
 //

@@ -188,6 +188,7 @@ void Pmove (pmove_t *pmove);
 //aibsmod - shared cvars (must set these CVAR_SERVERINFO so clients can be notified of changes)
 extern	vmCvar_t	am_fastWeaponSwitch;
 extern	vmCvar_t	am_trainingMode;
+extern	vmCvar_t	am_airControl;
 
 
 // player_state->stats[] indexes

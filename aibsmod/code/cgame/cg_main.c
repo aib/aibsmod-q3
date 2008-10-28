@@ -188,6 +188,7 @@ vmCvar_t	amh_depth;
 //aibsmod - server/shared variables. These will be communicated to us by the server (and used by pmove)
 vmCvar_t	am_fastWeaponSwitch;
 vmCvar_t	am_trainingMode;
+vmCvar_t	am_airControl;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -310,8 +311,9 @@ static cvarTable_t cvarTable[] = { // bk001129
 //	{ &cg_pmove_fixed, "cg_pmove_fixed", "0", CVAR_USERINFO | CVAR_ARCHIVE }
 
 	//aibsmod shared cvars (bg_public.h)
-	{ &am_fastWeaponSwitch, "am_fastWeaponSwitch", "0", CVAR_SERVERINFO | CVAR_ARCHIVE },
-	{ &am_trainingMode, "am_trainingMode", "0", CVAR_SERVERINFO | CVAR_ARCHIVE },
+	{ &am_fastWeaponSwitch, "am_fastWeaponSwitch", "0", CVAR_SERVERINFO },
+	{ &am_trainingMode, "am_trainingMode", "0", CVAR_SERVERINFO },
+	{ &am_airControl, "am_airControl", "1.0", CVAR_SERVERINFO },
 
 	//aibsmod client-side cvars
 	{ &am_showKillNotice, "am_showKillNotice", "1", CVAR_ARCHIVE },
