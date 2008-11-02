@@ -857,6 +857,7 @@ void ClientThink_real( gentity_t *ent ) {
 			football_shoot(level.football, ent, forward);
 		} else {
 			pm.gauntletHit = CheckGauntletAttack( ent );
+//			pm.gauntletHit = CheckTripmineAttack(ent); //FIXME
 		}
 	}
 

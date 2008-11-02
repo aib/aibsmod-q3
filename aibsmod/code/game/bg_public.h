@@ -259,6 +259,7 @@ typedef enum {
 //aibsmod stuff
 #define EF_BOUNCE_LIMITED	0x01000000		//like EF_BOUNCE, but limited times
 #define EF_AWARD_GOAL		0x00000800
+#define EF_IGNORE_OWNER		0x00000100		//don't allow .otherEntityNum to interact
 
 // NOTE: may not have more than 16
 typedef enum {
@@ -452,6 +453,8 @@ typedef enum {
 	EV_RAMBO_STEAL,			//rambo changed (might have just died)
 	EV_RAMBO_KILL,			//rambo killed someone
 	EV_CURRENT_BUTTONS,		//button state update (sent every frame)
+
+	EV_DROP_WEAPON,
 
 	EV_FOOTBALL_GOAL,
 	EV_FOOTBALL_PASS,		//used for all ball control

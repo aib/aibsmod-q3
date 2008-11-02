@@ -1603,6 +1603,61 @@ void Cmd_Stats_f( gentity_t *ent ) {
 */
 }
 
+void Cmd_Drop_f(gentity_t *ent)
+{
+	char		dropTarget[16];
+	int			weapon;
+	gitem_t		*item;
+	gentity_t	*dropped;
+
+	if (trap_Argc() < 2) {
+		trap_SendServerCommand(ent-g_entities, va("print \"usage: drop weapon\n\""));
+		return;
+	}
+
+	trap_Argv(1, dropTarget, sizeof(dropTarget));
+
+	if (Q_stricmp(dropTarget, "weapon") == 0) {
+		if (!am_droppableWeapons.integer) {
+			trap_SendServerCommand(ent-g_entities, va("print \"weapon dropping is not allowed\n\""));
+			return;
+		}
+
+		weapon = ent->s.weapon;
+
+		if ((weapon <= WP_MACHINEGUN) || (weapon == WP_GRAPPLING_HOOK) || (ent->client->ps.ammo[weapon] < 0)) {
+			trap_SendServerCommand(ent-g_entities, va("print \"cannot drop this weapon\n\""));
+			return;
+		} else {
+			if (ent->client->ps.ammo[weapon] == 0) {
+				trap_SendServerCommand(ent-g_entities, va("print \"not enough ammo to drop weapon\n\""));
+				return;
+			} else {
+				//find the item type for this weapon
+				item = BG_FindItemForWeapon(weapon);
+
+				//spawn the item
+				dropped = Drop_Item(ent, item, 0);
+
+				//give all ammo, set last owner and repick time
+				dropped->count = ent->client->ps.ammo[weapon];
+				dropped->s.eFlags |= EF_IGNORE_OWNER;
+				dropped->s.otherEntityNum = ent->s.number;
+				dropped->ignoreOwnerClearTime = level.time + WEAPON_REPICK_TIME;
+
+				trap_LinkEntity(dropped);
+
+				ent->client->ps.ammo[weapon] = 0;
+				ent->client->ps.stats[STAT_WEAPONS] &= ~(1 << weapon);
+				G_AddEvent(ent, EV_DROP_WEAPON, 0);
+			}
+		}
+	} else {
+		trap_SendServerCommand(ent-g_entities, va("print \"usage: drop weapon\n\""));
+		return;
+	}
+}
+
 /*
 =================
 ClientCommand
@@ -1709,6 +1764,11 @@ void ClientCommand( int clientNum ) {
 		Cmd_SetViewpos_f( ent );
 	else if (Q_stricmp (cmd, "stats") == 0)
 		Cmd_Stats_f( ent );
+
+	//aibsmod stuff
+	else if (Q_stricmp(cmd, "drop") == 0)
+		Cmd_Drop_f(ent);
+
 	else
 		trap_SendServerCommand( clientNum, va("print \"unknown cmd %s\n\"", cmd ) );
 }

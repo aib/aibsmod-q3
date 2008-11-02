@@ -2,16 +2,14 @@
 
 v0.80 Notes:
 	#sourgaming:
-	Selamlar! Moda bu versiyonda futbol modu basta olmak uzere birkac yenilik ekledim!
+	Selamlar. Moda bu versiyonda futbol modu basta olmak uzere birkac yenilik ekledim! Yeni komutlari filan burada bulabilirsiniz. Cruel ve gelaek'in maplerini test ediniz. --aib
 	
-	Enjoy!
-
 Installing:
 
 	Extract the archive file (probably the one you found this file in) to your Quake 3 directory. The archive contains a directory itself, so you should have:
 
-	* X:\Quake3\aibsmod\readme.txt
-	* X:\Quake3\aibsmod\pak0.pk3
+	* X:\Quake3\aibsmod_test8\readme.txt
+	* X:\Quake3\aibsmod_test8\pak0.pk3
 
 	Where X:\Quake3 is your Quake 3 directory.
 
@@ -45,22 +43,36 @@ Server Variables/Settings:
 
 	* am_redGoalRotation and am_blueGoalRotation
 		These settings rotate the red and blue goalposts respectively, if the map isn't using custom ones. They are necessary on maps where the red/blue flag orientation isn't correct, i.e. the goalposts that have replaced the flags in Football mode are facing the wrong way. They can also be used to make scoring a goal more difficult. Their values are in degrees clockwise from the original orientation. (e.g. "am_redGoalRotation 90" means "turn the red goalpost 90 degrees clockwise")
+		
+	* am_dropTeamPowerups <0/1>
+		This setting controls whether players drop their current powerups (e.g. quad) when they die in team games, as they do in FFA games.
+	
+	* am_droppableWeapons <0/1>
+		Controls whether the "drop weapon" client command is enabled.
 
 
 Client Variables/Settings:
 
 	* am_showKillNotice <0/1/2>
-		This client setting controls where the [occasionally annoying] "You fragged x/1st place with n kills" message appears. "1" is the default setting and doesn't change anything. Setting it to "0" will completely disable the message (you can still read your own kills from the "chat log" in the upper left corner) and setting it to "2" will make the message appear in the top center side of your screen, as opposed to the dead middle. Give it a try.
+		This setting controls where the [occasionally annoying] "You fragged x/1st place with n kills" message appears. "1" is the default setting and doesn't change anything. Setting it to "0" will completely disable the message (you can still read your own kills from the "chat log" in the upper left corner) and setting it to "2" will make the message appear in the top center side of your screen, as opposed to the dead middle. Give it a try.
 
 	* am_drawSpeed <0/1/2>
-		This client setting draws the infamous "player speed meter" (if not "0".) "1" draws it in the upper right corner, just below the FPS meter; "2" draws it in the middle of the screen, a bit below the crosshair.
+		This setting draws the infamous "player speed meter" (if not "0".) "1" draws it in the upper right corner, just below the FPS meter; "2" draws it in the middle of the screen, a bit below the crosshair.
 
 	* am_drawSpeedMethod <0/1/2>
 	* am_drawSpeedFrames <1-255>
 		See the section entitled "The Enhanced Speed Meter" below.
 		
 	* am_drawButtons <0/1>
-		This client setting controls whether an overlay indicating the buttons pressed by the current player (or spectator target) will be drawn.
+		This setting controls whether an overlay indicating the buttons pressed by the current player (or spectator target) will be drawn.
+	
+	* am_drawFootballTracer <0/1>
+		If set to 1, a line will be drawn from the current player's position towards the football. It will have the possessor's team color (or white.) This setting is currently disabled.
+		
+Client Commands:
+
+	* drop weapon
+		This command drops your current weapon and all its ammo, presumably for a teammate to pick up. You cannot pick up a weapon you have dropped for 5 seconds. am_droppableWeapons needs to be 1 in order for this command to work.
 
 
 The Enhanced Scoreboard:
@@ -97,7 +109,34 @@ Gametypes:
 
 Mapmaking:
 	The Football gametype introduces a few custom brushes (regions or triggers) and entities (points.)
-	TODO
+	
+	The first is a point entity called "football_ball". This is where the ball spawns at the beginning of a football game, after a goal is scored or the ball goes out. If this entity doesn't exist on a map, the white/neutral flag spawn point ("team_CTF_neutralflag") will be used.
+	
+	The red/blue goals are very customizable as they use region brushes. When the ball goes inside a region called "football_redgoal", it scores a goal for the blue team, and vice versa for "football_bluegoal". These regions will be playerclip (the players won't be able to go through them except in training mode), but otherwise immaterial. They can be any shape and size, and you can have multiples of these regions, so it is possible to create a goal (goal post) having any shape you desire. Note that you will have to create their surroundings as well, e.g. actual posts for the goal or back/top/left/right-side covers so that it's only possible to shoot from the front.
+	
+	If these regions don't exist, then aibsmod will search for the CTF red/blue flag entities and replace them with simple cuboid goals. These goals will have top, back, left and right covers and will face the direction where the original flag would be facing. (Which is not always the proper orientation, but luckily it is possible to rotate them with the am_redGoalRotation/am_blueGoalRotation admin variables.
+
+	If you're using GTKRadiant, you might want to add these lines to your entities.ent file, preferably just before the last "</classes>" line:
+
+	<!-- aibsmod stuff -->
+	<point name="football_ball" color=".8 .8 .8" box="-8 -8 -8 8 8 8" model="../aibsmod/models/football/ball.md3">
+	This is the football (spawn point) for aibsmod football.
+
+	If this entity doesn't exist on a map, the ball will spawn at the neutral flag post.
+	</point>
+
+	<group name="football_redgoal" color=".8 .1 .1">
+	This is used for aibsmod custom football goal posts. When the ball goes inside this region, it will score a goal for the opposing (blue) team.
+
+	If this region doesn't exist on a map, the CTF flag posts will be replaced by premade goal models, whose insides will consist of this region.
+	</group>
+
+	<group name="football_bluegoal" color=".1 .1 .8">
+	This is used for aibsmod custom football goal posts. When the ball goes inside this region, it will score a goal for the opposing (red) team.
+
+	If this region doesn't exist on a map, the CTF flag posts will be replaced by premade goal models, whose insides will consist of this region.
+	</group>
+	<!-- aibsmod stuff ends -->
 
 
 Notes:
@@ -111,5 +150,5 @@ Credits:
 	Orhan "aib" Kavrakoglu - http://aib.ftuff.com/ and aibok42 gmail.
 	Thanks to the guys at irc.freenode.net #sourgaming for helping me test the mod, and for their ideas.
 	Thanks to gelaek/skos for making dy3ram, the first map designed for Rambomatch play!
-	Thanks to cruelstroke and skos for their football maps, sounds and constant feedback.
+	Thanks to cruelstroke and skos for their football maps, help with sounds and their constant feedback.
 	Thanks to fuayfsilfm/vesc for keeping my TODO list :S and keeping me motivated.

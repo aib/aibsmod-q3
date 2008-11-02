@@ -88,7 +88,8 @@ void TossClientItems( gentity_t *self ) {
 	}
 
 	// drop all the powerups if not in teamplay
-	if ((g_gametype.integer != GT_TEAM) && (g_gametype.integer != GT_RAMBO_TEAM)) {
+	//or if teamplay drop is enabled - aibsmod
+	if ((am_dropTeamPowerups.integer) || ((g_gametype.integer != GT_TEAM) && (g_gametype.integer != GT_RAMBO_TEAM) && (g_gametype.integer != GT_FOOTBALL))) {
 		angle = 45;
 		for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
 			if ( self->client->ps.powerups[ i ] > level.time ) {

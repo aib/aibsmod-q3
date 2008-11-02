@@ -158,9 +158,12 @@ struct gentity_s {
 
 	gitem_t		*item;			// for bonus items
 
-	int			dieTime;		//for entities with limited lifespans
-	int			bounceCount;	//for EF_BOUNCE_LIMITED
-	float		laserDistance;	//tripmine fires when this changes
+	//aibsmod stuff
+	int			dieTime;				//for entities with limited lifespans
+	int			bounceCount;			//for EF_BOUNCE_LIMITED
+	float		laserDistance;			//tripmine fires when this changes
+
+	int			ignoreOwnerClearTime;	//time to clear EF_IGNORE_OWNER flag
 };
 
 
@@ -802,6 +805,9 @@ extern	vmCvar_t	am_rocketBounce;
 
 extern	vmCvar_t	am_selfDamage;
 extern	vmCvar_t	am_nonRamboKill;
+
+extern	vmCvar_t	am_dropTeamPowerups;
+extern	vmCvar_t	am_droppableWeapons;
 
 extern	vmCvar_t	am_redGoalRotation;
 extern	vmCvar_t	am_blueGoalRotation;

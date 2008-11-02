@@ -178,6 +178,7 @@ vmCvar_t	cg_obeliskRespawnDelay;
 #endif
 
 //aibsmod - client variables
+vmCvar_t	am_drawFootballTracer;
 vmCvar_t	am_showKillNotice;
 vmCvar_t	am_drawSpeed;
 vmCvar_t	am_drawSpeedMethod;
@@ -316,6 +317,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &am_airControl, "am_airControl", "1.0", CVAR_SERVERINFO },
 
 	//aibsmod client-side cvars
+	{ &am_drawFootballTracer, "am_drawFootballTracer", "0", CVAR_ARCHIVE },
 	{ &am_showKillNotice, "am_showKillNotice", "1", CVAR_ARCHIVE },
 	{ &am_drawSpeed, "am_drawSpeed", "0", CVAR_ARCHIVE },
 	{ &am_drawSpeedMethod, "am_drawSpeedMethod", "0", CVAR_ARCHIVE },
@@ -645,6 +647,7 @@ static void CG_RegisterSounds( void ) {
 
 	cgs.media.ballResetSound = trap_S_RegisterSound("sound/football/ballreset.wav", qtrue);
 	cgs.media.youHaveTheBallSound = trap_S_RegisterSound("sound/football/gotball.wav", qtrue);
+	cgs.media.youLostTheBallSound = trap_S_RegisterSound("sound/football/lostball.wav", qtrue);
 
 	cgs.media.yourTeamGoalSound = trap_S_RegisterSound("sound/football/goal_yourteam.wav", qtrue);
 	cgs.media.opponentGoalSound = trap_S_RegisterSound("sound/football/goal_opponent.wav", qtrue);

@@ -1174,7 +1174,7 @@ void ClientSpawn(gentity_t *ent) {
 		aibsmod_giveAllWeapons(client);
 	} else {
 		client->ps.stats[STAT_WEAPONS] = ( 1 << WP_MACHINEGUN );
-		if ((g_gametype.integer == GT_TEAM) || (g_gametype.integer == GT_RAMBO_TEAM)) {
+		if ((g_gametype.integer == GT_TEAM) || (g_gametype.integer == GT_RAMBO_TEAM) || (g_gametype.integer == GT_FOOTBALL)) {
 			client->ps.ammo[WP_MACHINEGUN] = 50;
 		} else {
 			client->ps.ammo[WP_MACHINEGUN] = 100;

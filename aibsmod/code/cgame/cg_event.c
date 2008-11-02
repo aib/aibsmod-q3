@@ -447,8 +447,11 @@ static void CG_ItemPickup( int itemNum ) {
 	if ( bg_itemlist[itemNum].giType == IT_WEAPON ) {
 		// select it immediately
 		if ( cg_autoswitch.integer && bg_itemlist[itemNum].giTag != WP_MACHINEGUN ) {
-			cg.weaponSelectTime = cg.time;
-			cg.weaponSelect = bg_itemlist[itemNum].giTag;
+			//aibsmod - if not the ball carrier
+			if (cg.carrierNum != cg.snap->ps.clientNum) {
+				cg.weaponSelectTime = cg.time;
+				cg.weaponSelect = bg_itemlist[itemNum].giTag;
+			}
 		}
 	}
 
@@ -514,7 +517,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	event = es->event & ~EV_EVENT_BITS;
 
 	if ( cg_debugEvents.integer ) {
-		CG_Printf( "ent:%3i  event:%3i ", es->number, event );
+		if (event != EV_CURRENT_BUTTONS) //aibsmod - no need to pollute with button events
+			CG_Printf( "ent:%3i  event:%3i ", es->number, event );
 	}
 
 	if ( !event ) {
@@ -1229,11 +1233,19 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		break;
 
 	case EV_CURRENT_BUTTONS:
-		DEBUGNAME("EV_CURRENT_BUTTONS");
+//		DEBUGNAME("EV_CURRENT_BUTTONS");
 		//draw buttons only if the event belongs to us or the current spectatee
 		if (cg.snap->ps.clientNum == es->otherEntityNum)
 			cg.buttonState = es->eventParm;
 		break;
+
+	case EV_DROP_WEAPON:
+		DEBUGNAME("EV_DROP_WEAPON");
+		if (es->number == cg.snap->ps.clientNum) {
+			CG_DropWeaponChange();
+		}
+		break;
+
 
 	case EV_FOOTBALL_GOAL:
 		DEBUGNAME("EV_FOOTBALL_GOAL");
@@ -1292,6 +1304,10 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 
 			case 1: //passed to red
 //				CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_RED "red team" S_COLOR_WHITE ") has the ball.\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+				if (cg.carrierNum == cg.snap->ps.clientNum) { //if stolen from us
+					CG_AddBufferedSound(cgs.media.youLostTheBallSound);
+				}
+
 				cg.carrierNum = es->otherEntityNum2;
 
 				//if us, switch to gauntlet and play warning sound
@@ -1303,6 +1319,10 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 
 			case 2: //passed to blue
 //				CG_Printf("%s" S_COLOR_WHITE " (" S_COLOR_BLUE "blue team" S_COLOR_WHITE ") has the ball.\n", Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"));
+				if (cg.carrierNum == cg.snap->ps.clientNum) { //if stolen from us
+					CG_AddBufferedSound(cgs.media.youLostTheBallSound);
+				}
+
 				cg.carrierNum = es->otherEntityNum2;
 
 				//if us, switch to gauntlet and play warning sound

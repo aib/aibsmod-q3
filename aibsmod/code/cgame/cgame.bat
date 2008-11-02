@@ -56,7 +56,8 @@ set cc=lcc -DQ3_VM -DCGAME -S -Wf-target=bytecode -Wf-g -I..\..\cgame -I..\..\ga
 %cc% ../cg_weapons.c
 @if errorlevel 1 goto quit
 
-
+%cc% ../cg_aibsmod.c
+@if errorlevel 1 goto quit
 
 
 q3asm -f ../cgame

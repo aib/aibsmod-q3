@@ -631,6 +631,7 @@ typedef struct {
 	float		zpos;				//client height, used in speed calculations
 	int			trackButtonsClient;	//the clientNum whose buttons we are tracking
 	int			buttonState;		//sent by the server so we can draw buttons pressed
+	vec3_t		footballPos;		//position of the football
 
 } cg_t;
 
@@ -980,6 +981,7 @@ typedef struct {
 
 	sfxHandle_t ballResetSound;
 	sfxHandle_t youHaveTheBallSound;
+	sfxHandle_t youLostTheBallSound;
 
 	sfxHandle_t yourTeamGoalSound;
 	sfxHandle_t opponentGoalSound;
@@ -1226,6 +1228,8 @@ extern	vmCvar_t		cg_obeliskRespawnDelay;
 #endif
 
 //aibsmod client side cvars, also see bg_public.h
+extern	vmCvar_t		am_drawFootballTracer;
+
 extern	vmCvar_t		am_showKillNotice;
 extern	vmCvar_t		am_drawSpeed;
 extern	vmCvar_t		am_drawSpeedMethod;
@@ -1388,13 +1392,6 @@ void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 							qhandle_t parentModel, char *tagName );
 void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 							qhandle_t parentModel, char *tagName );
-//aibsmod stuff
-void CG_Laser(const vec3_t start, const vec3_t end, const vec3_t color);
-void CG_Football(centity_t *cent);
-void CG_FootballGoalpost(centity_t *cent);
-void CG_Tripmine(centity_t *cent);
-void CG_BBox(centity_t *cent);
-
 
 //
 // cg_weapons.c
@@ -1515,6 +1512,22 @@ void CG_Respawn( void );
 void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops );
 void CG_CheckChangedPredictableEvents( playerState_t *ps );
 
+//cg_aibsmod.c - aibsmod stuff
+float getPlayerSpeed(void);
+float CG_DrawBigSpeed(float y);
+void CG_DrawSmallSpeed(void);
+void CG_DrawButtons(void);
+
+void CG_AibsmodEntities(void);
+
+void CG_Laser(const vec3_t start, const vec3_t end, const vec3_t color);
+void CG_Football(centity_t *cent);
+void CG_FootballGoalpost(centity_t *cent);
+void CG_Tripmine(centity_t *cent);
+void CG_BBox(centity_t *cent);
+void CG_DrawFootballTracer(void);
+
+void CG_DropWeaponChange(void);
 
 //===============================================
 

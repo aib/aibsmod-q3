@@ -228,7 +228,7 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 		}
 
 		// dropped items and teamplay weapons always have full ammo
-		if ( ! (ent->flags & FL_DROPPED_ITEM) && g_gametype.integer != GT_TEAM && g_gametype.integer != GT_RAMBO_TEAM) {
+		if ( ! (ent->flags & FL_DROPPED_ITEM) && (g_gametype.integer != GT_TEAM) && (g_gametype.integer != GT_RAMBO_TEAM) && (g_gametype.integer != GT_FOOTBALL)) {
 			// respawning rules
 			// drop the quantity if the already have over the minimum
 			if ( other->client->ps.ammo[ ent->item->giTag ] < quantity ) {
@@ -248,7 +248,7 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 		other->client->ps.ammo[ent->item->giTag] = -1; // unlimited ammo
 
 	// team deathmatch has slow weapon respawns
-	if ((g_gametype.integer == GT_TEAM) || (g_gametype.integer == GT_RAMBO_TEAM)) {
+	if ((g_gametype.integer == GT_TEAM) || (g_gametype.integer == GT_RAMBO_TEAM) || (g_gametype.integer == GT_FOOTBALL)) {
 		return g_weaponTeamRespawn.integer;
 	}
 

@@ -88,6 +88,9 @@ vmCvar_t	am_rocketBounce;
 vmCvar_t	am_selfDamage;
 vmCvar_t	am_nonRamboKill;
 
+vmCvar_t	am_dropTeamPowerups;
+vmCvar_t	am_droppableWeapons;
+
 vmCvar_t	am_redGoalRotation;
 vmCvar_t	am_blueGoalRotation;
 
@@ -188,6 +191,9 @@ static cvarTable_t		gameCvarTable[] = {
 
 	{ &am_selfDamage, "am_selfDamage", "1", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_nonRamboKill, "am_nonRamboKill", "2", CVAR_ARCHIVE, 0, qtrue },
+
+	{ &am_dropTeamPowerups, "am_dropTeamPowerups", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &am_droppableWeapons, "am_droppableWeapons", "0", CVAR_ARCHIVE, 0, qtrue },
 
 	{ &am_redGoalRotation, "am_redGoalRotation", "0.0", 0, 0, qtrue },
 	{ &am_blueGoalRotation, "am_blueGoalRotation", "0.0", 0, 0, qtrue },
@@ -1810,6 +1816,11 @@ int start, end;
 
 		if ( !ent->r.linked && ent->neverFree ) {
 			continue;
+		}
+
+		//aibsmod - clear EF_IGNORE_OWNER flag if time
+		if ((ent->s.eFlags & EF_IGNORE_OWNER) && ent->ignoreOwnerClearTime && (level.time >= ent->ignoreOwnerClearTime)) {
+			ent->s.eFlags &= ~EF_IGNORE_OWNER;
 		}
 
 		if ( ent->s.eType == ET_MISSILE ) {

@@ -1179,10 +1179,10 @@ void Tripmine_Arm(gentity_t *ent)
 	VectorMA(ent->s.origin, TRIPMINE_RANGE, ent->s.origin2, end);
 
 	VectorMA(ent->s.origin, -1, ent->s.origin2, nonSolidStart);
-	trap_Trace(&tr, nonSolidStart, NULL, NULL, end, ent->s.number, MASK_SHOT & ~CONTENTS_SOLID);
+	trap_Trace(&tr, nonSolidStart, NULL, NULL, end, ent->s.number, TRIPMINE_MASK & ~CONTENTS_SOLID);
 	nonSolidFraction = tr.fraction;
 
-	trap_Trace(&tr, ent->s.origin, NULL, NULL, end, ent->s.number, MASK_SHOT);
+	trap_Trace(&tr, ent->s.origin, NULL, NULL, end, ent->s.number, TRIPMINE_MASK);
 	ent->laserDistance = TRIPMINE_RANGE * MIN(tr.fraction,nonSolidFraction);
 
 	ent->s.modelindex = 1; //armed
@@ -1206,10 +1206,10 @@ void Tripmine_Think(gentity_t *ent)
 	VectorMA(ent->s.origin, TRIPMINE_RANGE, ent->s.origin2, end);
 
 	VectorMA(ent->s.origin, -1, ent->s.origin2, nonSolidStart);
-	trap_Trace(&tr, nonSolidStart, NULL, NULL, end, ent->s.number, MASK_SHOT & ~CONTENTS_SOLID);
+	trap_Trace(&tr, nonSolidStart, NULL, NULL, end, ent->s.number, TRIPMINE_MASK & ~CONTENTS_SOLID);
 	nonSolidFraction = tr.fraction;
 
-	trap_Trace(&tr, ent->s.origin, NULL, NULL, end, ent->s.number, MASK_SHOT);
+	trap_Trace(&tr, ent->s.origin, NULL, NULL, end, ent->s.number, TRIPMINE_MASK);
 	currentDistance = TRIPMINE_RANGE * MIN(tr.fraction,nonSolidFraction);
 
 	//explode if life expires or laser distance changes too much
@@ -1263,7 +1263,7 @@ qboolean CheckTripmineAttack(gentity_t *ent)
 
 	CalcMuzzlePoint(ent, forward, right, up, muzzle);
 
-	VectorMA(muzzle, 32, forward, end);
+	VectorMA(muzzle, TRIPMINE_PLACE_RANGE, forward, end);
 	trap_Trace(&tr, muzzle, NULL, NULL, end, ent->s.number, CONTENTS_SOLID);
 
 	if (tr.fraction == 1) //didn't hit a wall
@@ -1272,7 +1272,7 @@ qboolean CheckTripmineAttack(gentity_t *ent)
 	if (tr.surfaceFlags & SURF_NOIMPACT) //hit a noimpact wall
 		return qfalse;
 
-	VectorMA(muzzle, 32*tr.fraction, forward, minePos);
+	VectorMA(muzzle, TRIPMINE_PLACE_RANGE*tr.fraction, forward, minePos);
 	vectoangles(tr.plane.normal, mineAngles);
 
 	mine = G_Spawn();
@@ -1308,9 +1308,6 @@ qboolean CheckTripmineAttack(gentity_t *ent)
 
 	//Adjust bounding box
 	G_SetRotatedBoundingBox(mine, tripmine_mins, tripmine_maxs);
-//	mine->s.eType = ET_BBOX;
-//	VectorCopy(mine->r.mins, mine->s.origin2);
-//	VectorCopy(mine->r.maxs, mine->s.angles2);
 
 	trap_LinkEntity(mine);
 
