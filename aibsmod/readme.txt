@@ -29,6 +29,9 @@ Server Variables/Settings:
 	* am_selfDamage <0/1>
 		This setting controls whether players can damage themselves. If set to 0, players cannot damage themselves (neither health nor armorwise) but knockback still applies. Players can "callvote selfdamage 0/1" to change this setting.
 
+	* am_weaponsDisabled <0/1>
+		This setting controls whether players can use weapons other than the gauntlet. It is mainly useful in football and telefrag matches (see the "teleport" command below). Players can "callvote weaponsdisabled 0/1" to change this setting.
+
 	* am_piercingRail <0/1>
 		This setting controls whether railgun shots go through walls. Players can "callvote piercing 0/1" to change this setting.
 
@@ -39,16 +42,25 @@ Server Variables/Settings:
 		This setting controls whether rockets can bounce off of walls. 0 is the default and doesn't allow rockets to bounce off walls. Changing this setting to any number will allow rockets to bounce that many times. For example, if am_rocketBounce is 2, rockets will bounce off of the first two walls they encounter, and then explode on the third. If set to a negative number, rockets that have bounced off at least once will be able to hit their owners. Players can "callvote rocketbounce n" to change this setting.
 
 	* am_nonRamboKill <0/1/2>
-		This setting controls whether non-rambo players can be damaged by other non-rambo players. If it is "0", non-rambo players cannot be damaged by other non-rambo players. A value of "1" will allow such damage, but will not reward (or punish) such kills in [non-team] Rambomatch mode. A value of "2" will punish non-rambo killers by subtracting a point from their score in [non-team] Rambomatch mode. In Team Rambomatch mode, settings 1 and 2 do not differ and always reward opposing team non-rambo kills with +1 and punish team kills with -1. Players can "callvote nonrambokill 0/1/2" to change this setting.
+		This setting controls whether non-rambo players can be damaged by other non-rambo players. If it is "0", non-rambo players cannot be damaged by other non-rambo players. A value of "1" will allow such damage, but will not reward (nor punish) such kills in [non-team] Rambomatch mode. A value of "2" will punish non-rambo killers by subtracting a point from their score in [non-team] Rambomatch mode. In Team Rambomatch mode, settings 1 and 2 do not differ and always reward opposing team non-rambo kills with +1 and punish team kills with -1. Players can "callvote nonrambokill 0/1/2" to change this setting.
 
 	* am_redGoalRotation and am_blueGoalRotation
-		These settings rotate the red and blue goalposts respectively, if the map isn't using custom ones. They are necessary on maps where the red/blue flag orientation isn't correct, i.e. the goalposts that have replaced the flags in Football mode are facing the wrong way. They can also be used to make scoring a goal more difficult. Their values are in degrees clockwise from the original orientation. (e.g. "am_redGoalRotation 90" means "turn the red goalpost 90 degrees clockwise")
+		These settings rotate the red and blue goals respectively, if the map isn't using custom ones. They are necessary on maps where the red/blue flag orientation isn't correct, i.e. the goals that have replaced the flags in Football mode are facing the wrong way. They can also be used to make scoring a goal more difficult. Their values are in degrees clockwise from the original orientation. (e.g. "am_redGoalRotation 90" means "turn the red goal 90 degrees clockwise")
 		
 	* am_dropTeamPowerups <0/1>
 		This setting controls whether players drop their current powerups (e.g. quad) when they die in team games, as they do in FFA games.
 	
 	* am_droppableWeapons <0/1>
 		Controls whether the "drop weapon" client command is enabled.
+		
+	* am_teleportDelay <n>
+		Controls whether the "teleport" command (see the "Client Commands" section below) is enabled, and the delay between teleports. If it is a negative number, the command is disabled. Otherwise, it is the delay in milliseconds between successive uses of the "teleport" command. Players can "callvote teleportdelay n" to change this setting.
+		
+	* am_spawnHealth <n>
+		If set (greater than 0), players will start with this amount of health. This variable can be adjusted by maps; see the Mapmaking section below for details.
+		
+	* am_spawnNoMG <0/1>
+		If set, players don't start with a Machine Gun by default. This variable can be adjusted by maps; see the Mapmaking section below for details.
 
 
 Client Variables/Settings:
@@ -64,7 +76,7 @@ Client Variables/Settings:
 		See the section entitled "The Enhanced Speed Meter" below.
 		
 	* am_drawButtons <0/1>
-		This setting controls whether an overlay indicating the buttons pressed by the current player (or spectator target) will be drawn.
+		This setting controls whether an overlay indicating the buttons pressed by the current player (or spectatee) will be drawn.
 	
 	* am_drawFootballTracer <0/1>
 		If set to 1, a line will be drawn from the current player's position towards the football. It will have the possessor's team color (or white.) This setting is currently disabled.
@@ -73,6 +85,9 @@ Client Commands:
 
 	* drop weapon
 		This command drops your current weapon and all its ammo, presumably for a teammate to pick up. You cannot pick up a weapon you have dropped for 5 seconds. am_droppableWeapons needs to be 1 in order for this command to work.
+		
+	* teleport
+		This command teleports you immediately to the point your crosshair is on, with a maximum distance of 8192 game units. (Same as the railgun's range.) It will try to avoid teleporting you into walls, but may place you slightly off-target in doing so. It will telefrag other players. am_teleportDelay needs to be positive in order for this command to work, and it will only work once every am_teleportDelay milliseconds.
 
 
 The Enhanced Scoreboard:
@@ -104,39 +119,49 @@ Gametypes:
 		Same as above, team scores are the sum of the indiviuals' scores. Attacking a teammate rambo doesn't count, so if the rambo dies, rambo status goes to the last enemy to attack the rambo, or to the next person to spawn. Normal kills count as 1 point, rambo kills as 2 points, and a team that steals rambo from the other team gets 10 points, awarded to the person to become the new rambo.
 		
 	* Football (g_gametype 10):
-		The Quake version of football (or handball, or soccer, etc. --point being, there is a ball.) The players' aim is, of course, to shoot it through the opposing team's goalpost. If maps have custom goalposts (see the Mapmaking section below) and/or a custom football spawn point, they will be used. If not, the ball will spawn at the white flag's spawn point and red/blue flags will be replaced by premade goal posts.
+		The Quake version of football (or handball, or soccer, etc. --point being, there is a ball.) The players' aim is, of course, to shoot it through the opposing team's goal. If maps have custom goals (see the Mapmaking section below) and/or a custom football spawn point, they will be used. If not, the ball will spawn at the white flag's spawn point and red/blue flags will be replaced by premade goals.
 
 
 Mapmaking:
-	The Football gametype introduces a few custom brushes (regions or triggers) and entities (points.)
+	* Football maps:
+
+		The Football gametype introduces a few custom brushes (regions or triggers) and entities (points.)
+
+		The first is a point entity called "football_ball". This is where the ball spawns at the beginning of a football game, after a goal is scored or the ball goes out. If this entity doesn't exist on a map, the white/neutral flag spawn point ("team_CTF_neutralflag") will be used.
+
+		The red/blue goals are very customizable as they use region brushes. When the ball goes inside a region called "football_redgoal", it scores a goal for the blue team, and vice versa for "football_bluegoal". These regions will be playerclip (the players won't be able to go through them except in training mode), but otherwise immaterial. They can be any shape and size, and you can have multiples of these regions, so it is possible to create a goal (goal post) having any shape you desire. Note that you will have to create their surroundings as well, e.g. actual posts for the goal or back/top/left/right-side covers so that it's only possible to shoot from the front.
+
+		If these regions don't exist, then aibsmod will search for the CTF red/blue flag entities and replace them with simple cuboid goals. These goals will have top, back, left and right covers and will face the direction where the original flag would be facing. (Which is not always the proper orientation, but luckily it is possible to rotate them with the am_redGoalRotation/am_blueGoalRotation admin variables.
+
+		If you're using GTKRadiant, you might want to add these lines to your entities.ent file, preferably just before the last "</classes>" line:
+
+		<!-- aibsmod stuff -->
+		<point name="football_ball" color=".8 .8 .8" box="-8 -8 -8 8 8 8" model="../aibsmod/models/football/ball.md3">
+		This is the football (spawn point) for aibsmod football.
+
+		If this entity doesn't exist on a map, the ball will spawn at the neutral flag post.
+		</point>
+
+		<group name="football_redgoal" color=".8 .1 .1">
+		This is used for aibsmod custom football goal posts. When the ball goes inside this region, it will score a goal for the opposing (blue) team.
+
+		If this region doesn't exist on a map, the CTF flag posts will be replaced by premade goal models, whose insides will consist of this region.
+		</group>
+
+		<group name="football_bluegoal" color=".1 .1 .8">
+		This is used for aibsmod custom football goal posts. When the ball goes inside this region, it will score a goal for the opposing (red) team.
+
+		If this region doesn't exist on a map, the CTF flag posts will be replaced by premade goal models, whose insides will consist of this region.
+		</group>
+		<!-- aibsmod stuff ends -->
+
+	* General:
 	
-	The first is a point entity called "football_ball". This is where the ball spawns at the beginning of a football game, after a goal is scored or the ball goes out. If this entity doesn't exist on a map, the white/neutral flag spawn point ("team_CTF_neutralflag") will be used.
-	
-	The red/blue goals are very customizable as they use region brushes. When the ball goes inside a region called "football_redgoal", it scores a goal for the blue team, and vice versa for "football_bluegoal". These regions will be playerclip (the players won't be able to go through them except in training mode), but otherwise immaterial. They can be any shape and size, and you can have multiples of these regions, so it is possible to create a goal (goal post) having any shape you desire. Note that you will have to create their surroundings as well, e.g. actual posts for the goal or back/top/left/right-side covers so that it's only possible to shoot from the front.
-	
-	If these regions don't exist, then aibsmod will search for the CTF red/blue flag entities and replace them with simple cuboid goals. These goals will have top, back, left and right covers and will face the direction where the original flag would be facing. (Which is not always the proper orientation, but luckily it is possible to rotate them with the am_redGoalRotation/am_blueGoalRotation admin variables.
-
-	If you're using GTKRadiant, you might want to add these lines to your entities.ent file, preferably just before the last "</classes>" line:
-
-	<!-- aibsmod stuff -->
-	<point name="football_ball" color=".8 .8 .8" box="-8 -8 -8 8 8 8" model="../aibsmod/models/football/ball.md3">
-	This is the football (spawn point) for aibsmod football.
-
-	If this entity doesn't exist on a map, the ball will spawn at the neutral flag post.
-	</point>
-
-	<group name="football_redgoal" color=".8 .1 .1">
-	This is used for aibsmod custom football goal posts. When the ball goes inside this region, it will score a goal for the opposing (blue) team.
-
-	If this region doesn't exist on a map, the CTF flag posts will be replaced by premade goal models, whose insides will consist of this region.
-	</group>
-
-	<group name="football_bluegoal" color=".1 .1 .8">
-	This is used for aibsmod custom football goal posts. When the ball goes inside this region, it will score a goal for the opposing (red) team.
-
-	If this region doesn't exist on a map, the CTF flag posts will be replaced by premade goal models, whose insides will consist of this region.
-	</group>
-	<!-- aibsmod stuff ends -->
+		There are two worldspawn keys your maps can use:
+		
+		"spawn_health" directly adjusts the value of the am_spawnHealth server setting and allows you to set the amount of health the players start with.
+		
+		"spawn_nomg" directly adjusts the value of the am_spawnNoMG server setting and allows you to control whether players start with a Machine Gun.
 
 
 Notes:

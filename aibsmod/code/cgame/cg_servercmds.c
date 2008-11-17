@@ -144,7 +144,11 @@ void CG_ParseServerinfo( void ) {
 	//aibsmod stuff
 	trap_Cvar_Set("am_fastWeaponSwitch", Info_ValueForKey(info, "am_fastWeaponSwitch"));
 	trap_Cvar_Set("am_trainingMode", Info_ValueForKey(info, "am_trainingMode"));
+	trap_Cvar_Set("am_airControl", Info_ValueForKey(info, "am_airControl"));
+	trap_Cvar_Set("am_weaponsDisabled", Info_ValueForKey(info, "am_weaponsDisabled"));
 
+	if (am_weaponsDisabled.integer)
+		cg.weaponSelect = WP_GAUNTLET;
 }
 
 /*

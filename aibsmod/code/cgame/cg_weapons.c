@@ -1574,6 +1574,10 @@ void CG_NextWeapon_f( void ) {
 	//aibsmod - ball carriers cannot change weapons
 	if (cgs.gametype == GT_FOOTBALL && cg.snap->ps.powerups[PW_CARRIER])
 		cg.weaponSelect = original;
+
+	//aibsmod - cannot change weapons if they're disabled
+	if (am_weaponsDisabled.integer)
+		cg.weaponSelect = WP_GAUNTLET;
 }
 
 /*
@@ -1614,6 +1618,10 @@ void CG_PrevWeapon_f( void ) {
 	//aibsmod - ball carriers cannot change weapons
 	if (cgs.gametype == GT_FOOTBALL && cg.snap->ps.powerups[PW_CARRIER])
 		cg.weaponSelect = original;
+
+	//aibsmod - cannot change weapons if they're disabled
+	if (am_weaponsDisabled.integer)
+		cg.weaponSelect = WP_GAUNTLET;
 }
 
 /*
@@ -1641,6 +1649,10 @@ void CG_Weapon_f( void ) {
 
 	//aibsmod - ball carriers cannot change weapons
 	if (cgs.gametype == GT_FOOTBALL && cg.snap->ps.powerups[PW_CARRIER])
+		return;
+
+	//aibsmod - cannot change weapons if they're disabled
+	if (am_weaponsDisabled.integer)
 		return;
 
 	if ( ! ( cg.snap->ps.stats[STAT_WEAPONS] & ( 1 << num ) ) ) {

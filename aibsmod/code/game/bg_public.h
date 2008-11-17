@@ -140,7 +140,7 @@ typedef enum {
 #define PMF_SCOREBOARD		8192	// spectate as a scoreboard
 #define PMF_INVULEXPAND		16384	// invulnerability sphere set to full size
 
-#define PMF_GOTFOOTBALL		0x00008000	//just got football, disable attack until next time (like PMF_RESPAWNED)
+#define PMF_GOTFOOTBALL		0x00008000	//just got football, disable attack until next time (like PMF_RESPAWNED but doesn't affect jumps)
 
 #define	PMF_ALL_TIMES	(PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
 
@@ -189,6 +189,7 @@ void Pmove (pmove_t *pmove);
 extern	vmCvar_t	am_fastWeaponSwitch;
 extern	vmCvar_t	am_trainingMode;
 extern	vmCvar_t	am_airControl;
+extern	vmCvar_t	am_weaponsDisabled;
 
 
 // player_state->stats[] indexes

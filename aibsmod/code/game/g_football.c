@@ -35,7 +35,7 @@ void football_create(vec3_t origin)
 	ball->clipmask = CONTENTS_SOLID|CONTENTS_BODY;
 
 	//hurtable ball
-//	ball->r.contents = CONTENTS_BODY;
+//	ball->r.contents = CONTENTS_CORPSE;
 //	ball->takedamage = qtrue;
 
 	VectorSet(ball->r.mins, -BALL_RADIUS, -BALL_RADIUS, -BALL_RADIUS);
@@ -434,6 +434,7 @@ void G_RunFootball(gentity_t *ball)
 			(level.ballPasser ? level.ballPasser->client->pers.netname : "N/A")
 		);
 */
+	trap_UnlinkEntity(ball);
 
 	if (level.goalTime && ((level.time - level.goalTime) >= BALL_GOAL_RESET_TIME))
 		football_reset(ball);
@@ -487,6 +488,7 @@ void G_RunFootball(gentity_t *ball)
 					ball->s.apos.trBase[PITCH] -= 360.0f;
 			}
 
+			trap_LinkEntity(ball);
 			return;
 		}
 	}
@@ -532,6 +534,7 @@ void G_RunFootball(gentity_t *ball)
 
 		if (tr.surfaceFlags & SURF_NOIMPACT) {
 			football_reset(ball);
+			trap_LinkEntity(ball);
 			return;
 		}
 
@@ -565,6 +568,8 @@ void G_RunFootball(gentity_t *ball)
 		if (ball->s.apos.trBase[PITCH] > 360.0f)
 			ball->s.apos.trBase[PITCH] -= 360.0f;
 	}
+
+	trap_LinkEntity(ball);
 }
 
 void G_BounceFootball(gentity_t *ball, trace_t *trace)

@@ -1603,6 +1603,7 @@ void Cmd_Stats_f( gentity_t *ent ) {
 */
 }
 
+//aibsmod commands follow
 void Cmd_Drop_f(gentity_t *ent)
 {
 	char		dropTarget[16];
@@ -1619,18 +1620,18 @@ void Cmd_Drop_f(gentity_t *ent)
 
 	if (Q_stricmp(dropTarget, "weapon") == 0) {
 		if (!am_droppableWeapons.integer) {
-			trap_SendServerCommand(ent-g_entities, va("print \"weapon dropping is not allowed\n\""));
+			trap_SendServerCommand(ent-g_entities, va("print \"Weapon dropping is not allowed.\n\""));
 			return;
 		}
 
 		weapon = ent->s.weapon;
 
 		if ((weapon <= WP_MACHINEGUN) || (weapon == WP_GRAPPLING_HOOK) || (ent->client->ps.ammo[weapon] < 0)) {
-			trap_SendServerCommand(ent-g_entities, va("print \"cannot drop this weapon\n\""));
+			trap_SendServerCommand(ent-g_entities, va("print \"Cannot drop this weapon.\n\""));
 			return;
 		} else {
 			if (ent->client->ps.ammo[weapon] == 0) {
-				trap_SendServerCommand(ent-g_entities, va("print \"not enough ammo to drop weapon\n\""));
+				trap_SendServerCommand(ent-g_entities, va("print \"Not enough ammo to drop weapon.\n\""));
 				return;
 			} else {
 				//find the item type for this weapon
@@ -1653,9 +1654,32 @@ void Cmd_Drop_f(gentity_t *ent)
 			}
 		}
 	} else {
-		trap_SendServerCommand(ent-g_entities, va("print \"usage: drop weapon\n\""));
+		trap_SendServerCommand(ent-g_entities, va("print \"Usage: drop weapon\n\""));
 		return;
 	}
+}
+
+void Cmd_Teleport_f(gentity_t *ent)
+{
+	if (!ent->client)
+		return;
+
+	if (am_teleportDelay.integer < 0) {
+		trap_SendServerCommand(ent-g_entities, va("print \"teleporting is currently disabled.\n\""));
+		return;
+	}
+
+	if (ent->client->teleportTime > level.time)
+		return;
+
+	if ((ent->client->sess.sessionTeam == TEAM_SPECTATOR) || (ent->health <= 0)) {
+		trap_SendServerCommand(ent-g_entities, va("print \"You must be alive to use this command.\n\""));
+		return;
+	}
+
+	teleport_player_straight(ent);
+
+	ent->client->teleportTime = level.time + am_teleportDelay.integer;
 }
 
 /*
@@ -1768,6 +1792,8 @@ void ClientCommand( int clientNum ) {
 	//aibsmod stuff
 	else if (Q_stricmp(cmd, "drop") == 0)
 		Cmd_Drop_f(ent);
+	else if (Q_stricmp(cmd, "teleport") == 0)
+		Cmd_Teleport_f(ent);
 
 	else
 		trap_SendServerCommand( clientNum, va("print \"unknown cmd %s\n\"", cmd ) );

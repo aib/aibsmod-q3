@@ -1173,20 +1173,31 @@ void ClientSpawn(gentity_t *ent) {
 	if (am_trainingMode.integer == 1) {
 		aibsmod_giveAllWeapons(client);
 	} else {
-		client->ps.stats[STAT_WEAPONS] = ( 1 << WP_MACHINEGUN );
-		if ((g_gametype.integer == GT_TEAM) || (g_gametype.integer == GT_RAMBO_TEAM) || (g_gametype.integer == GT_FOOTBALL)) {
-			client->ps.ammo[WP_MACHINEGUN] = 50;
-		} else {
-			client->ps.ammo[WP_MACHINEGUN] = 100;
-		}
+		if (am_spawnNoMG.integer) {
+			client->ps.stats[STAT_WEAPONS] = (1 << WP_GAUNTLET);
 
-		client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_GAUNTLET );
-		client->ps.ammo[WP_GAUNTLET] = -1;
-		client->ps.ammo[WP_GRAPPLING_HOOK] = -1;
+			client->ps.ammo[WP_GAUNTLET] = -1;
+			client->ps.ammo[WP_GRAPPLING_HOOK] = -1;
+		} else {
+			client->ps.stats[STAT_WEAPONS] = ( 1 << WP_MACHINEGUN );
+			if ((g_gametype.integer == GT_TEAM) || (g_gametype.integer == GT_RAMBO_TEAM) || (g_gametype.integer == GT_FOOTBALL)) {
+				client->ps.ammo[WP_MACHINEGUN] = 50;
+			} else {
+				client->ps.ammo[WP_MACHINEGUN] = 100;
+			}
+
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_GAUNTLET );
+			client->ps.ammo[WP_GAUNTLET] = -1;
+			client->ps.ammo[WP_GRAPPLING_HOOK] = -1;
+		}
 	}
 
 	// health will count down towards max_health
-	ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] + 25;
+	//aibsmod - not if am_spawnHealth is set
+	if (am_spawnHealth.integer > 0)
+		ent->health = client->ps.stats[STAT_HEALTH] = am_spawnHealth.integer;
+	else
+		ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] + 25;
 
 	G_SetOrigin( ent, spawn_origin );
 	VectorCopy( spawn_origin, client->ps.origin );
@@ -1204,7 +1215,7 @@ void ClientSpawn(gentity_t *ent) {
 		trap_LinkEntity (ent);
 
 		// force the base weapon up
-		client->ps.weapon = WP_MACHINEGUN;
+		client->ps.weapon = WP_GAUNTLET;
 		client->ps.weaponstate = WEAPON_READY;
 
 	}
@@ -1245,6 +1256,9 @@ void ClientSpawn(gentity_t *ent) {
 
 	//Set last damager to NULL
 	client->lastAttacker = NULL;
+
+	//Clear teleport delay
+	client->teleportTime = level.time;
 
 	// run a client frame to drop exactly to the floor,
 	// initialize animations and other things

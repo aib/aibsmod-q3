@@ -317,6 +317,7 @@ struct gclient_s {
 
 	//aibsmod-specific stuff
 	gentity_t	*lastAttacker;		//last enemy attacker as calculated by aibsmod
+	int			teleportTime;		//next allowed time to teleport
 
 	char		*areabits;
 };
@@ -802,7 +803,12 @@ extern	vmCvar_t	g_proxMineTimeout;
 extern	vmCvar_t	am_piercingRail;
 extern	vmCvar_t	am_hyperGauntlet;
 extern	vmCvar_t	am_rocketBounce;
+extern	vmCvar_t	am_teleportDelay;
 
+extern	vmCvar_t	am_spawnHealth;
+extern	vmCvar_t	am_spawnNoMG;
+
+extern	vmCvar_t	am_weaponsDisabled;
 extern	vmCvar_t	am_selfDamage;
 extern	vmCvar_t	am_nonRamboKill;
 
@@ -1017,6 +1023,9 @@ int		trap_GeneticParentsAndChildSelection(int numranks, float *ranks, int *paren
 void	trap_SnapVector( float *v );
 
 //aibsmod stuff
+
+//g_aibsmod.c
+void teleport_player_straight(gentity_t *player);
 
 //g_football.c
 void football_create(vec3_t origin);

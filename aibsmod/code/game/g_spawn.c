@@ -622,6 +622,13 @@ void SP_worldspawn( void ) {
 	G_SpawnString( "enableBreath", "0", &s );
 	trap_Cvar_Set( "g_enableBreath", s );
 
+	//aibsmod extensions
+	G_SpawnString("spawn_health", "0", &s);
+	trap_Cvar_Set("am_spawnHealth", s);
+
+	G_SpawnString("spawn_nomg", "0", &s);
+	trap_Cvar_Set("am_spawnNoMG", s);
+
 	g_entities[ENTITYNUM_WORLD].s.number = ENTITYNUM_WORLD;
 	g_entities[ENTITYNUM_WORLD].classname = "worldspawn";
 

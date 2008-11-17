@@ -7,10 +7,10 @@
 #ifndef __AIBSMOD_H__
 #define __AIBSMOD_H__
 
-#define GAMEVERSION		"aibsmod_test8"
+#define GAMEVERSION		"aibsmod_test82"
 #define	GAME_VERSION	"aibsmod-1"
 
-#define VERSION_STRING	"aibsmod v0.80"
+#define VERSION_STRING	"aibsmod v0.82"
 
 //Couldn't find a suitable place for these, didn't want to modify q_shared.h
 #define MIN(x,y) ((x < y) ? (x) : (y))
@@ -19,6 +19,19 @@
 //The constants below are used by game mechanics
 
 #define WEAPON_REPICK_TIME		5000
+
+//g_aibsmod.c
+#define MASK_TELEPORT				(CONTENTS_SOLID | CONTENTS_PLAYERCLIP)
+#define MAX_TELEPORT_DISTANCE		8192.0f
+
+//how many unit vectors to move back if teleport would put us in a solid
+#define TELEPORT_BACKTRACE_FRACTION	8.0f
+
+//how many times to initially backtrace using the normal of the solid we hit
+#define TELEPORT_ANTINORMAL_COUNT	5
+
+//how many times to backtrace using the inverse forward vector
+#define TELEPORT_BACKTRACE_COUNT	100
 
 //g_football.c
 #define BALL_RADIUS				8.0f

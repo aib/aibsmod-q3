@@ -79,11 +79,16 @@ vmCvar_t	g_proxMineTimeout;
 vmCvar_t	am_fastWeaponSwitch;
 vmCvar_t	am_trainingMode;
 vmCvar_t	am_airControl;
+vmCvar_t	am_weaponsDisabled;
 
 //server-side cvars
+vmCvar_t	am_spawnHealth;
+vmCvar_t	am_spawnNoMG;
+
 vmCvar_t	am_piercingRail;
 vmCvar_t	am_hyperGauntlet;
 vmCvar_t	am_rocketBounce;
+vmCvar_t	am_teleportDelay;
 
 vmCvar_t	am_selfDamage;
 vmCvar_t	am_nonRamboKill;
@@ -183,11 +188,16 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &am_fastWeaponSwitch, "am_fastWeaponSwitch", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
 	{ &am_trainingMode, "am_trainingMode", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
 	{ &am_airControl, "am_airControl", "1.0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
+	{ &am_weaponsDisabled, "am_weaponsDisabled", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
 
 	//aibsmod server-side cvars
+	{ &am_spawnHealth, "am_spawnHealth", "0", 0, 0, qtrue },
+	{ &am_spawnNoMG, "am_spawnNoMG", "0", 0, 0, qtrue },
+
 	{ &am_piercingRail, "am_piercingRail", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_hyperGauntlet, "am_hyperGauntlet", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_rocketBounce, "am_rocketBounce", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &am_teleportDelay, "am_teleportDelay", "-1", CVAR_ARCHIVE, 0, qtrue },
 
 	{ &am_selfDamage, "am_selfDamage", "1", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_nonRamboKill, "am_nonRamboKill", "2", CVAR_ARCHIVE, 0, qtrue },
@@ -523,6 +533,8 @@ VectorSet(level.footballSpawnPoint, 0, 0, 100);
 		if (level.goalSpawnPointsFound == 2) { //found CTF flag posts we should convert to goal posts
 			goalpost_create(level.redGoalSpawnPoint, TEAM_RED);
 			goalpost_create(level.blueGoalSpawnPoint, TEAM_BLUE);
+			trap_Cvar_Set("am_redGoalRotation", "0.0");
+			trap_Cvar_Set("am_blueGoalRotation", "0.0");
 		}
 	} else {
 		level.football = NULL;
@@ -1831,7 +1843,6 @@ int start, end;
 		//aibsmod - use G_RunFootball for ET_FOOTBALL
 		if (ent->s.eType == ET_FOOTBALL) {
 			G_RunFootball(ent);
-			trap_LinkEntity(ent);
 			continue;
 		}
 

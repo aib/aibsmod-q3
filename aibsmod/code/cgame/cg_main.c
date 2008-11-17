@@ -190,6 +190,7 @@ vmCvar_t	amh_depth;
 vmCvar_t	am_fastWeaponSwitch;
 vmCvar_t	am_trainingMode;
 vmCvar_t	am_airControl;
+vmCvar_t	am_weaponsDisabled;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -315,6 +316,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &am_fastWeaponSwitch, "am_fastWeaponSwitch", "0", CVAR_SERVERINFO },
 	{ &am_trainingMode, "am_trainingMode", "0", CVAR_SERVERINFO },
 	{ &am_airControl, "am_airControl", "1.0", CVAR_SERVERINFO },
+	{ &am_weaponsDisabled, "am_weaponsDisabled", "0", CVAR_SERVERINFO },
 
 	//aibsmod client-side cvars
 	{ &am_drawFootballTracer, "am_drawFootballTracer", "0", CVAR_ARCHIVE },
