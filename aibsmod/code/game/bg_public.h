@@ -80,6 +80,7 @@ typedef enum {
 	GT_FFA,				// free for all
 	GT_TOURNAMENT,		// one on one tournament
 	GT_SINGLE_PLAYER,	// single player ffa
+	GT_ROCKETARENA,
 	GT_RAMBO,
 
 	//-- team games go after this --
@@ -94,6 +95,8 @@ typedef enum {
 	GT_MAX_GAME_TYPE,
 
 } gametype_t;
+
+extern const char *gameNames[GT_MAX_GAME_TYPE]; //see bg_misc.c
 
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
@@ -189,7 +192,7 @@ void Pmove (pmove_t *pmove);
 extern	vmCvar_t	am_fastWeaponSwitch;
 extern	vmCvar_t	am_trainingMode;
 extern	vmCvar_t	am_airControl;
-extern	vmCvar_t	am_weaponsDisabled;
+extern	vmCvar_t	am_disableWeapons;
 
 
 // player_state->stats[] indexes

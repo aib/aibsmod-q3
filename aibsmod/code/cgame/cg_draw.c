@@ -2385,30 +2385,12 @@ static void CG_DrawWarmup( void ) {
 #endif
 		}
 	} else {
-		if ( cgs.gametype == GT_FFA ) {
-			s = "Free For All";
-		} else if ( cgs.gametype == GT_TEAM ) {
-			s = "Team Deathmatch";
-		} else if ( cgs.gametype == GT_CTF ) {
-			s = "Capture the Flag";
-#ifdef MISSIONPACK
-		} else if ( cgs.gametype == GT_1FCTF ) {
-			s = "One Flag CTF";
-		} else if ( cgs.gametype == GT_OBELISK ) {
-			s = "Overload";
-		} else if ( cgs.gametype == GT_HARVESTER ) {
-			s = "Harvester";
-#endif
-		//aibsmod - add our gametypes here
-		} else if (cgs.gametype == GT_RAMBO) {
-			s = "Rambomatch";
-		} else if (cgs.gametype == GT_RAMBO_TEAM) {
-			s = "Team Rambomatch";
-		} else if (cgs.gametype == GT_FOOTBALL) {
-			s = "Football";
-		} else {
+		//aibsmod - fixed this
+		if ((cgs.gametype >= GT_FFA) && (cgs.gametype < GT_MAX_GAME_TYPE))
+			s = gameNames[cgs.gametype];
+		else
 			s = "";
-		}
+
 #ifdef MISSIONPACK
 		w = CG_Text_Width(s, 0.6f, 0);
 		CG_Text_Paint(320 - w / 2, 90, 0.6f, colorWhite, s, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE);

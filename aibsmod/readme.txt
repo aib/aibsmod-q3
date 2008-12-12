@@ -4,7 +4,7 @@ v0.80 Notes:
 	#sourgaming:
 	Selamlar. Moda bu versiyonda futbol modu basta olmak uzere birkac yenilik ekledim! Yeni komutlari filan burada bulabilirsiniz. Cruel ve gelaek'in maplerini test ediniz. --aib
 	
-Installing:
+Installation:
 
 	Extract the archive file (probably the one you found this file in) to your Quake 3 directory. The archive contains a directory itself, so you should have:
 
@@ -29,8 +29,8 @@ Server Variables/Settings:
 	* am_selfDamage <0/1>
 		This setting controls whether players can damage themselves. If set to 0, players cannot damage themselves (neither health nor armorwise) but knockback still applies. Players can "callvote selfdamage 0/1" to change this setting.
 
-	* am_weaponsDisabled <0/1>
-		This setting controls whether players can use weapons other than the gauntlet. It is mainly useful in football and telefrag matches (see the "teleport" command below). Players can "callvote weaponsdisabled 0/1" to change this setting.
+	* am_disableWeapons <0/1>
+		This setting controls whether players can use weapons other than the gauntlet. It is mainly useful in football and telefrag matches (see the "teleport" command below). Players can "callvote disableweapons 0/1" to change this setting.
 
 	* am_piercingRail <0/1>
 		This setting controls whether railgun shots go through walls. Players can "callvote piercing 0/1" to change this setting.
@@ -80,7 +80,11 @@ Client Variables/Settings:
 	
 	* am_drawFootballTracer <0/1>
 		If set to 1, a line will be drawn from the current player's position towards the football. It will have the possessor's team color (or white.) This setting is currently disabled.
-		
+	
+	* am_hitFeedback <0/1/2>
+		Changes the feedback sound you hear when you damage a player. 0 is the default value that uses the original Quake 3 Arena behavior - all hits make the same sound. (Unfortunately, the Team Arena sound effects that notify you of the target's armor level, is incompatible with aibsmod.) 1 employs CPMA-style sound effects with different levels at 1-25, 26-50, 51-75 and 76+ damage. 2 behaves like Threewave with different sounds at at 1-19, 20-49, 50-99 and 100+ damage.
+
+
 Client Commands:
 
 	* drop weapon
@@ -112,13 +116,16 @@ The Enhanced Speed Meter:
 
 Gametypes:
 
-	* Rambomatch (g_gametype 3):
+	* Rocket Arena (g_gametype 3):
+		TODO
+
+	* Rambomatch (g_gametype 4):
 		One person is deemed the "rambo". Only killing the rambo and kills made by the rambo count as a point. If the rambo is killed or otherwise dies, the last person to attack them becomes rambo. If there is no such person, the next person to spawn becomes rambo. Suicides give you -1 point.
 
-	* Team Rambomatch (g_gametype 5):
+	* Team Rambomatch (g_gametype 6):
 		Same as above, team scores are the sum of the indiviuals' scores. Attacking a teammate rambo doesn't count, so if the rambo dies, rambo status goes to the last enemy to attack the rambo, or to the next person to spawn. Normal kills count as 1 point, rambo kills as 2 points, and a team that steals rambo from the other team gets 10 points, awarded to the person to become the new rambo.
 		
-	* Football (g_gametype 10):
+	* Football (g_gametype 11):
 		The Quake version of football (or handball, or soccer, etc. --point being, there is a ball.) The players' aim is, of course, to shoot it through the opposing team's goal. If maps have custom goals (see the Mapmaking section below) and/or a custom football spawn point, they will be used. If not, the ball will spawn at the white flag's spawn point and red/blue flags will be replaced by premade goals.
 
 
@@ -171,9 +178,23 @@ Notes:
 
 Credits:
 
-	TODO
 	Orhan "aib" Kavrakoglu - http://aib.ftuff.com/ and aibok42 gmail.
+		Code; Concepts; Design; Models; Sounds; Bad-looking graphics
+	
+	gelaek/skos
+		Concepts; Maps: dy?, dy?, dy3ram, football, football2; Testing; Sounds
+		
+	cruelstroke
+		Graphics: tripmine; Maps: football
+		
+	fuayfsilfm/vesc
+		Concepts; Early motivation
+		
 	Thanks to the guys at irc.freenode.net #sourgaming for helping me test the mod, and for their ideas.
+	
+	Special thanks to zfs
+	
+	//
 	Thanks to gelaek/skos for making dy3ram, the first map designed for Rambomatch play!
 	Thanks to cruelstroke and skos for their football maps, help with sounds and their constant feedback.
 	Thanks to fuayfsilfm/vesc for keeping my TODO list :S and keeping me motivated.

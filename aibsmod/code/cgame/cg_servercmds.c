@@ -145,9 +145,9 @@ void CG_ParseServerinfo( void ) {
 	trap_Cvar_Set("am_fastWeaponSwitch", Info_ValueForKey(info, "am_fastWeaponSwitch"));
 	trap_Cvar_Set("am_trainingMode", Info_ValueForKey(info, "am_trainingMode"));
 	trap_Cvar_Set("am_airControl", Info_ValueForKey(info, "am_airControl"));
-	trap_Cvar_Set("am_weaponsDisabled", Info_ValueForKey(info, "am_weaponsDisabled"));
+	trap_Cvar_Set("am_disableWeapons", Info_ValueForKey(info, "am_disableWeapons"));
 
-	if (am_weaponsDisabled.integer)
+	if (am_disableWeapons.integer)
 		cg.weaponSelect = WP_GAUNTLET;
 }
 

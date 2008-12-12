@@ -79,7 +79,7 @@ vmCvar_t	g_proxMineTimeout;
 vmCvar_t	am_fastWeaponSwitch;
 vmCvar_t	am_trainingMode;
 vmCvar_t	am_airControl;
-vmCvar_t	am_weaponsDisabled;
+vmCvar_t	am_disableWeapons;
 
 //server-side cvars
 vmCvar_t	am_spawnHealth;
@@ -91,6 +91,7 @@ vmCvar_t	am_rocketBounce;
 vmCvar_t	am_teleportDelay;
 
 vmCvar_t	am_selfDamage;
+vmCvar_t	am_fallDamage;
 vmCvar_t	am_nonRamboKill;
 
 vmCvar_t	am_dropTeamPowerups;
@@ -188,7 +189,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &am_fastWeaponSwitch, "am_fastWeaponSwitch", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
 	{ &am_trainingMode, "am_trainingMode", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
 	{ &am_airControl, "am_airControl", "1.0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
-	{ &am_weaponsDisabled, "am_weaponsDisabled", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
+	{ &am_disableWeapons, "am_disableWeapons", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
 
 	//aibsmod server-side cvars
 	{ &am_spawnHealth, "am_spawnHealth", "0", 0, 0, qtrue },
@@ -200,6 +201,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &am_teleportDelay, "am_teleportDelay", "-1", CVAR_ARCHIVE, 0, qtrue },
 
 	{ &am_selfDamage, "am_selfDamage", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &am_fallDamage, "am_fallDamage", "1", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_nonRamboKill, "am_nonRamboKill", "2", CVAR_ARCHIVE, 0, qtrue },
 
 	{ &am_dropTeamPowerups, "am_dropTeamPowerups", "0", CVAR_ARCHIVE, 0, qtrue },
@@ -425,7 +427,7 @@ void G_UpdateCvars( void ) {
 						if (level.clients[j].pers.connected != CON_CONNECTED)
 							continue;
 
-						aibsmod_giveAllWeapons(level.clients + j);
+						give_all_weapons(level.clients + j);
 					}
 				}
 

@@ -277,6 +277,11 @@ qboolean G_CallSpawn( gentity_t *ent ) {
 	// check item spawn functions
 	for ( item=bg_itemlist+1 ; item->classname ; item++ ) {
 		if ( !strcmp(item->classname, ent->classname) ) {
+
+			//aibsmod - check gametype before spawning items
+			if (g_gametype.integer == GT_ROCKETARENA)
+				return qfalse;
+
 			G_SpawnItem( ent, item );
 			return qtrue;
 		}
@@ -397,7 +402,7 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 	int			i;
 	gentity_t	*ent;
 	char		*s, *value, *gametypeName;
-	static char *gametypeNames[] = {"ffa", "tournament", "single", "rambo", "team", "teamrambo", "ctf", "oneflag", "obelisk", "harvester", "football", "teamtournament" };
+	static char *gametypeNames[] = {"ffa", "tournament", "single", "rocketarena", "rambo", "team", "teamrambo", "ctf", "oneflag", "obelisk", "harvester", "football", "teamtournament" };
 
 	// get the next free entity
 	ent = G_Spawn();

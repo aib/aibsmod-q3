@@ -689,7 +689,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	}
 
 	if (level.rambo == self) { //aibsmod - Rambo died
-		aibsmod_switchRambo(self, self->client->lastAttacker);
+		switch_rambo(self, self->client->lastAttacker);
 	}
 
 	if (level.ballCarrier == self) { //aibsmod - ball carrier died
@@ -971,7 +971,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 #ifdef MISSIONPACK
 		if ( mod != MOD_JUICED && targ != attacker && !(dflags & DAMAGE_NO_TEAM_PROTECTION) && OnSameTeam (targ, attacker)  ) {
 #else
-		if ( targ != attacker && OnSameTeam (targ, attacker)  ) {
+		//aibsmod - tripmine does friendly damage
+		if ( mod != MOD_TRIPMINE_SPLASH && targ != attacker && OnSameTeam (targ, attacker)  ) {
+//		if ( targ != attacker && OnSameTeam (targ, attacker)  ) {
 #endif
 			if ( !g_friendlyFire.integer ) {
 				return;
@@ -1013,7 +1015,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		} else {
 			attacker->client->ps.persistant[PERS_HITS]++;
 		}
-		attacker->client->ps.persistant[PERS_ATTACKEE_ARMOR] = (targ->health<<8)|(client->ps.stats[STAT_ARMOR]);
+		attacker->client->ps.persistant[PERS_ATTACKEE_ARMOR] = damage;
+//		attacker->client->ps.persistant[PERS_ATTACKEE_ARMOR] = (targ->health<<8)|(client->ps.stats[STAT_ARMOR]);
 	}
 
 	// always give half damage if hurting self
@@ -1038,7 +1041,26 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		damage = 0;
 	}
 
-	//aibsmod - in training mode, don't allow any protectable damage except telefrag damage
+	//aibsmod - am_fallDamage 0 doesn't allow fall damage
+	if ((am_fallDamage.integer == 0) && (mod == MOD_FALLING)) {
+		damage = 0;
+	}
+
+	//aibsmod - only allow direct rocket and grenade hits in Rocket Arena
+	if (g_gametype.integer == GT_ROCKETARENA) {
+		if (!(dflags & DAMAGE_NO_PROTECTION)) {
+			if ((mod == MOD_ROCKET) || (mod == MOD_GRENADE)) {
+				if (targ && targ->client && attacker && attacker->client && targ->health > 0) {
+					ra_register_hit(attacker, inflictor, targ);
+					attacker->client->ps.persistant[PERS_ATTACKEE_ARMOR] = 100;
+				}
+			}
+
+			damage = 0;
+		}
+	}
+
+	//aibsmod - in training mode, don't allow any protectable damage or telefragging
 	if (am_trainingMode.integer && ((mod == MOD_TELEFRAG) || !(dflags & DAMAGE_NO_PROTECTION)))
 		damage = 0;
 

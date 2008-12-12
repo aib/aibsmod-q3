@@ -18,7 +18,8 @@
 
 //The constants below are used by game mechanics
 
-#define WEAPON_REPICK_TIME		5000
+#define WEAPON_REPICK_TIME				5000
+#define TRAININGMODE_TELEPORT_DELAY		200
 
 //g_aibsmod.c
 #define MASK_TELEPORT				(CONTENTS_SOLID | CONTENTS_PLAYERCLIP)

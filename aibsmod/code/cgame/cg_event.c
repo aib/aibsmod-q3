@@ -448,7 +448,7 @@ static void CG_ItemPickup( int itemNum ) {
 		// select it immediately
 		if ( cg_autoswitch.integer && bg_itemlist[itemNum].giTag != WP_MACHINEGUN ) {
 			//aibsmod - if not the ball carrier and if weapons are not disabled
-			if ((cg.carrierNum != cg.snap->ps.clientNum) && (!am_weaponsDisabled.integer)) {
+			if ((cg.carrierNum != cg.snap->ps.clientNum) && (!am_disableWeapons.integer)) {
 				cg.weaponSelectTime = cg.time;
 				cg.weaponSelect = bg_itemlist[itemNum].giTag;
 			}

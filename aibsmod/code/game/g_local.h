@@ -159,6 +159,9 @@ struct gentity_s {
 	gitem_t		*item;			// for bonus items
 
 	//aibsmod stuff
+	int			spawnTime;				//time of creation
+	int			pendingDoom;			//for Rocket Arena
+
 	int			dieTime;				//for entities with limited lifespans
 	int			bounceCount;			//for EF_BOUNCE_LIMITED
 	float		laserDistance;			//tripmine fires when this changes
@@ -808,8 +811,9 @@ extern	vmCvar_t	am_teleportDelay;
 extern	vmCvar_t	am_spawnHealth;
 extern	vmCvar_t	am_spawnNoMG;
 
-extern	vmCvar_t	am_weaponsDisabled;
+extern	vmCvar_t	am_disableWeapons;
 extern	vmCvar_t	am_selfDamage;
+extern	vmCvar_t	am_fallDamage;
 extern	vmCvar_t	am_nonRamboKill;
 
 extern	vmCvar_t	am_dropTeamPowerups;
@@ -1025,7 +1029,11 @@ void	trap_SnapVector( float *v );
 //aibsmod stuff
 
 //g_aibsmod.c
+void give_all_weapons(gclient_t *player);
+void give_rocketarena_weapons(gclient_t *player);
 void teleport_player_straight(gentity_t *player);
+void switch_rambo(gentity_t *oldrambo, gentity_t *newrambo);
+void TeleportPlayerWithoutShooting(gentity_t *player, vec3_t dest, vec3_t angles);
 
 //g_football.c
 void football_create(vec3_t origin);
@@ -1039,3 +1047,6 @@ void football_shoot(gentity_t *ball, gentity_t *player, vec3_t direction);
 void football_goal(gentity_t *ball, int color);
 void G_RunFootball(gentity_t *ball);
 void G_BounceFootball(gentity_t *ball, trace_t *trace);
+
+//g_rocketarena.c
+void ra_register_hit(gentity_t *attacker, gentity_t *inflictor, gentity_t *target);

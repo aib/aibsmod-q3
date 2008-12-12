@@ -1171,7 +1171,9 @@ void ClientSpawn(gentity_t *ent) {
 
 	//aibsmod - spawn with infinite weapons if trainingmode is 1
 	if (am_trainingMode.integer == 1) {
-		aibsmod_giveAllWeapons(client);
+		give_all_weapons(client);
+	} else if (g_gametype.integer == GT_ROCKETARENA) {
+		give_rocketarena_weapons(client);
 	} else {
 		if (am_spawnNoMG.integer) {
 			client->ps.stats[STAT_WEAPONS] = (1 << WP_GAUNTLET);
@@ -1252,7 +1254,7 @@ void ClientSpawn(gentity_t *ent) {
 	//aibsmod stuff
 	//Become rambo if noone else is
 	if ((level.rambo == NULL) && (client->sess.sessionTeam != TEAM_SPECTATOR))
-		aibsmod_switchRambo(NULL, ent);
+		switch_rambo(NULL, ent);
 
 	//Set last damager to NULL
 	client->lastAttacker = NULL;
@@ -1336,7 +1338,7 @@ void ClientDisconnect( int clientNum ) {
 
 	//aibsmod - lose rambo
 	if (level.rambo == ent)
-		aibsmod_switchRambo(ent, NULL);
+		switch_rambo(ent, NULL);
 
 	//aibsmod - lose the ball
 	if (level.ballCarrier == ent)
@@ -1374,68 +1376,4 @@ void ClientDisconnect( int clientNum ) {
 	if ( ent->r.svFlags & SVF_BOT ) {
 		BotAIShutdownClient( clientNum, qfalse );
 	}
-}
-
-//Called when rambo dies, used to switch rambo
-void aibsmod_switchRambo(gentity_t *oldrambo, gentity_t *newrambo)
-{
-	gentity_t *tmpent;
-
-	if (!((g_gametype.integer == GT_RAMBO) || (g_gametype.integer == GT_RAMBO_TEAM)))
-		return;
-
-	if (oldrambo && oldrambo->client)
-		oldrambo->client->ps.powerups[PW_CARRIER] = 0;
-
-	if (newrambo && newrambo->client && (newrambo->health > 0)) { //player stole rambo
-		newrambo->client->ps.powerups[PW_CARRIER] = INT_MAX;
-
-		tmpent = G_TempEntity(newrambo->r.currentOrigin, EV_RAMBO_STEAL);
-		if (g_gametype.integer == GT_RAMBO_TEAM)
-			if (newrambo->client->sess.sessionTeam == TEAM_RED) //red
-				tmpent->s.eventParm = 2;
-			else
-				tmpent->s.eventParm = 3;
-		else
-			tmpent->s.eventParm = 1;
-
-		tmpent->s.otherEntityNum2 = newrambo->s.number;
-		tmpent->r.svFlags = SVF_BROADCAST;	//send to everyone
-
-		if (newrambo->health < newrambo->client->ps.stats[STAT_MAX_HEALTH]) {
-			newrambo->health = newrambo->client->ps.stats[STAT_MAX_HEALTH];
-			newrambo->client->ps.stats[STAT_HEALTH] = newrambo->client->ps.stats[STAT_MAX_HEALTH];
-		}
-
-		level.rambo = newrambo;
-	} else if (oldrambo && oldrambo->client) { //player lost rambo
-		tmpent = G_TempEntity(newrambo->r.currentOrigin, EV_RAMBO_STEAL);
-		tmpent->s.eventParm = 4;
-		tmpent->s.otherEntityNum = oldrambo->s.number;
-		tmpent->s.otherEntityNum2 = -1;
-		tmpent->r.svFlags = SVF_BROADCAST;	//send to everyone
-
-		level.rambo = NULL;
-	}
-
-	if ((g_gametype.integer == GT_RAMBO_TEAM) && //team rambo switch
-		(oldrambo && oldrambo->client) &&
-		(newrambo && newrambo->client) &&
-		(oldrambo->client->sess.sessionTeam != newrambo->client->sess.sessionTeam))
-	{
-		AddScore(newrambo, oldrambo->r.currentOrigin, 10);
-	}
-}
-
-//Gives all weapons + infinite ammo
-void aibsmod_giveAllWeapons(gclient_t *player)
-{
-	int i;
-
-	//copied from "give weapons"
-	player->ps.stats[STAT_WEAPONS] = (1 << WP_NUM_WEAPONS) - 1 - ( 1 << WP_GRAPPLING_HOOK ) - ( 1 << WP_NONE );
-
-	//copied from "give ammo"
-	for (i=0; i<MAX_WEAPONS; i++)
-		player->ps.ammo[i] = -1;
 }

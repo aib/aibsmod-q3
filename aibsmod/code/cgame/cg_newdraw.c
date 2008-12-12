@@ -1184,7 +1184,9 @@ const char *CG_GameTypeString() {
 	}
 
 	//aibsmod gametypes..
-	else if (cgs.gametype == GT_RAMBO) {
+	else if (cgs.gametype == GT_ROCKETARENA) {
+		return "Rocket Arena";
+	} else if (cgs.gametype == GT_RAMBO) {
 		return "Rambomatch";
 	} else if (cgs.gametype == GT_RAMBO_TEAM) {
 		return "Team Rambomatch";

@@ -1176,20 +1176,6 @@ void Cmd_Where_f( gentity_t *ent ) {
 	trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", vtos( ent->s.origin ) ) );
 }
 
-static const char *gameNames[] = {
-	"Free For All",
-	"Tournament",
-	"Single Player",
-	"Rambomatch",
-	"Team Deathmatch",
-	"Team Rambomatch",
-	"Capture the Flag",
-	"One Flag CTF",
-	"Overload",
-	"Harvester",
-	"Football"
-};
-
 /*
 ==================
 Cmd_CallVote_f
@@ -1241,13 +1227,16 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	} else if (!Q_stricmp(arg1, "hypergauntlet")) {
 	} else if (!Q_stricmp(arg1, "fastswitch")) {
 	} else if (!Q_stricmp(arg1, "selfdamage")) {
+	} else if (!Q_stricmp(arg1, "falldamage")) {
 	} else if (!Q_stricmp(arg1, "nonrambokill")) {
 	} else if (!Q_stricmp(arg1, "training")) {
 	} else if (!Q_stricmp(arg1, "rocketbounce")) {
+	} else if (!Q_stricmp(arg1, "disableweapons")) {
+	} else if (!Q_stricmp(arg1, "teleportdelay")) {
 	} else {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
 		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, g_doWarmup, timelimit <time>, fraglimit <frags>.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"aibsmod-specific commands are: piercing <0|1>, hypergauntlet <0|1>, fastswitch <0|1>, selfdamage <0|1>, nonrambokill <0|1|2>, training <0|1|2>, rocketbounce <n>.\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"aibsmod-specific commands are: piercing <0|1>, hypergauntlet <0|1>, rocketbounce <n>, fastswitch <0|1>, selfdamage <0|1>, falldamage <0|1>, nonrambokill <0|1|2>, training <0|1|2>, disableweapons <0|1>, teleportdelay <n>.\n\"" );
 		return;
 	}
 
@@ -1260,8 +1249,16 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	// special case for g_gametype, check for bad values
 	if ( !Q_stricmp( arg1, "g_gametype" ) ) {
 		i = atoi( arg2 );
-		if( i == GT_SINGLE_PLAYER || i < GT_FFA || i >= GT_MAX_GAME_TYPE) {
-			trap_SendServerCommand( ent-g_entities, "print \"Invalid gametype.\n\"" );
+		if( i == GT_SINGLE_PLAYER || i < GT_FFA || i >= GT_MAX_GAME_TYPE || !Q_stricmp(arg2, "")) {
+			trap_SendServerCommand( ent-g_entities, "print \"Invalid gametype. Valid gametypes are:\n\"" );
+			trap_SendServerCommand( ent-g_entities, "print \"0:  FFA\n\"" );
+			trap_SendServerCommand( ent-g_entities, "print \"1:  1-on-1\n\"" );
+			trap_SendServerCommand( ent-g_entities, "print \"3:  Rocket Arena\n\"" );
+			trap_SendServerCommand( ent-g_entities, "print \"4:  Rambomatch\n\"" );
+			trap_SendServerCommand( ent-g_entities, "print \"5:  Team Deathmatch\n\"" );
+			trap_SendServerCommand( ent-g_entities, "print \"6:  Team Rambomatch\n\"" );
+			trap_SendServerCommand( ent-g_entities, "print \"7:  CTF\n\"" );
+			trap_SendServerCommand( ent-g_entities, "print \"11: Football\n\"" );
 			return;
 		}
 
@@ -1295,11 +1292,17 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	} else if (!Q_stricmp(arg1, "hypergauntlet")) {
 		Com_sprintf(level.voteString, sizeof(level.voteString), "am_hyperGauntlet %s", arg2);
 		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s", level.voteString);
+	} else if (!Q_stricmp(arg1, "rocketbounce")) {
+		Com_sprintf(level.voteString, sizeof(level.voteString), "am_rocketBounce %s", arg2);
+		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s", level.voteString);
 	} else if (!Q_stricmp(arg1, "fastswitch")) {
 		Com_sprintf(level.voteString, sizeof(level.voteString), "am_fastWeaponSwitch %s", arg2);
 		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s", level.voteString);
 	} else if (!Q_stricmp(arg1, "selfdamage")) {
 		Com_sprintf(level.voteString, sizeof(level.voteString), "am_selfDamage %s", arg2);
+		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s", level.voteString);
+	} else if (!Q_stricmp(arg1, "falldamage")) {
+		Com_sprintf(level.voteString, sizeof(level.voteString), "am_fallDamage %s", arg2);
 		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s", level.voteString);
 	} else if (!Q_stricmp(arg1, "nonrambokill")) {
 		Com_sprintf(level.voteString, sizeof(level.voteString), "am_nonRamboKill %s", arg2);
@@ -1307,8 +1310,11 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	} else if (!Q_stricmp(arg1, "training")) {
 		Com_sprintf(level.voteString, sizeof(level.voteString), "am_trainingMode %s", arg2);
 		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s", level.voteString);
-	} else if (!Q_stricmp(arg1, "rocketbounce")) {
-		Com_sprintf(level.voteString, sizeof(level.voteString), "am_rocketBounce %s", arg2);
+	} else if (!Q_stricmp(arg1, "disableweapons")) {
+		Com_sprintf(level.voteString, sizeof(level.voteString), "am_disableWeapons %s", arg2);
+		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s", level.voteString);
+	} else if (!Q_stricmp(arg1, "teleportdelay")) {
+		Com_sprintf(level.voteString, sizeof(level.voteString), "am_teleportDelay %s", arg2);
 		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s", level.voteString);
 	} else {
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );
@@ -1664,8 +1670,8 @@ void Cmd_Teleport_f(gentity_t *ent)
 	if (!ent->client)
 		return;
 
-	if (am_teleportDelay.integer < 0) {
-		trap_SendServerCommand(ent-g_entities, va("print \"teleporting is currently disabled.\n\""));
+	if (!am_trainingMode.integer && am_teleportDelay.integer < 0) {
+		trap_SendServerCommand(ent-g_entities, va("print \"Teleporting is currently disabled.\n\""));
 		return;
 	}
 
@@ -1679,7 +1685,10 @@ void Cmd_Teleport_f(gentity_t *ent)
 
 	teleport_player_straight(ent);
 
-	ent->client->teleportTime = level.time + am_teleportDelay.integer;
+	if (am_trainingMode.integer)
+		ent->client->teleportTime = level.time + TRAININGMODE_TELEPORT_DELAY;
+	else
+		ent->client->teleportTime = level.time + am_teleportDelay.integer;
 }
 
 /*

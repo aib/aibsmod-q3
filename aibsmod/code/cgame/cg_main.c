@@ -179,18 +179,22 @@ vmCvar_t	cg_obeliskRespawnDelay;
 
 //aibsmod - client variables
 vmCvar_t	am_drawFootballTracer;
+
 vmCvar_t	am_showKillNotice;
 vmCvar_t	am_drawSpeed;
 vmCvar_t	am_drawSpeedMethod;
 vmCvar_t	am_drawSpeedFrames;
 vmCvar_t	am_drawButtons;
+
+vmCvar_t	am_hitFeedback;
+
 vmCvar_t	amh_depth;
 
 //aibsmod - server/shared variables. These will be communicated to us by the server (and used by pmove)
 vmCvar_t	am_fastWeaponSwitch;
 vmCvar_t	am_trainingMode;
 vmCvar_t	am_airControl;
-vmCvar_t	am_weaponsDisabled;
+vmCvar_t	am_disableWeapons;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -316,7 +320,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &am_fastWeaponSwitch, "am_fastWeaponSwitch", "0", CVAR_SERVERINFO },
 	{ &am_trainingMode, "am_trainingMode", "0", CVAR_SERVERINFO },
 	{ &am_airControl, "am_airControl", "1.0", CVAR_SERVERINFO },
-	{ &am_weaponsDisabled, "am_weaponsDisabled", "0", CVAR_SERVERINFO },
+	{ &am_disableWeapons, "am_disableWeapons", "0", CVAR_SERVERINFO },
 
 	//aibsmod client-side cvars
 	{ &am_drawFootballTracer, "am_drawFootballTracer", "0", CVAR_ARCHIVE },
@@ -325,6 +329,8 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &am_drawSpeedMethod, "am_drawSpeedMethod", "0", CVAR_ARCHIVE },
 	{ &am_drawSpeedFrames, "am_drawSpeedFrames", "1", CVAR_ARCHIVE },
 	{ &am_drawButtons, "am_drawButtons", "0", CVAR_ARCHIVE },
+
+	{ &am_hitFeedback, "am_hitFeedback", "0", CVAR_ARCHIVE },
 
 	{ &amh_depth, "amh_depth", "0", CVAR_CHEAT }
 
@@ -637,6 +643,15 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.gibBounce3Sound = trap_S_RegisterSound( "sound/player/gibimp3.wav", qfalse );
 
 	//aibsmod sounds
+	cgs.media.hit1Sound = trap_S_RegisterSound("sound/feedback/hit1.wav", qfalse);
+	cgs.media.hit2Sound = trap_S_RegisterSound("sound/feedback/hit2.wav", qfalse);
+	cgs.media.hit3Sound = trap_S_RegisterSound("sound/feedback/hit3.wav", qfalse);
+	cgs.media.hit4Sound = trap_S_RegisterSound("sound/feedback/hit4.wav", qfalse);
+	cgs.media.hit25Sound = trap_S_RegisterSound("sound/feedback/hit25.wav", qfalse);
+	cgs.media.hit50Sound = trap_S_RegisterSound("sound/feedback/hit50.wav", qfalse);
+	cgs.media.hit75Sound = trap_S_RegisterSound("sound/feedback/hit75.wav", qfalse);
+	cgs.media.hit100Sound = trap_S_RegisterSound("sound/feedback/hit100.wav", qfalse);
+
 	cgs.media.ramboStealSound = trap_S_RegisterSound("sound/rambo/rambo_steal.wav", qtrue);
 	cgs.media.ramboKillSound = trap_S_RegisterSound("sound/rambo/rambo_kill.wav", qtrue);
 

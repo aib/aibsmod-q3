@@ -969,6 +969,15 @@ typedef struct {
 	sfxHandle_t	countPrepareSound;
 
 	//aibsmod sounds
+	sfxHandle_t	hit1Sound;
+	sfxHandle_t	hit2Sound;
+	sfxHandle_t	hit3Sound;
+	sfxHandle_t	hit4Sound;
+	sfxHandle_t	hit25Sound;
+	sfxHandle_t	hit50Sound;
+	sfxHandle_t	hit75Sound;
+	sfxHandle_t	hit100Sound;
+
 	sfxHandle_t ramboStealSound;
 	sfxHandle_t ramboKillSound;
 
@@ -1235,6 +1244,9 @@ extern	vmCvar_t		am_drawSpeed;
 extern	vmCvar_t		am_drawSpeedMethod;
 extern	vmCvar_t		am_drawSpeedFrames;
 extern	vmCvar_t		am_drawButtons;
+
+extern	vmCvar_t		am_hitFeedback;
+
 extern	vmCvar_t		amh_depth;
 
 //

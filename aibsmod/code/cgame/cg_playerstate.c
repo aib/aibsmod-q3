@@ -280,7 +280,8 @@ CG_CheckLocalSounds
 ==================
 */
 void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops ) {
-	int			highScore, health, armor, reward;
+	int			highScore, /*health, armor,*/ reward;
+	int			damage;
 	sfxHandle_t sfx;
 
 	// don't play the sounds if the player just changed teams
@@ -290,8 +291,35 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops ) {
 
 	// hit changes
 	if ( ps->persistant[PERS_HITS] > ops->persistant[PERS_HITS] ) {
+		damage = ps->persistant[PERS_ATTACKEE_ARMOR];
+
+		if (am_hitFeedback.integer == 0) {
+			trap_S_StartLocalSound(cgs.media.hitSound, CHAN_LOCAL_SOUND);
+		} else if (am_hitFeedback.integer == 1) {
+			if (damage <= 25) {
+				trap_S_StartLocalSound(cgs.media.hit25Sound, CHAN_LOCAL_SOUND);
+			} else if (damage <= 50) {
+				trap_S_StartLocalSound(cgs.media.hit50Sound, CHAN_LOCAL_SOUND);
+			} else if (damage <= 75) {
+				trap_S_StartLocalSound(cgs.media.hit75Sound, CHAN_LOCAL_SOUND);
+			} else {
+				trap_S_StartLocalSound(cgs.media.hit100Sound, CHAN_LOCAL_SOUND);
+			}
+		} else if (am_hitFeedback.integer == 2) {
+			if (damage < 20) {
+				trap_S_StartLocalSound(cgs.media.hit1Sound, CHAN_LOCAL_SOUND);
+			} else if (damage < 50) {
+				trap_S_StartLocalSound(cgs.media.hit2Sound, CHAN_LOCAL_SOUND);
+			} else if (damage < 100) {
+				trap_S_StartLocalSound(cgs.media.hit3Sound, CHAN_LOCAL_SOUND);
+			} else {
+				trap_S_StartLocalSound(cgs.media.hit4Sound, CHAN_LOCAL_SOUND);
+			}
+		}
+/*
 		armor  = ps->persistant[PERS_ATTACKEE_ARMOR] & 0xff;
 		health = ps->persistant[PERS_ATTACKEE_ARMOR] >> 8;
+
 #ifdef MISSIONPACK
 		if (armor > 50 ) {
 			trap_S_StartLocalSound( cgs.media.hitSoundHighArmor, CHAN_LOCAL_SOUND );
@@ -303,6 +331,7 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops ) {
 #else
 		trap_S_StartLocalSound( cgs.media.hitSound, CHAN_LOCAL_SOUND );
 #endif
+*/
 	} else if ( ps->persistant[PERS_HITS] < ops->persistant[PERS_HITS] ) {
 		trap_S_StartLocalSound( cgs.media.hitTeamSound, CHAN_LOCAL_SOUND );
 	}
