@@ -126,6 +126,8 @@ void trigger_push_touch (gentity_t *self, gentity_t *other, trace_t *trace ) {
 		return;
 	}
 
+	ra_hit_ground(other);
+
 	BG_TouchJumpPad( &other->client->ps, &self->s );
 }
 
@@ -198,6 +200,8 @@ void Use_target_push( gentity_t *self, gentity_t *other, gentity_t *activator ) 
 		return;
 	}
 
+	ra_hit_ground(activator);
+
 	if ( activator->client->ps.pm_type != PM_NORMAL ) {
 		return;
 	}
@@ -258,7 +262,7 @@ void trigger_teleporter_touch (gentity_t *self, gentity_t *other, trace_t *trace
 		return;
 	}
 	// Spectators only?
-	if ( ( self->spawnflags & 1 ) && 
+	if ( ( self->spawnflags & 1 ) &&
 		other->client->sess.sessionTeam != TEAM_SPECTATOR ) {
 		return;
 	}

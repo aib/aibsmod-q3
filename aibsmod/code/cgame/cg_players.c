@@ -1924,19 +1924,36 @@ static void CG_PlayerSprites( centity_t *cent ) {
 		return;
 	}
 
-	if ( cent->currentState.eFlags & EF_AWARD_IMPRESSIVE ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalImpressive );
-		return;
-	}
+	if (cgs.gametype == GT_ROCKETARENA) {
+		if (cent->currentState.eFlags & EF_AWARD_GAUNTLET) {
+			CG_PlayerFloatSprite(cent, cgs.media.medalAirCombo);
+			return;
+		}
 
-	if ( cent->currentState.eFlags & EF_AWARD_EXCELLENT ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalExcellent );
-		return;
-	}
+		if (cent->currentState.eFlags & EF_AWARD_IMPRESSIVE) {
+			CG_PlayerFloatSprite(cent, cgs.media.medalAirGrenade);
+			return;
+		}
 
-	if ( cent->currentState.eFlags & EF_AWARD_GAUNTLET ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalGauntlet );
-		return;
+		if (cent->currentState.eFlags & EF_AWARD_EXCELLENT) {
+			CG_PlayerFloatSprite(cent, cgs.media.medalAirRocket);
+			return;
+		}
+	} else {
+		if ( cent->currentState.eFlags & EF_AWARD_IMPRESSIVE ) {
+			CG_PlayerFloatSprite( cent, cgs.media.medalImpressive );
+			return;
+		}
+
+		if ( cent->currentState.eFlags & EF_AWARD_EXCELLENT ) {
+			CG_PlayerFloatSprite( cent, cgs.media.medalExcellent );
+			return;
+		}
+
+		if ( cent->currentState.eFlags & EF_AWARD_GAUNTLET ) {
+			CG_PlayerFloatSprite( cent, cgs.media.medalGauntlet );
+			return;
+		}
 	}
 
 	if ( cent->currentState.eFlags & EF_AWARD_DEFEND ) {

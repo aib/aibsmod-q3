@@ -652,9 +652,13 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.hit75Sound = trap_S_RegisterSound("sound/feedback/hit75.wav", qfalse);
 	cgs.media.hit100Sound = trap_S_RegisterSound("sound/feedback/hit100.wav", qfalse);
 
-	cgs.media.airRocketSound = trap_S_RegisterSound("sound/feedback/excellent.wav", qtrue);
-	cgs.media.airGrenadeSound = trap_S_RegisterSound("sound/feedback/impressive.wav", qtrue);
-	cgs.media.airComboSound = trap_S_RegisterSound("sound/feedback/perfect.wav", qtrue);
+	cgs.media.airRocketSound = trap_S_RegisterSound("sound/feedback/airrocket.wav", qtrue);
+	cgs.media.airGrenadeSound = trap_S_RegisterSound("sound/feedback/airgrenade.wav", qtrue);
+	cgs.media.airComboSound = trap_S_RegisterSound("sound/feedback/aircombo.wav", qtrue);
+
+	cgs.media.airDoubleComboSound = trap_S_RegisterSound("sound/feedback/airdouble.wav", qtrue);
+	cgs.media.airTripleComboSound = trap_S_RegisterSound("sound/feedback/airtriple.wav", qtrue);
+	cgs.media.airBigComboSound = trap_S_RegisterSound("sound/feedback/airbig.wav", qtrue);
 
 	cgs.media.ramboStealSound = trap_S_RegisterSound("sound/rambo/rambo_steal.wav", qtrue);
 	cgs.media.ramboKillSound = trap_S_RegisterSound("sound/rambo/rambo_kill.wav", qtrue);

@@ -456,12 +456,16 @@ typedef enum {
 	//aibsmod events
 	EV_RAMBO_STEAL,			//rambo changed (might have just died)
 	EV_RAMBO_KILL,			//rambo killed someone
+
+	EV_FOOTBALL_GOAL,
+	EV_FOOTBALL_PASS,		//used for all ball control
+
+	EV_ROCKETARENA_COMBO,
+
 	EV_CURRENT_BUTTONS,		//button state update (sent every frame)
 
 	EV_DROP_WEAPON,
 
-	EV_FOOTBALL_GOAL,
-	EV_FOOTBALL_PASS,		//used for all ball control
 
 	EV_TRIPMINE				//tripmine sounds
 

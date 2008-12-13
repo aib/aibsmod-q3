@@ -1236,21 +1236,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.ramboKillSound);
 		break;
 
-	case EV_CURRENT_BUTTONS:
-//		DEBUGNAME("EV_CURRENT_BUTTONS");
-		//draw buttons only if the event belongs to us or the current spectatee
-		if (cg.snap->ps.clientNum == es->otherEntityNum)
-			cg.buttonState = es->eventParm;
-		break;
-
-	case EV_DROP_WEAPON:
-		DEBUGNAME("EV_DROP_WEAPON");
-		if (es->number == cg.snap->ps.clientNum) {
-			CG_DropWeaponChange();
-		}
-		break;
-
-
 	case EV_FOOTBALL_GOAL:
 		DEBUGNAME("EV_FOOTBALL_GOAL");
 		switch (es->eventParm) {
@@ -1353,6 +1338,43 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			case 5: //dropped
 				cg.carrierNum = -1;
 				break;
+		}
+		break;
+
+	case EV_ROCKETARENA_COMBO:
+		if (es->eventParm == 2) {
+			CG_Printf("%s" S_COLOR_WHITE " scores a " S_COLOR_BLUE "double-hit" S_COLOR_WHITE " combo on %s" S_COLOR_WHITE "!\n",
+				Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"),
+				Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum), "n")
+			);
+			CG_AddBufferedSound(cgs.media.airDoubleComboSound);
+		} else if (es->eventParm == 3) {
+			CG_Printf("%s" S_COLOR_WHITE " scores a " S_COLOR_GREEN "triple-hit" S_COLOR_WHITE " combo on %s" S_COLOR_WHITE "!\n",
+				Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"),
+				Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum), "n")
+			);
+			CG_AddBufferedSound(cgs.media.airTripleComboSound);
+		} else if (es->eventParm >= 4) {
+			CG_Printf("%s" S_COLOR_WHITE " scores a " S_COLOR_RED "%i-HIT COMBO" S_COLOR_WHITE " on %s" S_COLOR_WHITE "!\n",
+				Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"),
+				es->eventParm,
+				Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum), "n")
+			);
+			CG_AddBufferedSound(cgs.media.airBigComboSound);
+		}
+		break;
+
+	case EV_CURRENT_BUTTONS:
+//		DEBUGNAME("EV_CURRENT_BUTTONS");
+		//draw buttons only if the event belongs to us or the current spectatee
+		if (cg.snap->ps.clientNum == es->otherEntityNum)
+			cg.buttonState = es->eventParm;
+		break;
+
+	case EV_DROP_WEAPON:
+		DEBUGNAME("EV_DROP_WEAPON");
+		if (es->number == cg.snap->ps.clientNum) {
+			CG_DropWeaponChange();
 		}
 		break;
 

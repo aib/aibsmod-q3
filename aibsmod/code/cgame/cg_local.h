@@ -986,6 +986,10 @@ typedef struct {
 	sfxHandle_t	airGrenadeSound;
 	sfxHandle_t	airComboSound;
 
+	sfxHandle_t airDoubleComboSound;
+	sfxHandle_t airTripleComboSound;
+	sfxHandle_t airBigComboSound;
+
 	sfxHandle_t ramboStealSound;
 	sfxHandle_t ramboKillSound;
 

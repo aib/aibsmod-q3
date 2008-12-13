@@ -542,6 +542,9 @@ VectorSet(level.footballSpawnPoint, 0, 0, 100);
 		level.football = NULL;
 	}
 
+	if ((g_gametype.integer == GT_ROCKETARENA) && (am_disableWeapons.integer))
+		trap_Cvar_Set("am_disableWeapons", "0");
+
 	// general initialization
 	G_FindTeams();
 

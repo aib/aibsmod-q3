@@ -463,7 +463,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	if (self->rocketHits) {
 		inflictor = NULL;
 		attacker = &g_entities[self->rocketHitter];
-		damage = 100;
+		damage = 100000;
 		meansOfDeath = MOD_AIRROCKET;
 	}
 
@@ -555,14 +555,21 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			}
 
 			//aibsmod - check for Rocket Arena air combos
-			if (g_gametype.integer == GT_ROCKETARENA && 1) {
+			if (g_gametype.integer == GT_ROCKETARENA && (self->rocketHits > 1)) {
 				//play "humiliation" on player
-				attacker->client->ps.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
+				attacker->client->ps.persistant[PERS_GAUNTLET_FRAG_COUNT] += (self->rocketHits - 1);
 
 				//add the sprite over the player's head
 				attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
 				attacker->client->ps.eFlags |= EF_AWARD_GAUNTLET;
 				attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+
+				//send combo event
+				ent = G_TempEntity(attacker->r.currentOrigin, EV_ROCKETARENA_COMBO);
+				ent->s.eventParm = self->rocketHits;
+				ent->s.otherEntityNum = self->s.number;
+				ent->s.otherEntityNum2 = killer;
+				ent->r.svFlags = SVF_BROADCAST;	//send to everyone
 			}
 
 			// check for two kills in a short amount of time
@@ -608,28 +615,32 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		}
 	}
 
-	// if client is in a nodrop area, don't drop anything (but return CTF flags!)
-	contents = trap_PointContents( self->r.currentOrigin, -1 );
-	if ( !( contents & CONTENTS_NODROP )) {
-		TossClientItems( self );
-	}
-	else {
-		if ( self->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
-			Team_ReturnFlag( TEAM_FREE );
+	//aibsmod - don't drop anything in Rocket Arena
+	if (g_gametype.integer != GT_ROCKETARENA) {
+
+		// if client is in a nodrop area, don't drop anything (but return CTF flags!)
+		contents = trap_PointContents( self->r.currentOrigin, -1 );
+		if ( !( contents & CONTENTS_NODROP )) {
+			TossClientItems( self );
 		}
-		else if ( self->client->ps.powerups[PW_REDFLAG] ) {		// only happens in standard CTF
-			Team_ReturnFlag( TEAM_RED );
+		else {
+			if ( self->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
+				Team_ReturnFlag( TEAM_FREE );
+			}
+			else if ( self->client->ps.powerups[PW_REDFLAG] ) {		// only happens in standard CTF
+				Team_ReturnFlag( TEAM_RED );
+			}
+			else if ( self->client->ps.powerups[PW_BLUEFLAG] ) {	// only happens in standard CTF
+				Team_ReturnFlag( TEAM_BLUE );
+			}
 		}
-		else if ( self->client->ps.powerups[PW_BLUEFLAG] ) {	// only happens in standard CTF
-			Team_ReturnFlag( TEAM_BLUE );
-		}
-	}
 #ifdef MISSIONPACK
-	TossClientPersistantPowerups( self );
-	if( g_gametype.integer == GT_HARVESTER ) {
-		TossClientCubes( self );
-	}
+		TossClientPersistantPowerups( self );
+		if( g_gametype.integer == GT_HARVESTER ) {
+			TossClientCubes( self );
+		}
 #endif
+	}
 
 	Cmd_Score_f( self );		// show scores
 	// send updated scores to any clients that are following this one,

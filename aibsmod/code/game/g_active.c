@@ -803,9 +803,8 @@ void ClientThink_real( gentity_t *ent ) {
 	}
 
 	//aibsmod - check for air rocketed players hitting the ground
-	if (ent->rocketHits && (ent->s.groundEntityNum != ENTITYNUM_NONE)) {
+	if (ent->s.groundEntityNum != ENTITYNUM_NONE) {
 		ra_hit_ground(ent);
-		ent->rocketHits = 0;
 	}
 
 	// check for inactivity timer, but never drop the local client of a non-dedicated server

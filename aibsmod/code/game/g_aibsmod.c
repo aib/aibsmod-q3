@@ -16,7 +16,7 @@ void give_all_weapons(gclient_t *player)
 //Give rocket+grenade + infinite ammo
 void give_rocketarena_weapons(gclient_t *player)
 {
-	player->ps.stats[STAT_WEAPONS] = (1 << WP_GAUNTLET) | (1 << WP_GRENADE_LAUNCHER) | (1 << WP_ROCKET_LAUNCHER);
+	player->ps.stats[STAT_WEAPONS] = (1 << WP_GRENADE_LAUNCHER) | (1 << WP_ROCKET_LAUNCHER);
 
 	player->ps.ammo[WP_GAUNTLET] = -1;
 	player->ps.ammo[WP_GRENADE_LAUNCHER] = -1;

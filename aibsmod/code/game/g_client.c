@@ -1244,11 +1244,14 @@ void ClientSpawn(gentity_t *ent) {
 
 		// select the highest weapon number available, after any
 		// spawn given items have fired
-		client->ps.weapon = 1;
-		for ( i = WP_NUM_WEAPONS - 1 ; i > 0 ; i-- ) {
-			if ( client->ps.stats[STAT_WEAPONS] & ( 1 << i ) ) {
-				client->ps.weapon = i;
-				break;
+		//aibsmod - if weapons are not disabled
+		if (!am_disableWeapons.integer) {
+			client->ps.weapon = 1;
+			for ( i = WP_NUM_WEAPONS - 1 ; i > 0 ; i-- ) {
+				if ( client->ps.stats[STAT_WEAPONS] & ( 1 << i ) ) {
+					client->ps.weapon = i;
+					break;
+				}
 			}
 		}
 	}
@@ -1263,6 +1266,9 @@ void ClientSpawn(gentity_t *ent) {
 
 	//Clear teleport delay
 	client->teleportTime = level.time;
+
+	//Clear rocket hits
+	ent->rocketHits = 0;
 
 	// run a client frame to drop exactly to the floor,
 	// initialize animations and other things
