@@ -1198,6 +1198,8 @@ void ClientSpawn(gentity_t *ent) {
 	//aibsmod - not if am_spawnHealth is set
 	if (am_spawnHealth.integer > 0)
 		ent->health = client->ps.stats[STAT_HEALTH] = am_spawnHealth.integer;
+	else if (g_gametype.integer == GT_ROCKETARENA)
+		ent->health = client->ps.stats[STAT_HEALTH] = 100;
 	else
 		ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] + 25;
 

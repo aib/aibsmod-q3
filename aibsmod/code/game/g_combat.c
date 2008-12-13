@@ -300,7 +300,11 @@ char	*modNames[] = {
 	"MOD_GRAPPLE",
 
 	//aibsmod stuff
-	"MOD_RAILGUN_PIERCE"
+	"MOD_RAILGUN_PIERCE",
+	"MOD_ROCKET_BOUNCE",
+	"MOD_ROCKET_BOUNCE_SPLASH",
+	"MOD_TRIPMINE_SPLASH",
+	"MOD_AIRROCKET"
 };
 
 #ifdef MISSIONPACK
@@ -455,6 +459,14 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 #endif
 	self->client->ps.pm_type = PM_DEAD;
 
+	//aibsmod - change all premature deaths to air rocket deaths in Rocket Arena
+	if (self->rocketHits) {
+		inflictor = NULL;
+		attacker = &g_entities[self->rocketHitter];
+		damage = 100;
+		meansOfDeath = MOD_AIRROCKET;
+	}
+
 	if ( attacker ) {
 		killer = attacker->s.number;
 		if ( attacker->client ) {
@@ -527,35 +539,54 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			}
 
 			if( meansOfDeath == MOD_GAUNTLET ) {
+				//aibsmod - no "humiliation" in Rocket Arena
+				if (g_gametype.integer != GT_ROCKETARENA) {
+					// play humiliation on player
+					attacker->client->ps.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
 
-				// play humiliation on player
+					// add the sprite over the player's head
+					attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+					attacker->client->ps.eFlags |= EF_AWARD_GAUNTLET;
+					attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+
+					// also play humiliation on target
+					self->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_GAUNTLETREWARD;
+				}
+			}
+
+			//aibsmod - check for Rocket Arena air combos
+			if (g_gametype.integer == GT_ROCKETARENA && 1) {
+				//play "humiliation" on player
 				attacker->client->ps.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
 
-				// add the sprite over the player's head
+				//add the sprite over the player's head
 				attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
 				attacker->client->ps.eFlags |= EF_AWARD_GAUNTLET;
 				attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
-
-				// also play humiliation on target
-				self->client->ps.persistant[PERS_PLAYEREVENTS] ^= PLAYEREVENT_GAUNTLETREWARD;
 			}
 
 			// check for two kills in a short amount of time
 			// if this is close enough to the last kill, give a reward sound
-			if ( level.time - attacker->client->lastKillTime < CARNAGE_REWARD_TIME ) {
-				// play excellent on player
-				attacker->client->ps.persistant[PERS_EXCELLENT_COUNT]++;
+			//aibsmod - no "excellent" in Rocket Arena
+			if (g_gametype.integer != GT_ROCKETARENA) {
+				if ( level.time - attacker->client->lastKillTime < CARNAGE_REWARD_TIME ) {
+					// play excellent on player
+					attacker->client->ps.persistant[PERS_EXCELLENT_COUNT]++;
 
-				// add the sprite over the player's head
-				attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
-				attacker->client->ps.eFlags |= EF_AWARD_EXCELLENT;
-				attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+					// add the sprite over the player's head
+					attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+					attacker->client->ps.eFlags |= EF_AWARD_EXCELLENT;
+					attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+				}
 			}
 			attacker->client->lastKillTime = level.time;
 
 		}
 	} else {
-		AddScore( self, self->r.currentOrigin, -1 );
+		if (g_gametype.integer == GT_ROCKETARENA) { //no world kills in Rocket Arena
+		} else {
+			AddScore( self, self->r.currentOrigin, -1 );
+		}
 	}
 
 	// Add team bonuses

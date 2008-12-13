@@ -38,3 +38,138 @@ tripmineExplosion
 		blendfunc add
 	}
 }
+
+medals/airrocket
+{
+	nopicmip
+	{
+		clampmap gfx/icons/medal_airrocket.tga
+		blendFunc blend
+	}
+}
+
+medals/airgrenade
+{
+	nopicmip
+	{
+		clampmap gfx/icons/medal_airgrenade.tga
+		blendFunc blend
+	}
+}
+
+medals/aircombo
+{
+	nopicmip
+	{
+		clampmap gfx/icons/medal_aircombo.tga
+		blendFunc blend
+	}
+}
+
+show_buttons/up_up
+{
+	nopicmip
+	{
+		clampmap gfx/buttons/btn_up_up.tga
+		blendFunc blend
+	}
+}
+
+show_buttons/up_down
+{
+	nopicmip
+	{
+		clampmap gfx/buttons/btn_up_down.tga
+		blendFunc blend
+	}
+}
+
+show_buttons/down_up
+{
+	nopicmip
+	{
+		clampmap gfx/buttons/btn_down_up.tga
+		blendFunc blend
+	}
+}
+
+show_buttons/down_down
+{
+	nopicmip
+	{
+		clampmap gfx/buttons/btn_down_down.tga
+		blendFunc blend
+	}
+}
+
+show_buttons/left_up
+{
+	nopicmip
+	{
+		clampmap gfx/buttons/btn_left_up.tga
+		blendFunc blend
+	}
+}
+
+show_buttons/left_down
+{
+	nopicmip
+	{
+		clampmap gfx/buttons/btn_left_down.tga
+		blendFunc blend
+	}
+}
+
+show_buttons/right_up
+{
+	nopicmip
+	{
+		clampmap gfx/buttons/btn_right_up.tga
+		blendFunc blend
+	}
+}
+
+show_buttons/right_down
+{
+	nopicmip
+	{
+		clampmap gfx/buttons/btn_right_down.tga
+		blendFunc blend
+	}
+}
+
+show_buttons/jump_up
+{
+	nopicmip
+	{
+		clampmap gfx/buttons/btn_jump_up.tga
+		blendFunc blend
+	}
+}
+
+show_buttons/jump_down
+{
+	nopicmip
+	{
+		clampmap gfx/buttons/btn_jump_down.tga
+		blendFunc blend
+	}
+}
+
+show_buttons/fire_up
+{
+	nopicmip
+	{
+		clampmap gfx/buttons/btn_fire_up.tga
+		blendFunc blend
+	}
+}
+
+show_buttons/fire_down
+{
+	nopicmip
+	{
+		clampmap gfx/buttons/btn_fire_down.tga
+		blendFunc blend
+	}
+}

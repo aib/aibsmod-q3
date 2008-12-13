@@ -830,6 +830,10 @@ typedef struct {
 	qhandle_t	ramboWeaponShader;
 	qhandle_t	tripmineExplosionShader;
 
+	qhandle_t	medalAirRocket;
+	qhandle_t	medalAirGrenade;
+	qhandle_t	medalAirCombo;
+
 	qhandle_t	button_up_upShader;
 	qhandle_t	button_up_downShader;
 	qhandle_t	button_down_upShader;
@@ -977,6 +981,10 @@ typedef struct {
 	sfxHandle_t	hit50Sound;
 	sfxHandle_t	hit75Sound;
 	sfxHandle_t	hit100Sound;
+
+	sfxHandle_t	airRocketSound;
+	sfxHandle_t	airGrenadeSound;
+	sfxHandle_t	airComboSound;
 
 	sfxHandle_t ramboStealSound;
 	sfxHandle_t ramboKillSound;

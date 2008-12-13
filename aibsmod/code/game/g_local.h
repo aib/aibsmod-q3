@@ -160,7 +160,9 @@ struct gentity_s {
 
 	//aibsmod stuff
 	int			spawnTime;				//time of creation
-	int			pendingDoom;			//for Rocket Arena
+
+	int			rocketHits;				//for Rocket Arena
+	int			rocketHitter;			//for Rocket Arena
 
 	int			dieTime;				//for entities with limited lifespans
 	int			bounceCount;			//for EF_BOUNCE_LIMITED
@@ -1050,3 +1052,4 @@ void G_BounceFootball(gentity_t *ball, trace_t *trace);
 
 //g_rocketarena.c
 void ra_register_hit(gentity_t *attacker, gentity_t *inflictor, gentity_t *target);
+void ra_hit_ground(gentity_t *ent);

@@ -652,6 +652,10 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.hit75Sound = trap_S_RegisterSound("sound/feedback/hit75.wav", qfalse);
 	cgs.media.hit100Sound = trap_S_RegisterSound("sound/feedback/hit100.wav", qfalse);
 
+	cgs.media.airRocketSound = trap_S_RegisterSound("sound/feedback/excellent.wav", qtrue);
+	cgs.media.airGrenadeSound = trap_S_RegisterSound("sound/feedback/impressive.wav", qtrue);
+	cgs.media.airComboSound = trap_S_RegisterSound("sound/feedback/perfect.wav", qtrue);
+
 	cgs.media.ramboStealSound = trap_S_RegisterSound("sound/rambo/rambo_steal.wav", qtrue);
 	cgs.media.ramboKillSound = trap_S_RegisterSound("sound/rambo/rambo_kill.wav", qtrue);
 
@@ -1162,18 +1166,23 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.ramboShader = trap_R_RegisterShader("powerups/rambo");
 	cgs.media.ramboWeaponShader = trap_R_RegisterShader("powerups/ramboWeapon");
 
-	cgs.media.button_up_upShader = trap_R_RegisterShader("gfx/2d/btn_up_up.tga");
-	cgs.media.button_up_downShader = trap_R_RegisterShader("gfx/2d/btn_up_down.tga");
-	cgs.media.button_down_upShader = trap_R_RegisterShader("gfx/2d/btn_down_up.tga");
-	cgs.media.button_down_downShader = trap_R_RegisterShader("gfx/2d/btn_down_down.tga");
-	cgs.media.button_left_upShader = trap_R_RegisterShader("gfx/2d/btn_left_up.tga");
-	cgs.media.button_left_downShader = trap_R_RegisterShader("gfx/2d/btn_left_down.tga");
-	cgs.media.button_right_upShader = trap_R_RegisterShader("gfx/2d/btn_right_up.tga");
-	cgs.media.button_right_downShader = trap_R_RegisterShader("gfx/2d/btn_right_down.tga");
-	cgs.media.button_jump_upShader = trap_R_RegisterShader("gfx/2d/btn_jump_up.tga");
-	cgs.media.button_jump_downShader = trap_R_RegisterShader("gfx/2d/btn_jump_down.tga");
-	cgs.media.button_fire_upShader = trap_R_RegisterShader("gfx/2d/btn_fire_up.tga");;
-	cgs.media.button_fire_downShader = trap_R_RegisterShader("gfx/2d/btn_fire_down.tga");;
+	cgs.media.medalAirRocket = trap_R_RegisterShader("medals/airrocket");
+	cgs.media.medalAirGrenade = trap_R_RegisterShader("medals/airgrenade");
+	cgs.media.medalAirCombo = trap_R_RegisterShader("medals/aircombo");
+
+	cgs.media.button_up_upShader = trap_R_RegisterShader("show_buttons/up_up");
+	cgs.media.button_up_downShader = trap_R_RegisterShader("show_buttons/up_down");
+	cgs.media.button_down_upShader = trap_R_RegisterShader("show_buttons/down_up");
+	cgs.media.button_down_downShader = trap_R_RegisterShader("show_buttons/down_down");
+	cgs.media.button_left_upShader = trap_R_RegisterShader("show_buttons/left_up");
+	cgs.media.button_left_downShader = trap_R_RegisterShader("show_buttons/left_down");
+	cgs.media.button_right_upShader = trap_R_RegisterShader("show_buttons/right_up");
+	cgs.media.button_right_downShader = trap_R_RegisterShader("show_buttons/right_down");
+	cgs.media.button_jump_upShader = trap_R_RegisterShader("show_buttons/jump_up");
+	cgs.media.button_jump_downShader = trap_R_RegisterShader("show_buttons/jump_down");
+	cgs.media.button_fire_upShader = trap_R_RegisterShader("show_buttons/fire_up");
+	cgs.media.button_fire_downShader = trap_R_RegisterShader("show_buttons/fire_down");
+
 
 	CG_ClearParticles ();
 /*

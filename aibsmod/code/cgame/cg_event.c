@@ -354,6 +354,10 @@ static void CG_Obituary( entityState_t *ent ) {
 			message2 = "'s tripmine";
 			break;
 
+		case MOD_AIRROCKET:
+			message = "was shot by";
+			break;
+
 		default:
 			message = "was killed by";
 			break;
