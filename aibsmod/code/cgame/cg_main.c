@@ -180,13 +180,15 @@ vmCvar_t	cg_obeliskRespawnDelay;
 //aibsmod - client variables
 vmCvar_t	am_drawFootballTracer;
 
-vmCvar_t	am_showKillNotice;
+vmCvar_t	am_drawKillNotice;
 vmCvar_t	am_drawSpeed;
 vmCvar_t	am_drawSpeedMethod;
 vmCvar_t	am_drawSpeedFrames;
 vmCvar_t	am_drawButtons;
 
 vmCvar_t	am_hitFeedback;
+
+vmCvar_t	am_CPMASkins;
 
 vmCvar_t	amh_depth;
 
@@ -324,13 +326,15 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 	//aibsmod client-side cvars
 	{ &am_drawFootballTracer, "am_drawFootballTracer", "0", CVAR_ARCHIVE },
-	{ &am_showKillNotice, "am_showKillNotice", "1", CVAR_ARCHIVE },
+	{ &am_drawKillNotice, "am_drawKillNotice", "1", CVAR_ARCHIVE },
 	{ &am_drawSpeed, "am_drawSpeed", "0", CVAR_ARCHIVE },
 	{ &am_drawSpeedMethod, "am_drawSpeedMethod", "0", CVAR_ARCHIVE },
 	{ &am_drawSpeedFrames, "am_drawSpeedFrames", "1", CVAR_ARCHIVE },
 	{ &am_drawButtons, "am_drawButtons", "0", CVAR_ARCHIVE },
 
 	{ &am_hitFeedback, "am_hitFeedback", "0", CVAR_ARCHIVE },
+
+	{ &am_CPMASkins, "am_CPMASkins", "0", CVAR_ARCHIVE },
 
 	{ &amh_depth, "amh_depth", "0", CVAR_CHEAT }
 

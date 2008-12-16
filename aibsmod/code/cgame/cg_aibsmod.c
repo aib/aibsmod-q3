@@ -341,3 +341,79 @@ void CG_DropWeaponChange(void)
 		}
 	}
 }
+
+//All am_CPMASkins-enabled code should call this to assign model colors
+void CG_SetShaderColors(int clientNum, byte targetRGBA[4])
+{
+	float colcycle;
+
+	//No need to bother if CPMA skins are disabled
+	if (!am_CPMASkins.integer) return;
+
+	//Easter egg!
+	if (!strcmp(cgs.clientinfo[clientNum].name, "aib42")) {
+		colcycle = (cg.time % 12000) / 2000.0f;
+
+		//aibsmod version info
+		if (colcycle < 1.0f) {
+			targetRGBA[0] = 255;
+			targetRGBA[1] = (byte) (255.0f * colcycle);
+			targetRGBA[2] = 0;
+		} else if (colcycle < 2.0f) {
+			targetRGBA[0] = (byte) (255.0f * (2.0f - colcycle));
+			targetRGBA[1] = 255;
+			targetRGBA[2] = 0;
+		} else if (colcycle < 3.0f) {
+			targetRGBA[0] = 0;
+			targetRGBA[1] = 255;
+			targetRGBA[2] = (byte) (255.0f * (colcycle - 2.0f));
+		} else if (colcycle < 4.0f) {
+			targetRGBA[0] = 0;
+			targetRGBA[1] = (byte) (255.0f * (4.0f - colcycle));
+			targetRGBA[2] = 255;
+		} else if (colcycle < 5.0f) {
+			targetRGBA[0] = (byte) (255.0f * (colcycle - 4.0f));
+			targetRGBA[1] = 0;
+			targetRGBA[2] = 255;
+		} else if (colcycle < 6.0f) {
+			targetRGBA[0] = 255;
+			targetRGBA[1] = 0;
+			targetRGBA[2] = (byte) (255.0f * (6.0f - colcycle));
+		}
+
+		targetRGBA[3] = 255;
+		return;
+	}
+
+	//Find a color based on gametype, overrides, etc.
+	if (cgs.gametype < GT_TEAM) { //non-team games
+		targetRGBA[0] = 255;
+		targetRGBA[1] = 255;
+		targetRGBA[2] = 255;
+		targetRGBA[3] = 255;
+	} else {
+		team_t myTeam = cgs.clientinfo[cg.clientNum].team;
+		team_t otherTeam = cgs.clientinfo[clientNum].team;
+
+		if ((otherTeam == myTeam) && 0) { //friendly color override
+
+		} else if ((otherTeam != myTeam) && 0) { //enemy color override
+
+		} else if (otherTeam == TEAM_RED) { //default red team color
+			targetRGBA[0] = 255;
+			targetRGBA[1] = 32;
+			targetRGBA[2] = 32;
+			targetRGBA[3] = 255;
+		} else if (otherTeam == TEAM_BLUE) { //default blue team color
+			targetRGBA[0] = 32;
+			targetRGBA[1] = 32;
+			targetRGBA[2] = 255;
+			targetRGBA[3] = 255;
+		} else { //this shouldn't happen; use something that will attract attention
+			targetRGBA[0] = 0;
+			targetRGBA[1] = 0;
+			targetRGBA[2] = 0;
+			targetRGBA[3] = 255;
+		}
+	}
+}

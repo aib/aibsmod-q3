@@ -304,6 +304,10 @@ static qboolean	CG_FindClientModelFile( char *filename, int length, clientInfo_t
 				break;
 			}
 		}
+
+		//aibsmod - hack, but works
+		if (am_CPMASkins.integer)
+			team = "pm";
 	}
 	else {
 		team = "default";
@@ -379,6 +383,10 @@ static qboolean	CG_FindClientHeadFile( char *filename, int length, clientInfo_t 
 				break;
 			}
 		}
+
+		//aibsmod - hack, but works
+		if (am_CPMASkins.integer)
+			team = "pm";
 	}
 	else {
 		team = "default";
@@ -649,28 +657,39 @@ static void CG_LoadClientInfo( clientInfo_t *ci ) {
 	}
 #endif
 	modelloaded = qtrue;
-	if ( !CG_RegisterClientModelname( ci, ci->modelName, ci->skinName, ci->headModelName, ci->headSkinName, teamname ) ) {
-		if ( cg_buildScript.integer ) {
-			CG_Error( "CG_RegisterClientModelname( %s, %s, %s, %s %s ) failed", ci->modelName, ci->skinName, ci->headModelName, ci->headSkinName, teamname );
-		}
 
-		// fall back to default team name
-		if( cgs.gametype >= GT_TEAM) {
-			// keep skin name
-			if( ci->team == TEAM_BLUE ) {
-				Q_strncpyz(teamname, DEFAULT_BLUETEAM_NAME, sizeof(teamname) );
-			} else {
-				Q_strncpyz(teamname, DEFAULT_REDTEAM_NAME, sizeof(teamname) );
+	//aibsmod - CPMA skins
+	if (am_CPMASkins.integer) {
+		if (!CG_RegisterClientModelname(ci, ci->modelName, "pm", ci->headModelName, "pm", NULL)) {
+			if (cg_buildScript.integer) {
+				CG_Error("CG_RegisterClientModelname( %s, %s, %s, %s %s ) failed", ci->modelName, "pm", ci->headModelName, "pm", "NULL");
 			}
-			if ( !CG_RegisterClientModelname( ci, DEFAULT_TEAM_MODEL, ci->skinName, DEFAULT_TEAM_HEAD, ci->skinName, teamname ) ) {
-				CG_Error( "DEFAULT_TEAM_MODEL / skin (%s/%s) failed to register", DEFAULT_TEAM_MODEL, ci->skinName );
-			}
-		} else {
-			if ( !CG_RegisterClientModelname( ci, DEFAULT_MODEL, "default", DEFAULT_MODEL, "default", teamname ) ) {
-				CG_Error( "DEFAULT_MODEL (%s) failed to register", DEFAULT_MODEL );
-			}
+			modelloaded = qfalse;
 		}
-		modelloaded = qfalse;
+	} else {
+		if ( !CG_RegisterClientModelname( ci, ci->modelName, ci->skinName, ci->headModelName, ci->headSkinName, teamname ) ) {
+			if ( cg_buildScript.integer ) {
+				CG_Error( "CG_RegisterClientModelname( %s, %s, %s, %s %s ) failed", ci->modelName, ci->skinName, ci->headModelName, ci->headSkinName, teamname );
+			}
+
+			// fall back to default team name
+			if( cgs.gametype >= GT_TEAM) {
+				// keep skin name
+				if( ci->team == TEAM_BLUE ) {
+					Q_strncpyz(teamname, DEFAULT_BLUETEAM_NAME, sizeof(teamname) );
+				} else {
+					Q_strncpyz(teamname, DEFAULT_REDTEAM_NAME, sizeof(teamname) );
+				}
+				if ( !CG_RegisterClientModelname( ci, DEFAULT_TEAM_MODEL, ci->skinName, DEFAULT_TEAM_HEAD, ci->skinName, teamname ) ) {
+					CG_Error( "DEFAULT_TEAM_MODEL / skin (%s/%s) failed to register", DEFAULT_TEAM_MODEL, ci->skinName );
+				}
+			} else {
+				if ( !CG_RegisterClientModelname( ci, DEFAULT_MODEL, "default", DEFAULT_MODEL, "default", teamname ) ) {
+					CG_Error( "DEFAULT_MODEL (%s) failed to register", DEFAULT_MODEL );
+				}
+			}
+			modelloaded = qfalse;
+		}
 	}
 
 	ci->newAnims = qfalse;
@@ -2306,6 +2325,13 @@ void CG_Player( centity_t *cent ) {
 	//aibsmod - wallhack
 	if (amh_depth.integer)
 		renderfx |= RF_DEPTHHACK;
+
+	//aibsmod - CPMA skins
+	if (am_CPMASkins.integer) {
+		CG_SetShaderColors(clientNum, legs.shaderRGBA);
+		CG_SetShaderColors(clientNum, torso.shaderRGBA);
+		CG_SetShaderColors(clientNum, head.shaderRGBA);
+	}
 
 	renderfx |= RF_LIGHTING_ORIGIN;			// use the same origin for all
 #ifdef MISSIONPACK

@@ -1251,13 +1251,15 @@ extern	vmCvar_t		cg_obeliskRespawnDelay;
 //aibsmod client side cvars, also see bg_public.h
 extern	vmCvar_t		am_drawFootballTracer;
 
-extern	vmCvar_t		am_showKillNotice;
+extern	vmCvar_t		am_drawKillNotice;
 extern	vmCvar_t		am_drawSpeed;
 extern	vmCvar_t		am_drawSpeedMethod;
 extern	vmCvar_t		am_drawSpeedFrames;
 extern	vmCvar_t		am_drawButtons;
 
 extern	vmCvar_t		am_hitFeedback;
+
+extern	vmCvar_t		am_CPMASkins;
 
 extern	vmCvar_t		amh_depth;
 
@@ -1365,7 +1367,7 @@ void CG_InitTeamChat();
 void CG_GetTeamColor(vec4_t *color);
 const char *CG_GetGameStatusText();
 const char *CG_GetKillerText();
-void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles );
+void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles, int clientNum );
 void CG_Text_PaintChar(float x, float y, float width, float height, float scale, float s, float t, float s2, float t2, qhandle_t hShader);
 void CG_CheckOrderPending();
 const char *CG_GameTypeString();
@@ -1552,6 +1554,8 @@ void CG_BBox(centity_t *cent);
 void CG_DrawFootballTracer(void);
 
 void CG_DropWeaponChange(void);
+
+void CG_SetShaderColors(int clientNum, byte targetRGBA[4]);
 
 //===============================================
 

@@ -231,7 +231,7 @@ static void CG_Obituary( entityState_t *ent ) {
 		}
 
 		//aibsmod - kill notice might be disabled or at the top
-		if (am_showKillNotice.integer == 1) {
+		if (am_drawKillNotice.integer == 1) {
 #ifdef MISSIONPACK
 			if (!(cg_singlePlayerActive.integer && cg_cameraOrbit.integer)) {
 #endif
@@ -239,7 +239,7 @@ static void CG_Obituary( entityState_t *ent ) {
 #ifdef MISSONPACK
 			}
 #endif
-		} else if (am_showKillNotice.integer == 2) {
+		} else if (am_drawKillNotice.integer == 2) {
 			CG_CenterPrint(s, BIGCHAR_HEIGHT, BIGCHAR_WIDTH);
 		}
 

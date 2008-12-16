@@ -160,7 +160,7 @@ static void CG_DrawPlayerArmorIcon( rectDef_t *rect, qboolean draw2D ) {
   	origin[2] = -10;
   	angles[YAW] = ( cg.time & 2047 ) * 360 / 2048.0;
 
-    CG_Draw3DModel( rect->x, rect->y, rect->w, rect->h, cgs.media.armorModel, 0, origin, angles );
+    CG_Draw3DModel( rect->x, rect->y, rect->w, rect->h, cgs.media.armorModel, 0, origin, angles, -1 );
   }
 
 }
@@ -220,7 +220,7 @@ static void CG_DrawPlayerAmmoIcon( rectDef_t *rect, qboolean draw2D ) {
   		origin[1] = 0;
   		origin[2] = 0;
   		angles[YAW] = 90 + 20 * sin( cg.time / 1000.0 );
-  		CG_Draw3DModel( rect->x, rect->y, rect->w, rect->h, cg_weapons[ cent->currentState.weapon ].ammoModel, 0, origin, angles );
+  		CG_Draw3DModel( rect->x, rect->y, rect->w, rect->h, cg_weapons[ cent->currentState.weapon ].ammoModel, 0, origin, angles, -1 );
   	}
   }
 }
@@ -479,7 +479,7 @@ static void CG_DrawPlayerItem( rectDef_t *rect, float scale, qboolean draw2D) {
   		origin[1] = 0;
    		origin[2] = -10;
   		angles[YAW] = ( cg.time & 2047 ) * 360 / 2048.0;
-			CG_Draw3DModel(rect->x, rect->y, rect->w, rect->h, cg_items[ value ].models[0], 0, origin, angles );
+			CG_Draw3DModel(rect->x, rect->y, rect->w, rect->h, cg_items[ value ].models[0], 0, origin, angles, -1 );
 		}
 	}
 
@@ -520,8 +520,10 @@ static void CG_DrawSelectedPlayerHead( rectDef_t *rect, qboolean draw2D, qboolea
 	vec3_t			origin;
 	vec3_t			mins, maxs, angles;
 
-
-  ci = cgs.clientinfo + ((voice) ? cgs.currentVoiceClient : sortedTeamPlayers[CG_GetSelectedPlayer()]);
+	//aibsmod
+//  ci = cgs.clientinfo + ((voice) ? cgs.currentVoiceClient : sortedTeamPlayers[CG_GetSelectedPlayer()]);
+	int clientNum = ((voice) ? cgs.currentVoiceClient : sortedTeamPlayers[CG_GetSelectedPlayer()]);
+	ci = cga.clientinfo + clientNum;
 
   if (ci) {
   	if ( cg_draw3dIcons.integer ) {
@@ -548,7 +550,7 @@ static void CG_DrawSelectedPlayerHead( rectDef_t *rect, qboolean draw2D, qboolea
     	angles[YAW] = 180;
     	angles[ROLL] = 0;
 
-      CG_Draw3DModel( rect->x, rect->y, rect->w, rect->h, ci->headModel, ci->headSkin, origin, angles );
+      CG_Draw3DModel( rect->x, rect->y, rect->w, rect->h, ci->headModel, ci->headSkin, origin, angles, clientNum );
   	} else if ( cg_drawIcons.integer ) {
 	  	CG_DrawPic( rect->x, rect->y, rect->w, rect->h, ci->modelIcon );
   	}
@@ -749,7 +751,7 @@ static void CG_HarvesterSkulls(rectDef_t *rect, float scale, vec4_t color, qbool
 			} else {
 				handle = cgs.media.blueCubeModel;
 			}
-			CG_Draw3DModel( rect->x, rect->y, 35, 35, handle, 0, origin, angles );
+			CG_Draw3DModel( rect->x, rect->y, 35, 35, handle, 0, origin, angles, -1 );
 		} else {
 			if( cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE ) {
 				handle = cgs.media.redCubeIcon;

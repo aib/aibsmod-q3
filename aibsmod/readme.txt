@@ -65,7 +65,7 @@ Server Variables/Settings:
 
 Client Variables/Settings:
 
-	* am_showKillNotice <0/1/2>
+	* am_drawKillNotice <0/1/2>
 		This setting controls where the [occasionally annoying] "You fragged x/1st place with n kills" message appears. "1" is the default setting and doesn't change anything. Setting it to "0" will completely disable the message (you can still read your own kills from the "chat log" in the upper left corner) and setting it to "2" will make the message appear in the top center side of your screen, as opposed to the dead middle. Give it a try.
 
 	* am_drawSpeed <0/1/2>
