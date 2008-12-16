@@ -1341,6 +1341,21 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		}
 		break;
 
+	case EV_ROCKETARENA_HIT:
+		CG_Printf("%s" S_COLOR_WHITE " hit %s" S_COLOR_WHITE ", rt: %0.1f, at: %0.1f, vt: %0.1f, vo: %0.1f\n",
+			Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"),
+			Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum), "n"),
+			es->angles2[0],
+			es->angles2[1],
+			es->angles2[2],
+			es->origin2[0]
+		);
+		CG_Printf("Combined flight time: %0.1f, combined velocity: %0.1f\n",
+			es->angles2[0] * es->angles2[1],
+			es->angles2[2] + es->origin2[0]
+		);
+		break;
+
 	case EV_ROCKETARENA_COMBO:
 		if (es->eventParm == 2) {
 			CG_Printf("%s" S_COLOR_WHITE " scores a " S_COLOR_BLUE "double-hit" S_COLOR_WHITE " combo on %s" S_COLOR_WHITE "!\n",

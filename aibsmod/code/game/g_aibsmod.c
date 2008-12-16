@@ -1,5 +1,45 @@
 #include "g_local.h"
 
+//vector maginute
+float VectorMagnitude(const vec3_t v)
+{
+	return sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+}
+
+//set angles
+void G_SetAngles(gentity_t *ent, vec3_t angles)
+{
+	VectorCopy(angles, ent->s.apos.trBase);
+	ent->s.apos.trType = TR_STATIONARY;
+	ent->s.apos.trTime = 0;
+	ent->s.apos.trDuration = 0;
+	VectorClear(ent->s.apos.trDelta);
+
+	VectorCopy(angles, ent->r.currentAngles);
+
+	VectorCopy(angles, ent->s.angles);
+}
+
+//rotate entity's bbox as best as you can
+void G_SetRotatedBoundingBox(gentity_t *ent, const vec3_t orgmins, const vec3_t orgmaxs)
+{
+	vec3_t	tmins, tmaxs;
+	vec3_t	tmins2, tmaxs2;
+
+	RotatePointAroundVector(tmins, axisDefault[1], orgmins, ent->r.currentAngles[0]);
+	RotatePointAroundVector(tmaxs, axisDefault[1], orgmaxs, ent->r.currentAngles[0]);
+
+	RotatePointAroundVector(tmins2, axisDefault[2], tmins, ent->r.currentAngles[1]);
+	RotatePointAroundVector(tmaxs2, axisDefault[2], tmaxs, ent->r.currentAngles[1]);
+
+	ent->r.mins[0] = MIN(tmins2[0], tmaxs2[0]);
+	ent->r.maxs[0] = MAX(tmins2[0], tmaxs2[0]);
+	ent->r.mins[1] = MIN(tmins2[1], tmaxs2[1]);
+	ent->r.maxs[1] = MAX(tmins2[1], tmaxs2[1]);
+	ent->r.mins[2] = MIN(tmins2[2], tmaxs2[2]);
+	ent->r.maxs[2] = MAX(tmins2[2], tmaxs2[2]);
+}
+
 //Gives all weapons + infinite ammo
 void give_all_weapons(gclient_t *player)
 {

@@ -1257,7 +1257,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			trap_SendServerCommand( ent-g_entities, "print \"Invalid gametype. Valid gametypes are:\n\"" );
 			trap_SendServerCommand( ent-g_entities, "print \"0:  FFA\n\"" );
 			trap_SendServerCommand( ent-g_entities, "print \"1:  1-on-1\n\"" );
-			trap_SendServerCommand( ent-g_entities, "print \"3:  Rocket Arena\n\"" );
+			trap_SendServerCommand( ent-g_entities, "print \"3:  Midair Arena\n\"" );
 			trap_SendServerCommand( ent-g_entities, "print \"4:  Rambomatch\n\"" );
 			trap_SendServerCommand( ent-g_entities, "print \"5:  Team Deathmatch\n\"" );
 			trap_SendServerCommand( ent-g_entities, "print \"6:  Team Rambomatch\n\"" );

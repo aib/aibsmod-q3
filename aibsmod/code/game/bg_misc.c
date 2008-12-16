@@ -9,7 +9,7 @@ const char *gameNames[GT_MAX_GAME_TYPE] = {
 	"Free For All",
 	"Tournament",
 	"Single Player",
-	"Rocket Arena",
+	"Midair Arena",
 	"Rambomatch",
 	"Team Deathmatch",
 	"Team Rambomatch",

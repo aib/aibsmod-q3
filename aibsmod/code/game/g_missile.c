@@ -577,6 +577,11 @@ gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->nextthink = level.time + 2500;
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
+
+	//aibsmod - Rocket Arena and other stuff
+	bolt->spawnTime = level.time;
+	bolt->ownerVelocity = VectorMagnitude(self->s.pos.trDelta);
+
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_GRENADE_LAUNCHER;
 	bolt->s.eFlags = EF_BOUNCE_HALF;
@@ -664,7 +669,9 @@ gentity_t *fire_rocket (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->s.eFlags = EF_BOUNCE_LIMITED;
 	bolt->bounceCount = am_rocketBounce.integer;
 
+	//aibsmod - Rocket Arena and other stuff
 	bolt->spawnTime = level.time;
+	bolt->ownerVelocity = VectorMagnitude(self->s.pos.trDelta);
 
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_ROCKET_LAUNCHER;

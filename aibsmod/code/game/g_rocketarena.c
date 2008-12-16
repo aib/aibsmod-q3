@@ -2,8 +2,11 @@
 
 void ra_register_hit(gentity_t *attacker, gentity_t *inflictor, gentity_t *target)
 {
+	gentity_t *ent;
+	float ownerVelocity;
 	float targetVelocity;
-	float flightTime;
+	float rocketFlightTime;
+	float targetFlightTime;
 
 	//Don't register ground hits
 	if (target->s.groundEntityNum != ENTITYNUM_NONE)
@@ -27,19 +30,27 @@ void ra_register_hit(gentity_t *attacker, gentity_t *inflictor, gentity_t *targe
 		attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 	}
 
-	targetVelocity = sqrt(
-		target->s.pos.trDelta[0]*target->s.pos.trDelta[0] +
-		target->s.pos.trDelta[1]*target->s.pos.trDelta[1] +
-		target->s.pos.trDelta[2]*target->s.pos.trDelta[2]
-	);
+	ownerVelocity = inflictor->ownerVelocity;
+	targetVelocity = VectorMagnitude(target->s.pos.trDelta);
+	rocketFlightTime = (level.time - inflictor->spawnTime) / 1000.0f;
+	targetFlightTime = (level.time - target->jumpTime) / 1000.0f;
 
-	flightTime = (level.time - inflictor->spawnTime) / 1000.0f;
+	ent = G_TempEntity(attacker->r.currentOrigin, EV_ROCKETARENA_HIT);
+	ent->s.otherEntityNum = target->s.number;
+	ent->s.otherEntityNum2 = attacker->s.number;
+	ent->s.angles2[0] = rocketFlightTime;
+	ent->s.angles2[1] = targetFlightTime;
+	ent->s.angles2[2] = targetVelocity;
+	ent->s.origin2[0] = ownerVelocity;
 
-	/*G_Printf("%s hit %s with a %s, flight time: %0.1f, target velocity: %.1f\n",
+//	ent->r.svFlags = SVF_BROADCAST;	//send to everyone
+
+/*	G_Printf("%s hit %s with a %s, rocket flight time: %0.1f, target flight time: %0.1f, target velocity: %.1f\n",
 		attacker->client->pers.netname,
 		target->client->pers.netname,
 		inflictor->classname,
-		flightTime,
+		rocketFlightTime,
+		targetFlightTime,
 		targetVelocity
 	);*/
 
@@ -52,6 +63,8 @@ void ra_register_hit(gentity_t *attacker, gentity_t *inflictor, gentity_t *targe
 
 void ra_hit_ground(gentity_t *ent)
 {
+	ent->jumpTime = level.time;
+
 	if (ent->rocketHits) {
 		//just kill the player, player_die() should take care of setting the fragger, MOD, etc.
 		if (ent->health > 0)

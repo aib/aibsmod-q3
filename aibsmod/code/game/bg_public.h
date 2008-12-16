@@ -460,6 +460,7 @@ typedef enum {
 	EV_FOOTBALL_GOAL,
 	EV_FOOTBALL_PASS,		//used for all ball control
 
+	EV_ROCKETARENA_HIT,
 	EV_ROCKETARENA_COMBO,
 
 	EV_CURRENT_BUTTONS,		//button state update (sent every frame)

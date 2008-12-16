@@ -163,6 +163,8 @@ struct gentity_s {
 
 	int			rocketHits;				//for Rocket Arena
 	int			rocketHitter;			//for Rocket Arena
+	float		ownerVelocity;			//for Rocket Arena, owner's velocity at time of firing
+	int			jumpTime;				//for Rocket Arena, time last touched ground
 
 	int			dieTime;				//for entities with limited lifespans
 	int			bounceCount;			//for EF_BOUNCE_LIMITED
@@ -519,10 +521,6 @@ void G_SetOrigin( gentity_t *ent, vec3_t origin );
 void AddRemap(const char *oldShader, const char *newShader, float timeOffset);
 const char *BuildShaderStateConfig();
 
-//aibsmod stuff
-void G_SetAngles(gentity_t *ent, vec3_t angles);
-void G_SetRotatedBoundingBox(gentity_t *ent, const vec3_t orgmins, const vec3_t orgmaxs);
-
 //
 // g_combat.c
 //
@@ -620,9 +618,6 @@ void player_die (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 void AddScore( gentity_t *ent, vec3_t origin, int score );
 void CalculateRanks( void );
 qboolean SpotWouldTelefrag( gentity_t *spot );
-
-void aibsmod_switchRambo(gentity_t *oldrambo, gentity_t *newrambo);
-void aibsmod_giveAllWeapons(gclient_t *player);
 
 //
 // g_svcmds.c
@@ -1031,6 +1026,9 @@ void	trap_SnapVector( float *v );
 //aibsmod stuff
 
 //g_aibsmod.c
+float VectorMagnitude(const vec3_t v);
+void G_SetAngles(gentity_t *ent, vec3_t angles);
+void G_SetRotatedBoundingBox(gentity_t *ent, const vec3_t orgmins, const vec3_t orgmaxs);
 void give_all_weapons(gclient_t *player);
 void give_rocketarena_weapons(gclient_t *player);
 void teleport_player_straight(gentity_t *player);

@@ -1270,6 +1270,9 @@ void ClientSpawn(gentity_t *ent) {
 	//Clear rocket hits
 	ent->rocketHits = 0;
 
+	//Clear last jump time
+	ent->jumpTime = level.time;
+
 	// run a client frame to drop exactly to the floor,
 	// initialize animations and other things
 	client->ps.commandTime = level.time - 100;
