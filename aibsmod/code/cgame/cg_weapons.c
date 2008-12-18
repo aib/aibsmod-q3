@@ -192,13 +192,18 @@ static void CG_NailgunEjectBrass( centity_t *cent ) {
 CG_RailTrail
 ==========================
 */
-void CG_RailTrail (clientInfo_t *ci, vec3_t start, vec3_t end) {
+//aibsmod - modified to take clientNum instead of clientInfo*
+void CG_RailTrail (int clientNum, vec3_t start, vec3_t end) {
 	vec3_t axis[36], move, move2, next_move, vec, temp;
 	float  len;
 	int    i, j, skip;
 
 	localEntity_t *le;
 	refEntity_t   *re;
+
+	clientInfo_t *ci;
+
+	ci = &cgs.clientinfo[clientNum];
 
 #define RADIUS   4
 #define ROTATION 1
@@ -228,15 +233,29 @@ void CG_RailTrail (clientInfo_t *ci, vec3_t start, vec3_t end) {
 	VectorCopy(start, re->origin);
 	VectorCopy(end, re->oldorigin);
 
-	re->shaderRGBA[0] = ci->color1[0] * 255;
-    re->shaderRGBA[1] = ci->color1[1] * 255;
-    re->shaderRGBA[2] = ci->color1[2] * 255;
-    re->shaderRGBA[3] = 255;
+	//aibsmod - use CPMA skin coloring
+	if (am_CPMASkins.integer) {
+		CG_SetColors(clientNum, AM_COLORPART_1, le->color);
 
-	le->color[0] = ci->color1[0] * 0.75;
-	le->color[1] = ci->color1[1] * 0.75;
-	le->color[2] = ci->color1[2] * 0.75;
-	le->color[3] = 1.0f;
+		le->color[0] *= 0.75f;
+		le->color[1] *= 0.75f;
+		le->color[2] *= 0.75f;
+		le->color[3] = 1.0f;
+
+		CG_SetShaderColors(clientNum, AM_COLORPART_1, re->shaderRGBA);
+		re->shaderRGBA[3] = 255;
+
+	} else {
+		re->shaderRGBA[0] = ci->color1[0] * 255;
+		re->shaderRGBA[1] = ci->color1[1] * 255;
+		re->shaderRGBA[2] = ci->color1[2] * 255;
+		re->shaderRGBA[3] = 255;
+
+		le->color[0] = ci->color1[0] * 0.75;
+		le->color[1] = ci->color1[1] * 0.75;
+		le->color[2] = ci->color1[2] * 0.75;
+		le->color[3] = 1.0f;
+	}
 
 	AxisClear( re->axis );
 
@@ -269,15 +288,29 @@ void CG_RailTrail (clientInfo_t *ci, vec3_t start, vec3_t end) {
             re->radius = 1.1f;
 			re->customShader = cgs.media.railRingsShader;
 
-            re->shaderRGBA[0] = ci->color2[0] * 255;
-            re->shaderRGBA[1] = ci->color2[1] * 255;
-            re->shaderRGBA[2] = ci->color2[2] * 255;
-            re->shaderRGBA[3] = 255;
+			//aibsmod - use CPMA skin coloring
+			if (am_CPMASkins.integer) {
+				CG_SetColors(clientNum, AM_COLORPART_2, le->color);
 
-            le->color[0] = ci->color2[0] * 0.75;
-            le->color[1] = ci->color2[1] * 0.75;
-            le->color[2] = ci->color2[2] * 0.75;
-            le->color[3] = 1.0f;
+				le->color[0] *= 0.75f;
+				le->color[1] *= 0.75f;
+				le->color[2] *= 0.75f;
+				le->color[3] = 1.0f;
+
+				CG_SetShaderColors(clientNum, AM_COLORPART_2, re->shaderRGBA);
+				re->shaderRGBA[3] = 255;
+
+			} else {
+				re->shaderRGBA[0] = ci->color2[0] * 255;
+				re->shaderRGBA[1] = ci->color2[1] * 255;
+				re->shaderRGBA[2] = ci->color2[2] * 255;
+				re->shaderRGBA[3] = 255;
+
+				le->color[0] = ci->color2[0] * 0.75;
+				le->color[1] = ci->color2[1] * 0.75;
+				le->color[2] = ci->color2[2] * 0.75;
+				le->color[3] = 1.0f;
+			}
 
             le->pos.trType = TR_LINEAR;
             le->pos.trTime = cg.time;
@@ -1112,7 +1145,7 @@ different than the muzzle point used for determining hits.
 ===============
 */
 static void CG_SpawnRailTrail( centity_t *cent, vec3_t origin ) {
-	clientInfo_t	*ci;
+//	clientInfo_t	*ci;
 
 	if ( cent->currentState.weapon != WP_RAILGUN ) {
 		return;
@@ -1121,8 +1154,9 @@ static void CG_SpawnRailTrail( centity_t *cent, vec3_t origin ) {
 		return;
 	}
 	cent->pe.railgunFlash = qtrue;
-	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-	CG_RailTrail( ci, origin, cent->pe.railgunImpact );
+//	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
+//	CG_RailTrail( ci, origin, cent->pe.railgunImpact );
+	CG_RailTrail( cent->currentState.clientNum, origin, cent->pe.railgunImpact );
 }
 
 
@@ -1323,9 +1357,16 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		clientInfo_t	*ci;
 
 		ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-		flash.shaderRGBA[0] = 255 * ci->color1[0];
-		flash.shaderRGBA[1] = 255 * ci->color1[1];
-		flash.shaderRGBA[2] = 255 * ci->color1[2];
+
+		//aibsmod - use CPMA skin coloring
+		if (am_CPMASkins.integer)
+			CG_SetShaderColors(cent->currentState.clientNum, AM_COLORPART_1, flash.shaderRGBA);
+
+		else {
+			flash.shaderRGBA[0] = 255 * ci->color1[0];
+			flash.shaderRGBA[1] = 255 * ci->color1[1];
+			flash.shaderRGBA[2] = 255 * ci->color1[2];
+		}
 	}
 
 	CG_PositionRotatedEntityOnTag( &flash, &gun, weapon->weaponModel, "tag_flash");
@@ -1943,8 +1984,14 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		le->light = light;
 		VectorCopy( lightColor, le->lightColor );
 		if ( weapon == WP_RAILGUN ) {
+
+			//aibsmod - use CPMA skin coloring
+			if (am_CPMASkins.integer)
+				CG_SetColors(clientNum, AM_COLORPART_1, le->color);
+
 			// colorize with client color
-			VectorCopy( cgs.clientinfo[clientNum].color1, le->color );
+			else
+				VectorCopy( cgs.clientinfo[clientNum].color1, le->color );
 		}
 	}
 
@@ -1953,11 +2000,22 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 	//
 	alphaFade = (mark == cgs.media.energyMarkShader);	// plasma fades alpha, all others fade color
 	if ( weapon == WP_RAILGUN ) {
-		float	*color;
 
-		// colorize with client color
-		color = cgs.clientinfo[clientNum].color2;
-		CG_ImpactMark( mark, origin, dir, random()*360, color[0],color[1], color[2],1, alphaFade, radius, qfalse );
+		//aibsmod - use CPMA skin coloring
+		if (am_CPMASkins.integer) {
+			float color[3];
+
+			CG_SetColors(clientNum, AM_COLORPART_2, color);
+			CG_ImpactMark( mark, origin, dir, random()*360, color[0],color[1], color[2],1, alphaFade, radius, qfalse );
+		}
+
+		else {
+			float	*color;
+
+			// colorize with client color
+			color = cgs.clientinfo[clientNum].color2;
+			CG_ImpactMark( mark, origin, dir, random()*360, color[0],color[1], color[2],1, alphaFade, radius, qfalse );
+		}
 	} else {
 		CG_ImpactMark( mark, origin, dir, random()*360, 1,1,1,1, alphaFade, radius, qfalse );
 	}

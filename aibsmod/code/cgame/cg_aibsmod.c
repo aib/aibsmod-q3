@@ -58,8 +58,8 @@ float getPlayerSpeed(void)
 
 float CG_DrawBigSpeed(float y)
 {
-	char		*s;
-	int			w;
+	char *s;
+	int w;
 
 	s = va("%.0fups", getPlayerSpeed());
 	w = CG_DrawStrlen(s) * BIGCHAR_WIDTH;
@@ -269,9 +269,6 @@ void CG_BBox(centity_t *cent)
 	VectorAdd(cent->currentState.origin, cent->currentState.origin2, mins);
 	VectorAdd(cent->currentState.origin, cent->currentState.angles2, maxs);
 
-	VectorSet(ci.color1, 0.5f, 0, 1.0f);
-	VectorSet(ci.color2, 0.5f, 0, 1.0f);
-
 	VectorSet(p1, mins[0], mins[1], mins[2]);
 	VectorSet(p2, mins[0], maxs[1], mins[2]);
 	CG_Laser(p1, p2, color);
@@ -323,6 +320,7 @@ void CG_DrawFootballTracer(void)
 	CG_Laser(cg.predictedPlayerState.origin, cg.footballPos, tracerColor);
 }
 
+//Called after dropping weapon
 void CG_DropWeaponChange(void)
 {
 	int i;
@@ -342,13 +340,69 @@ void CG_DropWeaponChange(void)
 	}
 }
 
-//All am_CPMASkins-enabled code should call this to assign model colors
-void CG_SetShaderColors(int clientNum, byte targetRGBA[4])
+//CG_SetColors below uses this to color body parts
+int CG_SetColorPart(char *colorString, amColorpart_t part, float targetRGB[3])
+{
+	switch (colorString[part]) {
+		case '1': //blue
+			targetRGB[0] = 0.0f;
+			targetRGB[1] = 0.0f;
+			targetRGB[2] = 1.0f;
+			return 1;
+
+		case '2': //green
+			targetRGB[0] = 0.0f;
+			targetRGB[1] = 1.0f;
+			targetRGB[2] = 0.0f;
+			return 1;
+
+		case '3': //cyan
+			targetRGB[0] = 0.0f;
+			targetRGB[1] = 1.0f;
+			targetRGB[2] = 1.0f;
+			return 1;
+
+		case '4': //red
+			targetRGB[0] = 1.0f;
+			targetRGB[1] = 0.0f;
+			targetRGB[2] = 0.0f;
+			return 1;
+
+		case '5': //magenta
+			targetRGB[0] = 1.0f;
+			targetRGB[1] = 0.0f;
+			targetRGB[2] = 1.0f;
+			return 1;
+
+		case '6': //yellow
+			targetRGB[0] = 1.0f;
+			targetRGB[1] = 1.0f;
+			targetRGB[2] = 0.0f;
+			return 1;
+
+		case '7': //white
+			targetRGB[0] = 1.0f;
+			targetRGB[1] = 1.0f;
+			targetRGB[2] = 1.0f;
+			return 1;
+
+		default:
+			return 0;
+	}
+}
+
+//All am_CPMASkins-enabled code should call this, or the counterpart below to assign model colors
+void CG_SetColors(int clientNum, amColorpart_t part, float targetRGB[3])
 {
 	float colcycle;
+	int colorSet = 0;
 
 	//No need to bother if CPMA skins are disabled
 	if (!am_CPMASkins.integer) return;
+
+	//This function should not be called with clientNum = -1
+	if ((clientNum == -1) || (part == AM_COLORPART_NONE))
+		CG_Printf("Warning: CG_SetColors() called with invalid client/part.\n");
 
 	//Easter egg!
 	if (!strcmp(cgs.clientinfo[clientNum].name, "aib42")) {
@@ -356,64 +410,116 @@ void CG_SetShaderColors(int clientNum, byte targetRGBA[4])
 
 		//aibsmod version info
 		if (colcycle < 1.0f) {
-			targetRGBA[0] = 255;
-			targetRGBA[1] = (byte) (255.0f * colcycle);
-			targetRGBA[2] = 0;
+			targetRGB[0] = 1.0f;
+			targetRGB[1] = colcycle;
+			targetRGB[2] = 0.0f;
 		} else if (colcycle < 2.0f) {
-			targetRGBA[0] = (byte) (255.0f * (2.0f - colcycle));
-			targetRGBA[1] = 255;
-			targetRGBA[2] = 0;
+			targetRGB[0] = 2.0f - colcycle;
+			targetRGB[1] = 1.0f;
+			targetRGB[2] = 0.0f;
 		} else if (colcycle < 3.0f) {
-			targetRGBA[0] = 0;
-			targetRGBA[1] = 255;
-			targetRGBA[2] = (byte) (255.0f * (colcycle - 2.0f));
+			targetRGB[0] = 0.0f;
+			targetRGB[1] = 1.0f;
+			targetRGB[2] = colcycle - 2.0f;
 		} else if (colcycle < 4.0f) {
-			targetRGBA[0] = 0;
-			targetRGBA[1] = (byte) (255.0f * (4.0f - colcycle));
-			targetRGBA[2] = 255;
+			targetRGB[0] = 0.0f;
+			targetRGB[1] = 4.0f - colcycle;
+			targetRGB[2] = 1.0f;
 		} else if (colcycle < 5.0f) {
-			targetRGBA[0] = (byte) (255.0f * (colcycle - 4.0f));
-			targetRGBA[1] = 0;
-			targetRGBA[2] = 255;
+			targetRGB[0] = colcycle - 4.0f;
+			targetRGB[1] = 0.0f;
+			targetRGB[2] = 1.0f;
 		} else if (colcycle < 6.0f) {
-			targetRGBA[0] = 255;
-			targetRGBA[1] = 0;
-			targetRGBA[2] = (byte) (255.0f * (6.0f - colcycle));
+			targetRGB[0] = 1.0f;
+			targetRGB[1] = 0.0f;
+			targetRGB[2] = 6.0f - colcycle;
 		}
 
-		targetRGBA[3] = 255;
 		return;
 	}
 
 	//Find a color based on gametype, overrides, etc.
 	if (cgs.gametype < GT_TEAM) { //non-team games
-		targetRGBA[0] = 255;
-		targetRGBA[1] = 255;
-		targetRGBA[2] = 255;
-		targetRGBA[3] = 255;
+		if (!CG_SetColorPart(am_enemyColors.string, part, targetRGB)) {
+			if (!CG_SetColorPart(cgs.clientinfo[clientNum].colors, part, targetRGB)) {
+				if (part == AM_COLORPART_1) {
+					targetRGB[0] = cgs.clientinfo[clientNum].color1[0];
+					targetRGB[1] = cgs.clientinfo[clientNum].color1[1];
+					targetRGB[2] = cgs.clientinfo[clientNum].color1[2];
+				} else if (part == AM_COLORPART_2) {
+					targetRGB[0] = cgs.clientinfo[clientNum].color2[0];
+					targetRGB[1] = cgs.clientinfo[clientNum].color2[1];
+					targetRGB[2] = cgs.clientinfo[clientNum].color2[2];
+				} else {
+					targetRGB[0] = 1.0f;
+					targetRGB[1] = 1.0f;
+					targetRGB[2] = 1.0f;
+				}
+			}
+		}
 	} else {
 		team_t myTeam = cgs.clientinfo[cg.clientNum].team;
 		team_t otherTeam = cgs.clientinfo[clientNum].team;
 
-		if ((otherTeam == myTeam) && 0) { //friendly color override
+		//friendly color override
+		if ((otherTeam == myTeam) && CG_SetColorPart(am_friendlyColors.string, part, targetRGB)) {
+		}
 
-		} else if ((otherTeam != myTeam) && 0) { //enemy color override
+		//enemy color override
+		else if ((otherTeam != myTeam) && CG_SetColorPart(am_enemyColors.string, part, targetRGB)) {
+		}
 
-		} else if (otherTeam == TEAM_RED) { //default red team color
-			targetRGBA[0] = 255;
-			targetRGBA[1] = 32;
-			targetRGBA[2] = 32;
-			targetRGBA[3] = 255;
-		} else if (otherTeam == TEAM_BLUE) { //default blue team color
-			targetRGBA[0] = 32;
-			targetRGBA[1] = 32;
-			targetRGBA[2] = 255;
-			targetRGBA[3] = 255;
-		} else { //this shouldn't happen; use something that will attract attention
-			targetRGBA[0] = 0;
-			targetRGBA[1] = 0;
-			targetRGBA[2] = 0;
-			targetRGBA[3] = 255;
+		//If the override didn't work, try these default values:
+		else {
+			if (otherTeam == TEAM_RED) { //default red team color
+				if (part == AM_COLORPART_1) {
+					targetRGB[0] = cgs.clientinfo[clientNum].color1[0];
+					targetRGB[1] = cgs.clientinfo[clientNum].color1[1];
+					targetRGB[2] = cgs.clientinfo[clientNum].color1[2];
+				} else if (part == AM_COLORPART_2) {
+					targetRGB[0] = cgs.clientinfo[clientNum].color2[0];
+					targetRGB[1] = cgs.clientinfo[clientNum].color2[1];
+					targetRGB[2] = cgs.clientinfo[clientNum].color2[2];
+				} else {
+					targetRGB[0] = 1.0f;
+					targetRGB[1] = 0.0;
+					targetRGB[2] = 0.0f;
+				}
+			} else if (otherTeam == TEAM_BLUE) { //default blue team color
+				if (part == AM_COLORPART_1) {
+					targetRGB[0] = cgs.clientinfo[clientNum].color1[0];
+					targetRGB[1] = cgs.clientinfo[clientNum].color1[1];
+					targetRGB[2] = cgs.clientinfo[clientNum].color1[2];
+				} else if (part == AM_COLORPART_2) {
+					targetRGB[0] = cgs.clientinfo[clientNum].color2[0];
+					targetRGB[1] = cgs.clientinfo[clientNum].color2[1];
+					targetRGB[2] = cgs.clientinfo[clientNum].color2[2];
+				} else {
+					targetRGB[0] = 0.0f;
+					targetRGB[1] = 0.0;
+					targetRGB[2] = 1.0f;
+				}
+			} else { //this shouldn't happen; use something that will attract attention
+				targetRGB[0] = 0.0f;
+				targetRGB[1] = 0.0f;
+				targetRGB[2] = 0.0f;
+			}
 		}
 	}
+}
+
+//Wrapper for above
+void CG_SetShaderColors(int clientNum, amColorpart_t part, byte targetRGB[3])
+{
+	float rgb[3];
+
+	CG_SetColors(clientNum, part, rgb);
+
+	targetRGB[0] = (byte) (255.0f * rgb[0]);
+	targetRGB[1] = (byte) (255.0f * rgb[1]);
+	targetRGB[2] = (byte) (255.0f * rgb[2]);
+
+	if (targetRGB[0] < 32) targetRGB[0] = 32;
+	if (targetRGB[1] < 32) targetRGB[1] = 32;
+	if (targetRGB[2] < 32) targetRGB[2] = 32;
 }

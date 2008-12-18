@@ -189,6 +189,9 @@ vmCvar_t	am_drawButtons;
 vmCvar_t	am_hitFeedback;
 
 vmCvar_t	am_CPMASkins;
+vmCvar_t	am_colors;
+vmCvar_t	am_enemyColors;
+vmCvar_t	am_friendlyColors;
 
 vmCvar_t	amh_depth;
 
@@ -335,6 +338,9 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &am_hitFeedback, "am_hitFeedback", "0", CVAR_ARCHIVE },
 
 	{ &am_CPMASkins, "am_CPMASkins", "0", CVAR_ARCHIVE },
+	{ &am_colors, "am_colors", "-----", CVAR_USERINFO | CVAR_ARCHIVE },
+	{ &am_enemyColors, "am_enemyColors", "-----", CVAR_ARCHIVE },
+	{ &am_friendlyColors, "am_friendlyColors", "-----", CVAR_ARCHIVE },
 
 	{ &amh_depth, "amh_depth", "0", CVAR_CHEAT }
 

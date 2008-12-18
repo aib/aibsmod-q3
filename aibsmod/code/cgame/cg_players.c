@@ -880,6 +880,8 @@ void CG_NewClientInfo( int clientNum ) {
 	const char	*v;
 	char		*slash;
 
+	int i;
+
 	ci = &cgs.clientinfo[clientNum];
 
 	configstring = CG_ConfigString( clientNum + CS_PLAYERS );
@@ -902,6 +904,23 @@ void CG_NewClientInfo( int clientNum ) {
 
 	v = Info_ValueForKey( configstring, "c2" );
 	CG_ColorFromString( v, newInfo.color2 );
+
+	//aibsmod - true colors
+	v = Info_ValueForKey(configstring, "cc");
+	for (i=0; i<5; ++i)
+		newInfo.colors[i] = v[i];
+
+	for (; i<5; ++i)
+		newInfo.colors[i] = '-';
+
+CG_Printf("DEBUG: %s's color string looks like: \"%c%c%c%c%c\".\n",
+	newInfo.name,
+	newInfo.colors[0] ? newInfo.colors[0] : '!',
+	newInfo.colors[1] ? newInfo.colors[1] : '!',
+	newInfo.colors[2] ? newInfo.colors[2] : '!',
+	newInfo.colors[3] ? newInfo.colors[3] : '!',
+	newInfo.colors[4] ? newInfo.colors[4] : '!'
+);
 
 	// bot skill
 	v = Info_ValueForKey( configstring, "skill" );
@@ -2328,9 +2347,9 @@ void CG_Player( centity_t *cent ) {
 
 	//aibsmod - CPMA skins
 	if (am_CPMASkins.integer) {
-		CG_SetShaderColors(clientNum, legs.shaderRGBA);
-		CG_SetShaderColors(clientNum, torso.shaderRGBA);
-		CG_SetShaderColors(clientNum, head.shaderRGBA);
+		CG_SetShaderColors(clientNum, AM_COLORPART_LEGS, legs.shaderRGBA);
+		CG_SetShaderColors(clientNum, AM_COLORPART_TORSO, torso.shaderRGBA);
+		CG_SetShaderColors(clientNum, AM_COLORPART_HEAD, head.shaderRGBA);
 	}
 
 	renderfx |= RF_LIGHTING_ORIGIN;			// use the same origin for all

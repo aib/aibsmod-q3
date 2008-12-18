@@ -7,14 +7,26 @@
 #ifndef __AIBSMOD_H__
 #define __AIBSMOD_H__
 
-#define GAMEVERSION		"aibsmod_test82"
+#define GAMEVERSION		"aibsmod_test83"
 #define	GAME_VERSION	"aibsmod-1"
 
-#define VERSION_STRING	"aibsmod v0.82"
+#define VERSION_STRING	"aibsmod v0.83"
 
 //Couldn't find a suitable place for these, didn't want to modify q_shared.h
 #define MIN(x,y) ((x < y) ? (x) : (y))
 #define MAX(x,y) ((x > y) ? (x) : (y))
+
+typedef enum {
+	AM_COLORPART_NONE = -1,
+
+	AM_COLORPART_HEAD,
+	AM_COLORPART_TORSO,
+	AM_COLORPART_LEGS,
+	AM_COLORPART_1,
+	AM_COLORPART_2,
+
+	AM_MAX_COLORPARTS
+} amColorpart_t;
 
 //The constants below are used by game mechanics
 

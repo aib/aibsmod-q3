@@ -355,6 +355,10 @@ typedef struct {
 	animation_t		animations[MAX_TOTALANIMATIONS];
 
 	sfxHandle_t		sounds[MAX_CUSTOM_SOUNDS];
+
+	//aibsmod
+	char			colors[AM_MAX_COLORPARTS];
+
 } clientInfo_t;
 
 
@@ -1260,6 +1264,9 @@ extern	vmCvar_t		am_drawButtons;
 extern	vmCvar_t		am_hitFeedback;
 
 extern	vmCvar_t		am_CPMASkins;
+extern	vmCvar_t		am_colors;
+extern	vmCvar_t		am_enemyColors;
+extern	vmCvar_t		am_friendlyColors;
 
 extern	vmCvar_t		amh_depth;
 
@@ -1367,7 +1374,7 @@ void CG_InitTeamChat();
 void CG_GetTeamColor(vec4_t *color);
 const char *CG_GetGameStatusText();
 const char *CG_GetKillerText();
-void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles, int clientNum );
+void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles, int clientNum, amColorpart_t part );
 void CG_Text_PaintChar(float x, float y, float width, float height, float scale, float s, float t, float s2, float t2, qhandle_t hShader);
 void CG_CheckOrderPending();
 const char *CG_GameTypeString();
@@ -1435,7 +1442,7 @@ void CG_MissileHitPlayer( int weapon, vec3_t origin, vec3_t dir, int entityNum )
 void CG_ShotgunFire( entityState_t *es );
 void CG_Bullet( vec3_t origin, int sourceEntityNum, vec3_t normal, qboolean flesh, int fleshEntityNum );
 
-void CG_RailTrail( clientInfo_t *ci, vec3_t start, vec3_t end );
+void CG_RailTrail( int clientNum, vec3_t start, vec3_t end );
 void CG_GrappleTrail( centity_t *ent, const weaponInfo_t *wi );
 void CG_AddViewWeapon (playerState_t *ps);
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team );
@@ -1555,7 +1562,7 @@ void CG_DrawFootballTracer(void);
 
 void CG_DropWeaponChange(void);
 
-void CG_SetShaderColors(int clientNum, byte targetRGBA[4]);
+void CG_SetShaderColors(int clientNum, amColorpart_t part, byte targetRGBA[4]);
 
 //===============================================
 

@@ -250,8 +250,8 @@ CG_Draw3DModel
 
 ================
 */
-//aibsmod - modified this to take a clientNum parameter
-void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles, int clientNum ) {
+//aibsmod - modified this to take clientNum and bodyPart parameters
+void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles, int clientNum, amColorpart_t part ) {
 	refdef_t		refdef;
 	refEntity_t		ent;
 
@@ -272,7 +272,7 @@ void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandl
 
 	//aibsmod - set CPMA skin shader colors if clientNum is given
 	if (clientNum != -1) {
-		CG_SetShaderColors(clientNum, ent.shaderRGBA);
+		CG_SetShaderColors(clientNum, part, ent.shaderRGBA);
 	}
 
 	refdef.rdflags = RDF_NOWORLDMODEL;
@@ -330,7 +330,7 @@ void CG_DrawHead( float x, float y, float w, float h, int clientNum, vec3_t head
 		// allow per-model tweaking
 		VectorAdd( origin, ci->headOffset, origin );
 
-		CG_Draw3DModel( x, y, w, h, ci->headModel, ci->headSkin, origin, headAngles, clientNum );
+		CG_Draw3DModel( x, y, w, h, ci->headModel, ci->headSkin, origin, headAngles, clientNum, AM_COLORPART_HEAD );
 	} else if ( cg_drawIcons.integer ) {
 		CG_DrawPic( x, y, w, h, ci->modelIcon );
 	}
@@ -383,7 +383,7 @@ void CG_DrawFlagModel( float x, float y, float w, float h, int team, qboolean fo
 		} else {
 			return;
 		}
-		CG_Draw3DModel( x, y, w, h, handle, 0, origin, angles, -1 );
+		CG_Draw3DModel( x, y, w, h, handle, 0, origin, angles, -1, AM_COLORPART_NONE );
 	} else if ( cg_drawIcons.integer ) {
 		gitem_t *item;
 
@@ -545,7 +545,7 @@ static void CG_DrawStatusBar( void ) {
 		origin[2] = 0;
 		angles[YAW] = 90 + 20 * sin( cg.time / 1000.0 );
 		CG_Draw3DModel( CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE,
-					   cg_weapons[ cent->currentState.weapon ].ammoModel, 0, origin, angles, -1 );
+					   cg_weapons[ cent->currentState.weapon ].ammoModel, 0, origin, angles, -1, AM_COLORPART_NONE );
 	}
 
 	CG_DrawStatusBarHead( 185 + CHAR_WIDTH*3 + TEXT_ICON_SPACE );
@@ -571,7 +571,7 @@ static void CG_DrawStatusBar( void ) {
 		origin[2] = -10;
 		angles[YAW] = ( cg.time & 2047 ) * 360 / 2048.0;
 		CG_Draw3DModel( 370 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE,
-					   cgs.media.armorModel, 0, origin, angles, -1 );
+					   cgs.media.armorModel, 0, origin, angles, -1, AM_COLORPART_NONE );
 	}
 #ifdef MISSIONPACK
 	if( cgs.gametype == GT_HARVESTER ) {
@@ -584,7 +584,7 @@ static void CG_DrawStatusBar( void ) {
 		} else {
 			handle = cgs.media.blueCubeModel;
 		}
-		CG_Draw3DModel( 640 - (TEXT_ICON_SPACE + ICON_SIZE), 416, ICON_SIZE, ICON_SIZE, handle, 0, origin, angles, -1 );
+		CG_Draw3DModel( 640 - (TEXT_ICON_SPACE + ICON_SIZE), 416, ICON_SIZE, ICON_SIZE, handle, 0, origin, angles, -1, AM_COLORPART_NONE );
 	}
 #endif
 	//
