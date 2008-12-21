@@ -1126,11 +1126,14 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	// the total will be turned into screen blends and view angle kicks
 	// at the end of the frame
 	if ( client ) {
-		if ( attacker ) {
-			client->ps.persistant[PERS_ATTACKER] = attacker->s.number;
-		} else {
-			client->ps.persistant[PERS_ATTACKER] = ENTITYNUM_WORLD;
+		if (g_gametype.integer != GT_ROCKETARENA) { //aibsmod - Rocket Arena will set last attacker in ra_register_hit
+			if ( attacker ) {
+				client->ps.persistant[PERS_ATTACKER] = attacker->s.number;
+			} else {
+				client->ps.persistant[PERS_ATTACKER] = ENTITYNUM_WORLD;
+			}
 		}
+
 		client->damage_armor += asave;
 		client->damage_blood += take;
 		client->damage_knockback += knockback;

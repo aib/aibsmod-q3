@@ -88,6 +88,7 @@ vmCvar_t	am_spawnNoMG;
 vmCvar_t	am_piercingRail;
 vmCvar_t	am_hyperGauntlet;
 vmCvar_t	am_rocketBounce;
+vmCvar_t	am_tripmineGrenade;
 vmCvar_t	am_teleportDelay;
 
 vmCvar_t	am_selfDamage;
@@ -198,6 +199,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &am_piercingRail, "am_piercingRail", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_hyperGauntlet, "am_hyperGauntlet", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_rocketBounce, "am_rocketBounce", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &am_tripmineGrenade, "am_tripmineGrenade", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_teleportDelay, "am_teleportDelay", "-1", CVAR_ARCHIVE, 0, qtrue },
 
 	{ &am_selfDamage, "am_selfDamage", "1", CVAR_ARCHIVE, 0, qtrue },

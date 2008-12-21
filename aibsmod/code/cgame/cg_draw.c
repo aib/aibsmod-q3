@@ -711,7 +711,17 @@ static float CG_DrawAttacker( float y ) {
 
 		if ((clientNum < 0) || (clientNum >= MAX_CLIENTS))
 			return y;
-	} else {
+	}
+
+	//aibsmod - always draw last attacker in Rocket Arena
+	else if (cgs.gametype == GT_ROCKETARENA) {
+		clientNum = cg.predictedPlayerState.persistant[PERS_ATTACKER];
+
+		if ((clientNum < 0) || (clientNum >= MAX_CLIENTS))
+			return y;
+	}
+
+	else {
 		if ( cg.predictedPlayerState.stats[STAT_HEALTH] <= 0 ) {
 			return y;
 		}

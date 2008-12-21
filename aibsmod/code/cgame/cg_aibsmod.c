@@ -405,6 +405,66 @@ int CG_SetColorPart(char *colorString, amColorpart_t part, float targetRGB[3])
 			targetRGB[2] = 1.0f;
 			return 1;
 
+		case '8': //gray
+			targetRGB[0] = 0.5f;
+			targetRGB[1] = 0.5f;
+			targetRGB[2] = 0.5f;
+			return 1;
+
+		case 'a':
+			targetRGB[0] = 0.5f;
+			targetRGB[1] = 0.5f;
+			targetRGB[2] = 1.0f;
+			return 1;
+
+		case 'b':
+			targetRGB[0] = 0.5f;
+			targetRGB[1] = 1.0f;
+			targetRGB[2] = 0.5f;
+			return 1;
+
+		case 'c':
+			targetRGB[0] = 1.0f;
+			targetRGB[1] = 0.5f;
+			targetRGB[2] = 0.5f;
+			return 1;
+
+		case 'd':
+			targetRGB[0] = 0.5f;
+			targetRGB[1] = 0.0f;
+			targetRGB[2] = 1.0f;
+			return 1;
+
+		case 'e':
+			targetRGB[0] = 0.0f;
+			targetRGB[1] = 0.5f;
+			targetRGB[2] = 1.0f;
+			return 1;
+
+		case 'f':
+			targetRGB[0] = 0.5f;
+			targetRGB[1] = 1.0f;
+			targetRGB[2] = 0.0f;
+			return 1;
+
+		case 'g':
+			targetRGB[0] = 0.0f;
+			targetRGB[1] = 1.0f;
+			targetRGB[2] = 0.5f;
+			return 1;
+
+		case 'h':
+			targetRGB[0] = 1.0f;
+			targetRGB[1] = 0.5f;
+			targetRGB[2] = 0.0f;
+			return 1;
+
+		case 'i': //pink
+			targetRGB[0] = 1.0f;
+			targetRGB[1] = 0.0f;
+			targetRGB[2] = 0.5f;
+			return 1;
+
 		default:
 			return 0;
 	}
@@ -459,24 +519,44 @@ void CG_SetColors(int clientNum, amColorpart_t part, float targetRGB[3])
 
 	//Find a color based on gametype, overrides, etc.
 	if (cgs.gametype < GT_TEAM) { //non-team games
-		if (!CG_SetColorPart(am_enemyColors.string, part, targetRGB)) {
-			if (!CG_SetColorPart(cgs.clientinfo[clientNum].colors, part, targetRGB)) {
-				if (part == AM_COLORPART_1) {
-					targetRGB[0] = cgs.clientinfo[clientNum].color1[0];
-					targetRGB[1] = cgs.clientinfo[clientNum].color1[1];
-					targetRGB[2] = cgs.clientinfo[clientNum].color1[2];
-				} else if (part == AM_COLORPART_2) {
-					targetRGB[0] = cgs.clientinfo[clientNum].color2[0];
-					targetRGB[1] = cgs.clientinfo[clientNum].color2[1];
-					targetRGB[2] = cgs.clientinfo[clientNum].color2[2];
-				} else {
-					targetRGB[0] = 1.0f;
-					targetRGB[1] = 1.0f;
-					targetRGB[2] = 1.0f;
+		if (clientNum == cg.clientNum) { //self
+			if (!CG_SetColorPart(am_colors.string, part, targetRGB)) {
+				if (!CG_SetColorPart(cgs.clientinfo[clientNum].colors, part, targetRGB)) {
+					if (part == AM_COLORPART_1) {
+						targetRGB[0] = cgs.clientinfo[clientNum].color1[0];
+						targetRGB[1] = cgs.clientinfo[clientNum].color1[1];
+						targetRGB[2] = cgs.clientinfo[clientNum].color1[2];
+					} else if (part == AM_COLORPART_2) {
+						targetRGB[0] = cgs.clientinfo[clientNum].color2[0];
+						targetRGB[1] = cgs.clientinfo[clientNum].color2[1];
+						targetRGB[2] = cgs.clientinfo[clientNum].color2[2];
+					} else {
+						targetRGB[0] = 1.0f;
+						targetRGB[1] = 1.0f;
+						targetRGB[2] = 1.0f;
+					}
+				}
+			}
+		} else { //enemy
+			if (!CG_SetColorPart(am_enemyColors.string, part, targetRGB)) {
+				if (!CG_SetColorPart(cgs.clientinfo[clientNum].colors, part, targetRGB)) {
+					if (part == AM_COLORPART_1) {
+						targetRGB[0] = cgs.clientinfo[clientNum].color1[0];
+						targetRGB[1] = cgs.clientinfo[clientNum].color1[1];
+						targetRGB[2] = cgs.clientinfo[clientNum].color1[2];
+					} else if (part == AM_COLORPART_2) {
+						targetRGB[0] = cgs.clientinfo[clientNum].color2[0];
+						targetRGB[1] = cgs.clientinfo[clientNum].color2[1];
+						targetRGB[2] = cgs.clientinfo[clientNum].color2[2];
+					} else {
+						targetRGB[0] = 1.0f;
+						targetRGB[1] = 1.0f;
+						targetRGB[2] = 1.0f;
+					}
 				}
 			}
 		}
-	} else {
+	} else { //team games
 		team_t myTeam = cgs.clientinfo[cg.clientNum].team;
 		team_t otherTeam = cgs.clientinfo[clientNum].team;
 
@@ -554,7 +634,7 @@ void CG_SetShaderColors(int clientNum, amColorpart_t part, byte targetRGBA[4])
 
 	//Sanitize shader values
 	targetRGBA[3] = 255;
-	if (targetRGBA[0] < 32) targetRGBA[0] = 32;
-	if (targetRGBA[1] < 32) targetRGBA[1] = 32;
-	if (targetRGBA[2] < 32) targetRGBA[2] = 32;
+	if (targetRGBA[0] < 32) targetRGBA[0] = 24;
+	if (targetRGBA[1] < 32) targetRGBA[1] = 24;
+	if (targetRGBA[2] < 32) targetRGBA[2] = 24;
 }

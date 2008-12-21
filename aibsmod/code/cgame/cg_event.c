@@ -1349,7 +1349,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	ent->s.origin2[1] = ownerVelocity;
 */
 	case EV_ROCKETARENA_HIT:
-		CG_Printf("%s" S_COLOR_WHITE " hit %s" S_COLOR_WHITE ", Tf: %0.1f, Tv: %0.1f / Rf: %0.1f / Sf: %0.1f, Sv: %0.1f",
+/*		CG_Printf("%s" S_COLOR_WHITE " hit %s" S_COLOR_WHITE ", Tf: %0.1f, Tv: %0.1f / Rf: %0.1f / Sf: %0.1f, Sv: %0.1f\n",
 			Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum2), "n"),
 			Info_ValueForKey(CG_ConfigString(CS_PLAYERS + es->otherEntityNum), "n"),
 			es->angles2[0],
@@ -1357,7 +1357,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			es->angles2[2],
 			es->origin2[0],
 			es->origin2[1]
-		);
+		);*/
 		break;
 
 	case EV_ROCKETARENA_COMBO:

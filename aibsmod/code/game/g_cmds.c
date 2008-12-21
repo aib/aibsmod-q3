@@ -1266,8 +1266,8 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 			return;
 		}
 
-		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s %d; map_restart 5", arg1, i );
-		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s; map_restart 5", arg1, gameNames[i] );
+		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s %d; map_restart 0", arg1, i );
+		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s %s; map_restart 0", arg1, gameNames[i] );
 	} else if ( !Q_stricmp( arg1, "map" ) ) {
 		// special case for map changes, we want to reset the nextmap setting
 		// this allows a player to change maps, but not upset the map rotation

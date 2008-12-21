@@ -917,15 +917,6 @@ void CG_NewClientInfo( int clientNum ) {
 	for (; i<5; ++i)
 		newInfo.colors[i] = '-';
 
-CG_Printf("DEBUG: %s's color string looks like: \"%c%c%c%c%c\".\n",
-	newInfo.name,
-	newInfo.colors[0],
-	newInfo.colors[1],
-	newInfo.colors[2],
-	newInfo.colors[3],
-	newInfo.colors[4]
-);
-
 	// bot skill
 	v = Info_ValueForKey( configstring, "skill" );
 	newInfo.botSkill = atoi( v );

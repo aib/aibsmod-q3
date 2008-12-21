@@ -1268,6 +1268,9 @@ void ClientSpawn(gentity_t *ent) {
 	//Set last damager to NULL
 	client->lastAttacker = NULL;
 
+	//Set last attacker to noone
+	client->ps.persistant[PERS_ATTACKER] = ENTITYNUM_WORLD;
+
 	//Clear teleport delay
 	client->teleportTime = level.time;
 

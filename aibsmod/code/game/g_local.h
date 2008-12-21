@@ -803,6 +803,7 @@ extern	vmCvar_t	g_proxMineTimeout;
 extern	vmCvar_t	am_piercingRail;
 extern	vmCvar_t	am_hyperGauntlet;
 extern	vmCvar_t	am_rocketBounce;
+extern	vmCvar_t	am_tripmineGrenade;
 extern	vmCvar_t	am_teleportDelay;
 
 extern	vmCvar_t	am_spawnHealth;

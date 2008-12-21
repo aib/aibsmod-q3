@@ -13,6 +13,10 @@ void ra_register_hit(gentity_t *attacker, gentity_t *inflictor, gentity_t *targe
 	if (target->s.groundEntityNum != ENTITYNUM_NONE)
 		return;
 
+	//Don't register disconnected hits
+	if (target->s.eFlags & EF_CONNECTION)
+		return;
+
 	if (!Q_stricmp(inflictor->classname, "grenade")) { //air grenade
 		//play "impressive" on player
 		attacker->client->ps.persistant[PERS_IMPRESSIVE_COUNT]++;
@@ -57,8 +61,10 @@ void ra_register_hit(gentity_t *attacker, gentity_t *inflictor, gentity_t *targe
 		targetVelocity
 	);*/
 
-	if (target->rocketHits == 0) //first hit
+	if (target->rocketHits == 0) { //first hit
 		target->rocketHitter = attacker->s.clientNum;
+		target->client->ps.persistant[PERS_ATTACKER] = attacker->s.clientNum;
+	}
 
 	if (target->rocketHitter == attacker->s.clientNum) //subsequent hits, must be from the same attacker
 		target->rocketHits++;
