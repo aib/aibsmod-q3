@@ -1,6 +1,10 @@
 #include "cg_local.h"
 
+//used to initialize min/max values
+#define IMPOSSIBLE_SPEED (1000000.0f)
+
 #define MAX_SPEEDCALC_FRAMES 256
+
 float getPlayerSpeed(void)
 {
 	static float previousSpeeds[MAX_SPEEDCALC_FRAMES];
@@ -11,7 +15,11 @@ float getPlayerSpeed(void)
 	float maxval; //max. height or speed, depending on method
 	int i;
 
-	previousSpeeds[index % MAX_SPEEDCALC_FRAMES] = cg.xyspeed;
+	if (am_drawSpeedFull.integer)
+		previousSpeeds[index % MAX_SPEEDCALC_FRAMES] = cg.xyzspeed;
+	else
+		previousSpeeds[index % MAX_SPEEDCALC_FRAMES] = cg.xyspeed;
+
 	previousHeights[index % MAX_SPEEDCALC_FRAMES] = cg.zpos;
 	index = (index + 1) % MAX_SPEEDCALC_FRAMES;
 
@@ -24,7 +32,7 @@ float getPlayerSpeed(void)
 
 	if (am_drawSpeedMethod.integer == 2) { //speed at max. height
 		total = 0.0f;
-		maxval = -1000000.0f;
+		maxval = -IMPOSSIBLE_SPEED;
 		for (i=(index + MAX_SPEEDCALC_FRAMES - totalFrames)%MAX_SPEEDCALC_FRAMES; i!=index; i=(i+1)%MAX_SPEEDCALC_FRAMES) {
 			if (previousHeights[i] > maxval) {
 				total = previousSpeeds[i];
@@ -38,6 +46,17 @@ float getPlayerSpeed(void)
 		maxval = -1.0f;
 		for (i=(index + MAX_SPEEDCALC_FRAMES - totalFrames)%MAX_SPEEDCALC_FRAMES; i!=index; i=(i+1)%MAX_SPEEDCALC_FRAMES) {
 			if (previousSpeeds[i] > maxval) {
+				total = previousSpeeds[i];
+				maxval = previousSpeeds[i];
+			}
+		}
+	}
+
+	else if (am_drawSpeedMethod.integer == 3) { //speed at min. speed
+		total = 0.0f;
+		maxval = +IMPOSSIBLE_SPEED;
+		for (i=(index + MAX_SPEEDCALC_FRAMES - totalFrames)%MAX_SPEEDCALC_FRAMES; i!=index; i=(i+1)%MAX_SPEEDCALC_FRAMES) {
+			if (previousSpeeds[i] < maxval) {
 				total = previousSpeeds[i];
 				maxval = previousSpeeds[i];
 			}
@@ -461,12 +480,26 @@ void CG_SetColors(int clientNum, amColorpart_t part, float targetRGB[3])
 		team_t myTeam = cgs.clientinfo[cg.clientNum].team;
 		team_t otherTeam = cgs.clientinfo[clientNum].team;
 
-		//friendly color override
-		if ((otherTeam == myTeam) && CG_SetColorPart(am_friendlyColors.string, part, targetRGB)) {
+		//friendly color override + am_colors override for color1/color2
+		if (otherTeam == myTeam) {
+			if (!CG_SetColorPart(am_friendlyColors.string, part, targetRGB)) {				//try friendlyColors, if it fails...
+				if ((part == AM_COLORPART_1) || (part == AM_COLORPART_2)) 					//and is an effect color,
+					if (CG_SetColorPart(cgs.clientinfo[clientNum].colors, part, targetRGB))	//try am_colors
+						return;
+			} else { //am_friendlyColors succeeded
+				return;
+			}
 		}
 
-		//enemy color override
-		else if ((otherTeam != myTeam) && CG_SetColorPart(am_enemyColors.string, part, targetRGB)) {
+		//enemy color override + am_colors override for color1/color2
+		else if (otherTeam != myTeam) {
+			if (!CG_SetColorPart(am_enemyColors.string, part, targetRGB)) {
+				if ((part == AM_COLORPART_1) || (part == AM_COLORPART_2))
+					if (CG_SetColorPart(cgs.clientinfo[clientNum].colors, part, targetRGB))
+						return;
+			} else { //am_enemyColors succeeded
+				return;
+			}
 		}
 
 		//If the override didn't work, try these default values:
@@ -509,17 +542,19 @@ void CG_SetColors(int clientNum, amColorpart_t part, float targetRGB[3])
 }
 
 //Wrapper for above
-void CG_SetShaderColors(int clientNum, amColorpart_t part, byte targetRGB[3])
+void CG_SetShaderColors(int clientNum, amColorpart_t part, byte targetRGBA[4])
 {
 	float rgb[3];
 
 	CG_SetColors(clientNum, part, rgb);
 
-	targetRGB[0] = (byte) (255.0f * rgb[0]);
-	targetRGB[1] = (byte) (255.0f * rgb[1]);
-	targetRGB[2] = (byte) (255.0f * rgb[2]);
+	targetRGBA[0] = (byte) (255.0f * rgb[0]);
+	targetRGBA[1] = (byte) (255.0f * rgb[1]);
+	targetRGBA[2] = (byte) (255.0f * rgb[2]);
 
-	if (targetRGB[0] < 32) targetRGB[0] = 32;
-	if (targetRGB[1] < 32) targetRGB[1] = 32;
-	if (targetRGB[2] < 32) targetRGB[2] = 32;
+	//Sanitize shader values
+	targetRGBA[3] = 255;
+	if (targetRGBA[0] < 32) targetRGBA[0] = 32;
+	if (targetRGBA[1] < 32) targetRGBA[1] = 32;
+	if (targetRGBA[2] < 32) targetRGBA[2] = 32;
 }

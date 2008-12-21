@@ -184,6 +184,7 @@ vmCvar_t	am_drawKillNotice;
 vmCvar_t	am_drawSpeed;
 vmCvar_t	am_drawSpeedMethod;
 vmCvar_t	am_drawSpeedFrames;
+vmCvar_t	am_drawSpeedFull;
 vmCvar_t	am_drawButtons;
 
 vmCvar_t	am_hitFeedback;
@@ -333,6 +334,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &am_drawSpeed, "am_drawSpeed", "0", CVAR_ARCHIVE },
 	{ &am_drawSpeedMethod, "am_drawSpeedMethod", "0", CVAR_ARCHIVE },
 	{ &am_drawSpeedFrames, "am_drawSpeedFrames", "1", CVAR_ARCHIVE },
+	{ &am_drawSpeedFull, "am_drawSpeedFull", "0", CVAR_ARCHIVE },
 	{ &am_drawButtons, "am_drawButtons", "0", CVAR_ARCHIVE },
 
 	{ &am_hitFeedback, "am_hitFeedback", "0", CVAR_ARCHIVE },
@@ -373,6 +375,10 @@ void CG_RegisterCvars( void ) {
 	trap_Cvar_Register(NULL, "headmodel", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
 	trap_Cvar_Register(NULL, "team_model", DEFAULT_TEAM_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
 	trap_Cvar_Register(NULL, "team_headmodel", DEFAULT_TEAM_HEAD, CVAR_USERINFO | CVAR_ARCHIVE );
+
+	//aibsmod
+	trap_Cvar_Register(NULL, "enemy_model", DEFAULT_TEAM_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
+	trap_Cvar_Register(NULL, "enemy_headmodel", DEFAULT_TEAM_HEAD, CVAR_USERINFO | CVAR_ARCHIVE );
 }
 
 /*

@@ -581,6 +581,7 @@ gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
 	//aibsmod - Rocket Arena and other stuff
 	bolt->spawnTime = level.time;
 	bolt->ownerVelocity = VectorMagnitude(self->s.pos.trDelta);
+	bolt->jumpTime = self->jumpTime;
 
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_GRENADE_LAUNCHER;
@@ -672,6 +673,7 @@ gentity_t *fire_rocket (gentity_t *self, vec3_t start, vec3_t dir) {
 	//aibsmod - Rocket Arena and other stuff
 	bolt->spawnTime = level.time;
 	bolt->ownerVelocity = VectorMagnitude(self->s.pos.trDelta);
+	bolt->jumpTime = self->jumpTime;
 
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_ROCKET_LAUNCHER;

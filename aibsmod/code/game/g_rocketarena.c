@@ -3,10 +3,11 @@
 void ra_register_hit(gentity_t *attacker, gentity_t *inflictor, gentity_t *target)
 {
 	gentity_t *ent;
-	float ownerVelocity;
+	float targetFlightTime;
 	float targetVelocity;
 	float rocketFlightTime;
-	float targetFlightTime;
+	float ownerFlightTime;
+	float ownerVelocity;
 
 	//Don't register ground hits
 	if (target->s.groundEntityNum != ENTITYNUM_NONE)
@@ -30,18 +31,20 @@ void ra_register_hit(gentity_t *attacker, gentity_t *inflictor, gentity_t *targe
 		attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 	}
 
-	ownerVelocity = inflictor->ownerVelocity;
+	targetFlightTime = (level.time - target->jumpTime) / 1000.0f;
 	targetVelocity = VectorMagnitude(target->s.pos.trDelta);
 	rocketFlightTime = (level.time - inflictor->spawnTime) / 1000.0f;
-	targetFlightTime = (level.time - target->jumpTime) / 1000.0f;
+	ownerFlightTime = (level.time - inflictor->jumpTime) / 1000.0f;
+	ownerVelocity = inflictor->ownerVelocity;
 
 	ent = G_TempEntity(attacker->r.currentOrigin, EV_ROCKETARENA_HIT);
 	ent->s.otherEntityNum = target->s.number;
 	ent->s.otherEntityNum2 = attacker->s.number;
-	ent->s.angles2[0] = rocketFlightTime;
-	ent->s.angles2[1] = targetFlightTime;
-	ent->s.angles2[2] = targetVelocity;
-	ent->s.origin2[0] = ownerVelocity;
+	ent->s.angles2[0] = targetFlightTime;
+	ent->s.angles2[1] = targetVelocity;
+	ent->s.angles2[2] = rocketFlightTime;
+	ent->s.origin2[0] = ownerFlightTime;
+	ent->s.origin2[1] = ownerVelocity;
 
 //	ent->r.svFlags = SVF_BROADCAST;	//send to everyone
 

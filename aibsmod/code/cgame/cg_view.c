@@ -631,6 +631,13 @@ static int CG_CalcViewValues( void ) {
 		ps->velocity[1] * ps->velocity[1] );
 	cg.zpos = ps->origin[2];
 
+	//aibsmod - also calculate xyzspeed
+	cg.xyzspeed = sqrt(
+		ps->velocity[0] * ps->velocity[0] +
+		ps->velocity[1] * ps->velocity[1] +
+		ps->velocity[2] * ps->velocity[2]
+	);
+
 	VectorCopy( ps->origin, cg.refdef.vieworg );
 	VectorCopy( ps->viewangles, cg.refdefViewAngles );
 

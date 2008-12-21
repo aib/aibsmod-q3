@@ -633,6 +633,8 @@ typedef struct {
 	//aibsmod stuff
 	int			carrierNum;			//current rambo or ball carrier (or -1)
 	float		zpos;				//client height, used in speed calculations
+	float		xyzspeed;			//total speed
+
 	int			trackButtonsClient;	//the clientNum whose buttons we are tracking
 	int			buttonState;		//sent by the server so we can draw buttons pressed
 	vec3_t		footballPos;		//position of the football
@@ -1259,6 +1261,7 @@ extern	vmCvar_t		am_drawKillNotice;
 extern	vmCvar_t		am_drawSpeed;
 extern	vmCvar_t		am_drawSpeedMethod;
 extern	vmCvar_t		am_drawSpeedFrames;
+extern	vmCvar_t		am_drawSpeedFull;
 extern	vmCvar_t		am_drawButtons;
 
 extern	vmCvar_t		am_hitFeedback;
@@ -1562,6 +1565,7 @@ void CG_DrawFootballTracer(void);
 
 void CG_DropWeaponChange(void);
 
+void CG_SetColors(int clientNum, amColorpart_t part, float targetRGB[3]);
 void CG_SetShaderColors(int clientNum, amColorpart_t part, byte targetRGBA[4]);
 
 //===============================================

@@ -907,19 +907,23 @@ void CG_NewClientInfo( int clientNum ) {
 
 	//aibsmod - true colors
 	v = Info_ValueForKey(configstring, "cc");
-	for (i=0; i<5; ++i)
+	for (i=0; i<5; ++i) {
+		if (v[i] == '\0') //end of string, quit so below can fill the rest with '-'
+			break;
+
 		newInfo.colors[i] = v[i];
+	}
 
 	for (; i<5; ++i)
 		newInfo.colors[i] = '-';
 
 CG_Printf("DEBUG: %s's color string looks like: \"%c%c%c%c%c\".\n",
 	newInfo.name,
-	newInfo.colors[0] ? newInfo.colors[0] : '!',
-	newInfo.colors[1] ? newInfo.colors[1] : '!',
-	newInfo.colors[2] ? newInfo.colors[2] : '!',
-	newInfo.colors[3] ? newInfo.colors[3] : '!',
-	newInfo.colors[4] ? newInfo.colors[4] : '!'
+	newInfo.colors[0],
+	newInfo.colors[1],
+	newInfo.colors[2],
+	newInfo.colors[3],
+	newInfo.colors[4]
 );
 
 	// bot skill
@@ -965,10 +969,29 @@ CG_Printf("DEBUG: %s's color string looks like: \"%c%c%c%c%c\".\n",
 		char *skin;
 
 		if( cgs.gametype >= GT_TEAM ) {
-			Q_strncpyz( newInfo.modelName, DEFAULT_TEAM_MODEL, sizeof( newInfo.modelName ) );
+			//aibsmod - use enemy/team models
+			modelStr[0] = '\0';
+
+			if (newInfo.team == cgs.clientinfo[cg.clientNum].team) //friendly
+				trap_Cvar_VariableStringBuffer("team_model", modelStr, sizeof(modelStr));
+			else //enemy
+				trap_Cvar_VariableStringBuffer("enemy_model", modelStr, sizeof(modelStr));
+
+			if (modelStr[0] == '\0')
+				Q_strncpyz( newInfo.modelName, DEFAULT_TEAM_MODEL, sizeof( newInfo.modelName ) );
+
+			//some other code overrides the skin, right?
 			Q_strncpyz( newInfo.skinName, "default", sizeof( newInfo.skinName ) );
 		} else {
-			trap_Cvar_VariableStringBuffer( "model", modelStr, sizeof( modelStr ) );
+			//aibsmod - if not self, try enemy_model first
+			modelStr[0] = '\0';
+
+			if (clientNum != cg.clientNum)
+				trap_Cvar_VariableStringBuffer("enemy_model", modelStr, sizeof(modelStr));
+
+			if (modelStr[0] == '\0')
+				trap_Cvar_VariableStringBuffer( "model", modelStr, sizeof( modelStr ) );
+
 			if ( ( skin = strchr( modelStr, '/' ) ) == NULL) {
 				skin = "default";
 			} else {
@@ -1009,10 +1032,29 @@ CG_Printf("DEBUG: %s's color string looks like: \"%c%c%c%c%c\".\n",
 		char *skin;
 
 		if( cgs.gametype >= GT_TEAM ) {
-			Q_strncpyz( newInfo.headModelName, DEFAULT_TEAM_MODEL, sizeof( newInfo.headModelName ) );
+			//aibsmod - use enemy/team models
+			modelStr[0] = '\0';
+
+			if (newInfo.team == cgs.clientinfo[cg.clientNum].team) //friendly
+				trap_Cvar_VariableStringBuffer("team_headmodel", modelStr, sizeof(modelStr));
+			else //enemy
+				trap_Cvar_VariableStringBuffer("enemy_headmodel", modelStr, sizeof(modelStr));
+
+			if (modelStr[0] == '\0')
+				Q_strncpyz( newInfo.headModelName, DEFAULT_TEAM_MODEL, sizeof( newInfo.headModelName ) );
+
+			//some other code overrides the skin, right?
 			Q_strncpyz( newInfo.headSkinName, "default", sizeof( newInfo.headSkinName ) );
 		} else {
-			trap_Cvar_VariableStringBuffer( "headmodel", modelStr, sizeof( modelStr ) );
+			//aibsmod - if not self, try enemy_headmodel first
+			modelStr[0] = '\0';
+
+			if (clientNum != cg.clientNum)
+				trap_Cvar_VariableStringBuffer("enemy_headmodel", modelStr, sizeof(modelStr));
+
+			if (modelStr[0] == '\0')
+				trap_Cvar_VariableStringBuffer( "headmodel", modelStr, sizeof( modelStr ) );
+
 			if ( ( skin = strchr( modelStr, '/' ) ) == NULL) {
 				skin = "default";
 			} else {

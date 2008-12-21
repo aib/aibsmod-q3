@@ -2240,25 +2240,28 @@ CG_DrawFollow
 */
 static qboolean CG_DrawFollow( void ) {
 	float		x;
-	vec4_t		color;
+//	vec4_t		color;
 	const char	*name;
 
 	if ( !(cg.snap->ps.pm_flags & PMF_FOLLOW) ) {
 		return qfalse;
 	}
-	color[0] = 1;
-	color[1] = 1;
-	color[2] = 1;
-	color[3] = 1;
+//	color[0] = 1;
+//	color[1] = 1;
+//	color[2] = 1;
+//	color[3] = 1;
 
 
 	CG_DrawBigString( 320 - 9 * 8, 24, "following", 1.0F );
 
 	name = cgs.clientinfo[ cg.snap->ps.clientNum ].name;
 
-	x = 0.5 * ( 640 - GIANT_WIDTH * CG_DrawStrlen( name ) );
+	//aibsmod - this is too big, fix
+//	x = 0.5 * ( 640 - GIANT_WIDTH * CG_DrawStrlen( name ) );
+//	CG_DrawStringExt( x, 40, name, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0 );
 
-	CG_DrawStringExt( x, 40, name, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0 );
+	x = 0.5 * (640 - BIGCHAR_WIDTH * CG_DrawStrlen(name));
+	CG_DrawBigString(x, 40, name, 1.0f);
 
 	return qtrue;
 }
