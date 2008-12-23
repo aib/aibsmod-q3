@@ -80,6 +80,7 @@ vmCvar_t	am_fastWeaponSwitch;
 vmCvar_t	am_trainingMode;
 vmCvar_t	am_airControl;
 vmCvar_t	am_disableWeapons;
+vmCvar_t	am_tripmineGrenades;
 
 //server-side cvars
 vmCvar_t	am_spawnHealth;
@@ -88,7 +89,6 @@ vmCvar_t	am_spawnNoMG;
 vmCvar_t	am_piercingRail;
 vmCvar_t	am_hyperGauntlet;
 vmCvar_t	am_rocketBounce;
-vmCvar_t	am_tripmineGrenade;
 vmCvar_t	am_teleportDelay;
 
 vmCvar_t	am_selfDamage;
@@ -100,6 +100,8 @@ vmCvar_t	am_droppableWeapons;
 
 vmCvar_t	am_redGoalRotation;
 vmCvar_t	am_blueGoalRotation;
+
+vmCvar_t	am_rocketArena_groundLaunch;
 
 // bk001129 - made static to avoid aliasing
 static cvarTable_t		gameCvarTable[] = {
@@ -199,7 +201,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &am_piercingRail, "am_piercingRail", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_hyperGauntlet, "am_hyperGauntlet", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_rocketBounce, "am_rocketBounce", "0", CVAR_ARCHIVE, 0, qtrue },
-	{ &am_tripmineGrenade, "am_tripmineGrenade", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &am_tripmineGrenades, "am_tripmineGrenades", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_teleportDelay, "am_teleportDelay", "-1", CVAR_ARCHIVE, 0, qtrue },
 
 	{ &am_selfDamage, "am_selfDamage", "1", CVAR_ARCHIVE, 0, qtrue },
@@ -211,6 +213,8 @@ static cvarTable_t		gameCvarTable[] = {
 
 	{ &am_redGoalRotation, "am_redGoalRotation", "0.0", 0, 0, qtrue },
 	{ &am_blueGoalRotation, "am_blueGoalRotation", "0.0", 0, 0, qtrue },
+
+	{ &am_rocketArena_groundLaunch, "am_midair_groundLaunch", "0", CVAR_ARCHIVE, 0, qtrue }
 };
 
 // bk001129 - made static to avoid aliasing
@@ -406,17 +410,24 @@ void G_UpdateCvars( void ) {
 	cvarTable_t	*cv;
 	qboolean remapped = qfalse;
 	int			j;
+	int			oldSpeed;
 
 	for ( i = 0, cv = gameCvarTable ; i < gameCvarTableSize ; i++, cv++ ) {
 		if ( cv->vmCvar ) {
+			if (cv->vmCvar == &g_speed)
+				oldSpeed = g_speed.integer;
+
 			trap_Cvar_Update( cv->vmCvar );
 
 			if ( cv->modificationCount != cv->vmCvar->modificationCount ) {
 				cv->modificationCount = cv->vmCvar->modificationCount;
 
 				if ( cv->trackChange ) {
-					trap_SendServerCommand( -1, va("print \"Server: %s changed to %s\n\"",
-						cv->cvarName, cv->vmCvar->string ) );
+					if ((cv->vmCvar == &g_speed) && (g_speed.integer == oldSpeed))
+						trap_SendServerCommand(-1, "print \"Server: g_speed changed without changing value.\n\"");
+					else
+						trap_SendServerCommand( -1, va("print \"Server: %s changed to %s\n\"",
+							cv->cvarName, cv->vmCvar->string ) );
 				}
 
 				if (cv->teamShader) {

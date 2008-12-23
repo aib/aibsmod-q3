@@ -1619,20 +1619,34 @@ static void PM_Weapon( void ) {
 
 	pm->ps->weaponstate = WEAPON_FIRING;
 
-	// check for out of ammo
-	if ( ! pm->ps->ammo[ pm->ps->weapon ] ) {
-		PM_AddEvent( EV_NOAMMO );
-		pm->ps->weaponTime += 500;
-		return;
-	}
+	//aibsmod - tripmines behave a bit differently
+	if (am_tripmineGrenades.integer && (pm->ps->weapon == WP_GRENADE_LAUNCHER)) {
+		//out of ammo
+		if (pm->ps->ammo[WP_GRENADE_LAUNCHER] < 5) {
+			PM_AddEvent(EV_NOAMMO);
+			pm->ps->weaponTime += 500;
+			return;
+		}
 
-	// take an ammo away if not infinite
-	if ( pm->ps->ammo[ pm->ps->weapon ] != -1 ) {
-		pm->ps->ammo[ pm->ps->weapon ]--;
-	}
+		//server will take care of subtracting ammo
 
-	// fire weapon
-	PM_AddEvent( EV_FIRE_WEAPON );
+		PM_AddEvent(EV_TRIPMINE_FIRE);
+	} else {
+		// check for out of ammo
+		if ( ! pm->ps->ammo[ pm->ps->weapon ] ) {
+			PM_AddEvent( EV_NOAMMO );
+			pm->ps->weaponTime += 500;
+			return;
+		}
+
+		// take an ammo away if not infinite
+		if ( pm->ps->ammo[ pm->ps->weapon ] != -1 ) {
+			pm->ps->ammo[ pm->ps->weapon ]--;
+		}
+
+		// fire weapon
+		PM_AddEvent( EV_FIRE_WEAPON );
+	}
 
 	switch( pm->ps->weapon ) {
 	default:

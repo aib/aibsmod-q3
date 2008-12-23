@@ -65,6 +65,7 @@
 #define TEAM_OVERLAY_MAXLOCATION_WIDTH	16
 
 #define	DEFAULT_MODEL			"sarge"
+/*
 #ifdef MISSIONPACK
 #define	DEFAULT_TEAM_MODEL		"james"
 #define	DEFAULT_TEAM_HEAD		"*james"
@@ -72,7 +73,7 @@
 #define	DEFAULT_TEAM_MODEL		"sarge"
 #define	DEFAULT_TEAM_HEAD		"sarge"
 #endif
-
+*/
 #define DEFAULT_REDTEAM_NAME		"Stroggs"
 #define DEFAULT_BLUETEAM_NAME		"Pagans"
 
@@ -1265,6 +1266,7 @@ extern	vmCvar_t		am_drawSpeedFull;
 extern	vmCvar_t		am_drawButtons;
 
 extern	vmCvar_t		am_hitFeedback;
+extern	vmCvar_t		am_chatBeep;
 
 extern	vmCvar_t		am_CPMASkins;
 extern	vmCvar_t		am_colors;
@@ -1272,6 +1274,14 @@ extern	vmCvar_t		am_enemyColors;
 extern	vmCvar_t		am_friendlyColors;
 
 extern	vmCvar_t		amh_depth;
+
+//making these proper cvars, sigh
+extern	vmCvar_t		model;
+extern	vmCvar_t		headmodel;
+extern	vmCvar_t		team_model;
+extern	vmCvar_t		team_headmodel;
+extern	vmCvar_t		enemy_model;
+extern	vmCvar_t		enemy_headmodel;
 
 //
 // cg_main.c

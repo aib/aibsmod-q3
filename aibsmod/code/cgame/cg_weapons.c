@@ -1540,7 +1540,9 @@ void CG_DrawWeaponSelect( void ) {
 		}
 
 		// no ammo cross on top
-		if ( !cg.snap->ps.ammo[ i ] ) {
+		//aibsmod - use CG_WeaponSelectable
+//		if ( !cg.snap->ps.ammo[ i ] ) {
+		if (!CG_WeaponSelectable(i)) {
 			CG_DrawPic( x, y, 32, 32, cgs.media.noammoShader );
 		}
 
@@ -1567,7 +1569,9 @@ CG_WeaponSelectable
 ===============
 */
 static qboolean CG_WeaponSelectable( int i ) {
-	if ( !cg.snap->ps.ammo[i] ) {
+	if ((i == WP_GRENADE_LAUNCHER) && am_tripmineGrenades.integer && (cg.snap->ps.ammo[WP_GRENADE_LAUNCHER] < 5))
+		return qfalse;
+	else if ( !cg.snap->ps.ammo[i] ) {
 		return qfalse;
 	}
 	if ( ! (cg.snap->ps.stats[ STAT_WEAPONS ] & ( 1 << i ) ) ) {

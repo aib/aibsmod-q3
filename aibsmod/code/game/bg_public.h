@@ -193,6 +193,7 @@ extern	vmCvar_t	am_fastWeaponSwitch;
 extern	vmCvar_t	am_trainingMode;
 extern	vmCvar_t	am_airControl;
 extern	vmCvar_t	am_disableWeapons;
+extern	vmCvar_t	am_tripmineGrenades;
 
 
 // player_state->stats[] indexes
@@ -467,7 +468,7 @@ typedef enum {
 
 	EV_DROP_WEAPON,
 
-
+	EV_TRIPMINE_FIRE,		//pmove communicates this to server if tripmine is being fired
 	EV_TRIPMINE				//tripmine sounds
 
 } entity_event_t;

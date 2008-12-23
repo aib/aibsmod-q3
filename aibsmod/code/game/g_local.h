@@ -592,11 +592,6 @@ void SnapVectorTowards( vec3_t v, vec3_t to );
 qboolean CheckGauntletAttack( gentity_t *ent );
 void Weapon_HookFree (gentity_t *ent);
 void Weapon_HookThink (gentity_t *ent);
-//aibsmod
-void Tripmine_Arm(gentity_t *ent);
-void Tripmine_Think(gentity_t *ent);
-void Tripmine_Explode(gentity_t *ent);
-qboolean CheckTripmineAttack(gentity_t *ent);
 
 
 //
@@ -803,7 +798,6 @@ extern	vmCvar_t	g_proxMineTimeout;
 extern	vmCvar_t	am_piercingRail;
 extern	vmCvar_t	am_hyperGauntlet;
 extern	vmCvar_t	am_rocketBounce;
-extern	vmCvar_t	am_tripmineGrenade;
 extern	vmCvar_t	am_teleportDelay;
 
 extern	vmCvar_t	am_spawnHealth;
@@ -819,6 +813,8 @@ extern	vmCvar_t	am_droppableWeapons;
 
 extern	vmCvar_t	am_redGoalRotation;
 extern	vmCvar_t	am_blueGoalRotation;
+
+extern	vmCvar_t	am_rocketArena_groundLaunch;
 
 void	trap_Printf( const char *fmt );
 void	trap_Error( const char *fmt );
@@ -1048,6 +1044,12 @@ void football_shoot(gentity_t *ball, gentity_t *player, vec3_t direction);
 void football_goal(gentity_t *ball, int color);
 void G_RunFootball(gentity_t *ball);
 void G_BounceFootball(gentity_t *ball, trace_t *trace);
+
+//g_tripmine.c
+void Tripmine_Arm(gentity_t *ent);
+void Tripmine_Think(gentity_t *ent);
+void Tripmine_Explode(gentity_t *ent);
+qboolean CheckTripmineAttack(gentity_t *ent);
 
 //g_rocketarena.c
 void ra_register_hit(gentity_t *attacker, gentity_t *inflictor, gentity_t *target);

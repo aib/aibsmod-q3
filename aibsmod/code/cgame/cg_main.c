@@ -10,6 +10,7 @@ displayContextDef_t cgDC;
 #endif
 
 int forceModelModificationCount = -1;
+int lastTeam = -1;
 
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
 void CG_Shutdown( void );
@@ -188,6 +189,7 @@ vmCvar_t	am_drawSpeedFull;
 vmCvar_t	am_drawButtons;
 
 vmCvar_t	am_hitFeedback;
+vmCvar_t	am_chatBeep;
 
 vmCvar_t	am_CPMASkins;
 vmCvar_t	am_colors;
@@ -196,11 +198,19 @@ vmCvar_t	am_friendlyColors;
 
 vmCvar_t	amh_depth;
 
+vmCvar_t	model;
+vmCvar_t	headmodel;
+vmCvar_t	team_model;
+vmCvar_t	team_headmodel;
+vmCvar_t	enemy_model;
+vmCvar_t	enemy_headmodel;
+
 //aibsmod - server/shared variables. These will be communicated to us by the server (and used by pmove)
 vmCvar_t	am_fastWeaponSwitch;
 vmCvar_t	am_trainingMode;
 vmCvar_t	am_airControl;
 vmCvar_t	am_disableWeapons;
+vmCvar_t	am_tripmineGrenades;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -327,6 +337,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &am_trainingMode, "am_trainingMode", "0", CVAR_SERVERINFO },
 	{ &am_airControl, "am_airControl", "1.0", CVAR_SERVERINFO },
 	{ &am_disableWeapons, "am_disableWeapons", "0", CVAR_SERVERINFO },
+	{ &am_tripmineGrenades, "am_tripmineGrenades", "0", CVAR_SERVERINFO },
 
 	//aibsmod client-side cvars
 	{ &am_drawFootballTracer, "am_drawFootballTracer", "0", CVAR_ARCHIVE },
@@ -338,13 +349,22 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &am_drawButtons, "am_drawButtons", "0", CVAR_ARCHIVE },
 
 	{ &am_hitFeedback, "am_hitFeedback", "0", CVAR_ARCHIVE },
+	{ &am_chatBeep, "am_chatBeep", "1", CVAR_ARCHIVE },
 
 	{ &am_CPMASkins, "am_CPMASkins", "0", CVAR_ARCHIVE },
 	{ &am_colors, "am_colors", "-----", CVAR_USERINFO | CVAR_ARCHIVE },
 	{ &am_enemyColors, "am_enemyColors", "-----", CVAR_ARCHIVE },
 	{ &am_friendlyColors, "am_friendlyColors", "-----", CVAR_ARCHIVE },
 
-	{ &amh_depth, "amh_depth", "0", CVAR_CHEAT }
+	{ &amh_depth, "amh_depth", "0", CVAR_CHEAT },
+
+	//aibsmod - fixing model cvars
+	{ &model,			"model",			DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE },
+	{ &headmodel,		"headmodel",		DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE },
+	{ &team_model,		"team_model",		DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE },
+	{ &team_headmodel,	"team_headmodel",	DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE },
+	{ &enemy_model,		"enemy_model",		DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE },
+	{ &enemy_headmodel,	"enemy_headmodel",	DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE }
 
 };
 
@@ -369,16 +389,7 @@ void CG_RegisterCvars( void ) {
 	trap_Cvar_VariableStringBuffer( "sv_running", var, sizeof( var ) );
 	cgs.localServer = atoi( var );
 
-	forceModelModificationCount = cg_forceModel.modificationCount;
-
-	trap_Cvar_Register(NULL, "model", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
-	trap_Cvar_Register(NULL, "headmodel", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
-	trap_Cvar_Register(NULL, "team_model", DEFAULT_TEAM_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
-	trap_Cvar_Register(NULL, "team_headmodel", DEFAULT_TEAM_HEAD, CVAR_USERINFO | CVAR_ARCHIVE );
-
-	//aibsmod
-	trap_Cvar_Register(NULL, "enemy_model", DEFAULT_TEAM_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
-	trap_Cvar_Register(NULL, "enemy_headmodel", DEFAULT_TEAM_HEAD, CVAR_USERINFO | CVAR_ARCHIVE );
+//	forceModelModificationCount = cg_forceModel.modificationCount;
 }
 
 /*
@@ -408,6 +419,7 @@ CG_UpdateCvars
 void CG_UpdateCvars( void ) {
 	int			i;
 	cvarTable_t	*cv;
+	int			newModCount;
 
 	for ( i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++ ) {
 		trap_Cvar_Update( cv->vmCvar );
@@ -429,9 +441,20 @@ void CG_UpdateCvars( void ) {
 		trap_Cvar_Set( "teamoverlay", "1" );
 	}
 
+	newModCount =
+			cg_forceModel.modificationCount +
+			model.modificationCount +
+			headmodel.modificationCount +
+			team_model.modificationCount +
+			team_headmodel.modificationCount +
+			enemy_model.modificationCount +
+			enemy_headmodel.modificationCount;
+
 	// if force model changed
-	if ( forceModelModificationCount != cg_forceModel.modificationCount ) {
-		forceModelModificationCount = cg_forceModel.modificationCount;
+	if ((forceModelModificationCount != newModCount) || (lastTeam != cgs.clientinfo[cg.clientNum].team)) {
+		forceModelModificationCount = newModCount;
+		lastTeam = cgs.clientinfo[cg.clientNum].team;
+
 		CG_ForceModelChange();
 	}
 }

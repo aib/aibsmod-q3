@@ -474,14 +474,16 @@ int CG_SetColorPart(char *colorString, amColorpart_t part, float targetRGB[3])
 void CG_SetColors(int clientNum, amColorpart_t part, float targetRGB[3])
 {
 	float colcycle;
-	int colorSet = 0;
+	int spectator;
 
 	//No need to bother if CPMA skins are disabled
 	if (!am_CPMASkins.integer) return;
 
 	//This function should not be called with clientNum = -1
-	if ((clientNum == -1) || (part == AM_COLORPART_NONE))
+	if ((clientNum == -1) || (part == AM_COLORPART_NONE)) {
 		CG_Printf("Warning: CG_SetColors() called with invalid client/part.\n");
+		return;
+	}
 
 	//Easter egg!
 	if (!strcmp(cgs.clientinfo[clientNum].name, "aib42")) {
@@ -517,6 +519,8 @@ void CG_SetColors(int clientNum, amColorpart_t part, float targetRGB[3])
 		return;
 	}
 
+	spectator = (cgs.clientinfo[cg.clientNum].team == TEAM_SPECTATOR);
+
 	//Find a color based on gametype, overrides, etc.
 	if (cgs.gametype < GT_TEAM) { //non-team games
 		if (clientNum == cg.clientNum) { //self
@@ -538,7 +542,7 @@ void CG_SetColors(int clientNum, amColorpart_t part, float targetRGB[3])
 				}
 			}
 		} else { //enemy
-			if (!CG_SetColorPart(am_enemyColors.string, part, targetRGB)) {
+			if (spectator || !CG_SetColorPart(am_enemyColors.string, part, targetRGB)) { //spectator or no am_enemyColors
 				if (!CG_SetColorPart(cgs.clientinfo[clientNum].colors, part, targetRGB)) {
 					if (part == AM_COLORPART_1) {
 						targetRGB[0] = cgs.clientinfo[clientNum].color1[0];
@@ -561,7 +565,7 @@ void CG_SetColors(int clientNum, amColorpart_t part, float targetRGB[3])
 		team_t otherTeam = cgs.clientinfo[clientNum].team;
 
 		//friendly color override + am_colors override for color1/color2
-		if (otherTeam == myTeam) {
+		if (!spectator && otherTeam == myTeam) {
 			if (!CG_SetColorPart(am_friendlyColors.string, part, targetRGB)) {				//try friendlyColors, if it fails...
 				if ((part == AM_COLORPART_1) || (part == AM_COLORPART_2)) 					//and is an effect color,
 					if (CG_SetColorPart(cgs.clientinfo[clientNum].colors, part, targetRGB))	//try am_colors
@@ -572,7 +576,7 @@ void CG_SetColors(int clientNum, amColorpart_t part, float targetRGB[3])
 		}
 
 		//enemy color override + am_colors override for color1/color2
-		else if (otherTeam != myTeam) {
+		else if (!spectator && otherTeam != myTeam) {
 			if (!CG_SetColorPart(am_enemyColors.string, part, targetRGB)) {
 				if ((part == AM_COLORPART_1) || (part == AM_COLORPART_2))
 					if (CG_SetColorPart(cgs.clientinfo[clientNum].colors, part, targetRGB))
@@ -583,40 +587,38 @@ void CG_SetColors(int clientNum, amColorpart_t part, float targetRGB[3])
 		}
 
 		//If the override didn't work, try these default values:
-		else {
-			if (otherTeam == TEAM_RED) { //default red team color
-				if (part == AM_COLORPART_1) {
-					targetRGB[0] = cgs.clientinfo[clientNum].color1[0];
-					targetRGB[1] = cgs.clientinfo[clientNum].color1[1];
-					targetRGB[2] = cgs.clientinfo[clientNum].color1[2];
-				} else if (part == AM_COLORPART_2) {
-					targetRGB[0] = cgs.clientinfo[clientNum].color2[0];
-					targetRGB[1] = cgs.clientinfo[clientNum].color2[1];
-					targetRGB[2] = cgs.clientinfo[clientNum].color2[2];
-				} else {
-					targetRGB[0] = 1.0f;
-					targetRGB[1] = 0.0;
-					targetRGB[2] = 0.0f;
-				}
-			} else if (otherTeam == TEAM_BLUE) { //default blue team color
-				if (part == AM_COLORPART_1) {
-					targetRGB[0] = cgs.clientinfo[clientNum].color1[0];
-					targetRGB[1] = cgs.clientinfo[clientNum].color1[1];
-					targetRGB[2] = cgs.clientinfo[clientNum].color1[2];
-				} else if (part == AM_COLORPART_2) {
-					targetRGB[0] = cgs.clientinfo[clientNum].color2[0];
-					targetRGB[1] = cgs.clientinfo[clientNum].color2[1];
-					targetRGB[2] = cgs.clientinfo[clientNum].color2[2];
-				} else {
-					targetRGB[0] = 0.0f;
-					targetRGB[1] = 0.0;
-					targetRGB[2] = 1.0f;
-				}
-			} else { //this shouldn't happen; use something that will attract attention
-				targetRGB[0] = 0.0f;
-				targetRGB[1] = 0.0f;
+		if (otherTeam == TEAM_RED) { //default red team color
+			if (part == AM_COLORPART_1) {
+				targetRGB[0] = cgs.clientinfo[clientNum].color1[0];
+				targetRGB[1] = cgs.clientinfo[clientNum].color1[1];
+				targetRGB[2] = cgs.clientinfo[clientNum].color1[2];
+			} else if (part == AM_COLORPART_2) {
+				targetRGB[0] = cgs.clientinfo[clientNum].color2[0];
+				targetRGB[1] = cgs.clientinfo[clientNum].color2[1];
+				targetRGB[2] = cgs.clientinfo[clientNum].color2[2];
+			} else {
+				targetRGB[0] = 1.0f;
+				targetRGB[1] = 0.0;
 				targetRGB[2] = 0.0f;
 			}
+		} else if (otherTeam == TEAM_BLUE) { //default blue team color
+			if (part == AM_COLORPART_1) {
+				targetRGB[0] = cgs.clientinfo[clientNum].color1[0];
+				targetRGB[1] = cgs.clientinfo[clientNum].color1[1];
+				targetRGB[2] = cgs.clientinfo[clientNum].color1[2];
+			} else if (part == AM_COLORPART_2) {
+				targetRGB[0] = cgs.clientinfo[clientNum].color2[0];
+				targetRGB[1] = cgs.clientinfo[clientNum].color2[1];
+				targetRGB[2] = cgs.clientinfo[clientNum].color2[2];
+			} else {
+				targetRGB[0] = 0.0f;
+				targetRGB[1] = 0.0;
+				targetRGB[2] = 1.0f;
+			}
+		} else { //this shouldn't happen; use something that will attract attention
+			targetRGB[0] = 0.0f;
+			targetRGB[1] = 0.0f;
+			targetRGB[2] = 0.0f;
 		}
 	}
 }

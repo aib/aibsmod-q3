@@ -637,6 +637,12 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			break;
 #endif
 
+		//aibsmod
+		case EV_TRIPMINE_FIRE:	//client firing tripmine
+			if (am_tripmineGrenades.integer && (ent->client->ps.ammo[WP_GRENADE_LAUNCHER] >= 5) && CheckTripmineAttack(ent))
+				ent->client->ps.ammo[WP_GRENADE_LAUNCHER] -= 5;
+			break;
+
 		default:
 			break;
 		}
@@ -861,10 +867,7 @@ void ClientThink_real( gentity_t *ent ) {
 			AngleVectors(client->ps.viewangles, forward, right, up);
 			football_shoot(level.football, ent, forward);
 		} else {
-			if (am_tripmineGrenade.integer)
-				pm.gauntletHit = CheckTripmineAttack(ent);
-			else
-				pm.gauntletHit = CheckGauntletAttack( ent );
+			pm.gauntletHit = CheckGauntletAttack( ent );
 		}
 	}
 

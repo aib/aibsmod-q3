@@ -985,8 +985,16 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 		mass = 200;
 
-		VectorScale (dir, g_knockback.value * (float)knockback / mass, kvel);
-		VectorAdd (targ->client->ps.velocity, kvel, targ->client->ps.velocity);
+		if ((g_gametype.integer == GT_ROCKETARENA) &&
+			(mod == MOD_ROCKET || mod == MOD_ROCKET_SPLASH) &&
+			(targ->s.groundEntityNum != ENTITYNUM_NONE) &&
+			am_rocketArena_groundLaunch.integer)
+		{
+			targ->client->ps.velocity[2] += am_rocketArena_groundLaunch.integer;
+		} else {
+			VectorScale (dir, g_knockback.value * (float)knockback / mass, kvel);
+			VectorAdd (targ->client->ps.velocity, kvel, targ->client->ps.velocity);
+		}
 
 		// set the timer so that the other client can't cancel
 		// out the movement immediately

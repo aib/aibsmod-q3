@@ -664,6 +664,12 @@ static void CG_LoadClientInfo( clientInfo_t *ci ) {
 			if (cg_buildScript.integer) {
 				CG_Error("CG_RegisterClientModelname( %s, %s, %s, %s %s ) failed", ci->modelName, "pm", ci->headModelName, "pm", "NULL");
 			}
+
+			//fall back
+			if (!CG_RegisterClientModelname(ci, DEFAULT_MODEL, "pm", DEFAULT_MODEL, "pm", NULL)) {
+				CG_Error("DEFAULT_MODEL / skin (%s/%s) failed to register", DEFAULT_MODEL, "pm");
+			}
+
 			modelloaded = qfalse;
 		}
 	} else {
@@ -680,8 +686,8 @@ static void CG_LoadClientInfo( clientInfo_t *ci ) {
 				} else {
 					Q_strncpyz(teamname, DEFAULT_REDTEAM_NAME, sizeof(teamname) );
 				}
-				if ( !CG_RegisterClientModelname( ci, DEFAULT_TEAM_MODEL, ci->skinName, DEFAULT_TEAM_HEAD, ci->skinName, teamname ) ) {
-					CG_Error( "DEFAULT_TEAM_MODEL / skin (%s/%s) failed to register", DEFAULT_TEAM_MODEL, ci->skinName );
+				if ( !CG_RegisterClientModelname( ci, DEFAULT_MODEL, ci->skinName, DEFAULT_MODEL, ci->skinName, teamname ) ) {
+					CG_Error( "DEFAULT_MODEL / skin (%s/%s) failed to register", DEFAULT_MODEL, ci->skinName );
 				}
 			} else {
 				if ( !CG_RegisterClientModelname( ci, DEFAULT_MODEL, "default", DEFAULT_MODEL, "default", teamname ) ) {
@@ -703,7 +709,8 @@ static void CG_LoadClientInfo( clientInfo_t *ci ) {
 
 	// sounds
 	dir = ci->modelName;
-	fallback = (cgs.gametype >= GT_TEAM) ? DEFAULT_TEAM_MODEL : DEFAULT_MODEL;
+//	fallback = (cgs.gametype >= GT_TEAM) ? DEFAULT_TEAM_MODEL : DEFAULT_MODEL;
+	fallback = DEFAULT_MODEL;
 
 	for ( i = 0 ; i < MAX_CUSTOM_SOUNDS ; i++ ) {
 		s = cg_customSoundNames[i];
@@ -878,7 +885,10 @@ void CG_NewClientInfo( int clientNum ) {
 	clientInfo_t newInfo;
 	const char	*configstring;
 	const char	*v;
+
+	char		*modelStr;
 	char		*slash;
+	char		*skinStr;
 
 	int i;
 
@@ -953,129 +963,73 @@ void CG_NewClientInfo( int clientNum ) {
 
 	// model
 	v = Info_ValueForKey( configstring, "model" );
-	if ( cg_forceModel.integer ) {
-		// forcemodel makes everyone use a single model
-		// to prevent load hitches
-		char modelStr[MAX_QPATH];
-		char *skin;
 
-		if( cgs.gametype >= GT_TEAM ) {
-			//aibsmod - use enemy/team models
-			modelStr[0] = '\0';
-
-			if (newInfo.team == cgs.clientinfo[cg.clientNum].team) //friendly
-				trap_Cvar_VariableStringBuffer("team_model", modelStr, sizeof(modelStr));
-			else //enemy
-				trap_Cvar_VariableStringBuffer("enemy_model", modelStr, sizeof(modelStr));
-
-			if (modelStr[0] == '\0')
-				Q_strncpyz( newInfo.modelName, DEFAULT_TEAM_MODEL, sizeof( newInfo.modelName ) );
-
-			//some other code overrides the skin, right?
-			Q_strncpyz( newInfo.skinName, "default", sizeof( newInfo.skinName ) );
-		} else {
-			//aibsmod - if not self, try enemy_model first
-			modelStr[0] = '\0';
-
-			if (clientNum != cg.clientNum)
-				trap_Cvar_VariableStringBuffer("enemy_model", modelStr, sizeof(modelStr));
-
-			if (modelStr[0] == '\0')
-				trap_Cvar_VariableStringBuffer( "model", modelStr, sizeof( modelStr ) );
-
-			if ( ( skin = strchr( modelStr, '/' ) ) == NULL) {
-				skin = "default";
-			} else {
-				*skin++ = 0;
-			}
-
-			Q_strncpyz( newInfo.skinName, skin, sizeof( newInfo.skinName ) );
-			Q_strncpyz( newInfo.modelName, modelStr, sizeof( newInfo.modelName ) );
-		}
-
-		if ( cgs.gametype >= GT_TEAM ) {
-			// keep skin name
-			slash = strchr( v, '/' );
-			if ( slash ) {
-				Q_strncpyz( newInfo.skinName, slash + 1, sizeof( newInfo.skinName ) );
-			}
-		}
+	//Decide which model to use
+	if (cg_forceModel.integer && (clientNum != cg.clientNum)) { //forceModel and not self
+		if ((cgs.gametype >= GT_TEAM) && (newInfo.team == cgs.clientinfo[cg.clientNum].team)) //team game and friendly
+			modelStr = team_model.string;
+		else
+			modelStr = enemy_model.string;
 	} else {
-		Q_strncpyz( newInfo.modelName, v, sizeof( newInfo.modelName ) );
-
-		slash = strchr( newInfo.modelName, '/' );
-		if ( !slash ) {
-			// modelName didn not include a skin name
-			Q_strncpyz( newInfo.skinName, "default", sizeof( newInfo.skinName ) );
-		} else {
-			Q_strncpyz( newInfo.skinName, slash + 1, sizeof( newInfo.skinName ) );
-			// truncate modelName
-			*slash = 0;
-		}
+		modelStr = (char *) v;
 	}
+
+	if (!*modelStr)
+		modelStr = DEFAULT_MODEL;
+
+	//Need to use newInfo.modelName as a buffer here, so store it first
+	Q_strncpyz(newInfo.modelName, modelStr, sizeof(newInfo.modelName));
+	modelStr = newInfo.modelName;
+
+	slash = strchr(modelStr, '/');
+
+	if (!slash) { //no skin name
+		skinStr = "default";
+	} else { //get skin name and replace / with \0
+		skinStr = slash + 1;
+		*slash = '\0';
+	}
+
+	Q_strncpyz(newInfo.skinName, skinStr, sizeof(newInfo.skinName));
 
 	// head model
 	v = Info_ValueForKey( configstring, "hmodel" );
-	if ( cg_forceModel.integer ) {
-		// forcemodel makes everyone use a single model
-		// to prevent load hitches
-		char modelStr[MAX_QPATH];
-		char *skin;
 
-		if( cgs.gametype >= GT_TEAM ) {
-			//aibsmod - use enemy/team models
-			modelStr[0] = '\0';
-
-			if (newInfo.team == cgs.clientinfo[cg.clientNum].team) //friendly
-				trap_Cvar_VariableStringBuffer("team_headmodel", modelStr, sizeof(modelStr));
-			else //enemy
-				trap_Cvar_VariableStringBuffer("enemy_headmodel", modelStr, sizeof(modelStr));
-
-			if (modelStr[0] == '\0')
-				Q_strncpyz( newInfo.headModelName, DEFAULT_TEAM_MODEL, sizeof( newInfo.headModelName ) );
-
-			//some other code overrides the skin, right?
-			Q_strncpyz( newInfo.headSkinName, "default", sizeof( newInfo.headSkinName ) );
-		} else {
-			//aibsmod - if not self, try enemy_headmodel first
-			modelStr[0] = '\0';
-
-			if (clientNum != cg.clientNum)
-				trap_Cvar_VariableStringBuffer("enemy_headmodel", modelStr, sizeof(modelStr));
-
-			if (modelStr[0] == '\0')
-				trap_Cvar_VariableStringBuffer( "headmodel", modelStr, sizeof( modelStr ) );
-
-			if ( ( skin = strchr( modelStr, '/' ) ) == NULL) {
-				skin = "default";
-			} else {
-				*skin++ = 0;
-			}
-
-			Q_strncpyz( newInfo.headSkinName, skin, sizeof( newInfo.headSkinName ) );
-			Q_strncpyz( newInfo.headModelName, modelStr, sizeof( newInfo.headModelName ) );
-		}
-
-		if ( cgs.gametype >= GT_TEAM ) {
-			// keep skin name
-			slash = strchr( v, '/' );
-			if ( slash ) {
-				Q_strncpyz( newInfo.headSkinName, slash + 1, sizeof( newInfo.headSkinName ) );
-			}
-		}
+	//Decide which head model to use
+	if (cg_forceModel.integer && (clientNum != cg.clientNum)) { //forceModel and not self
+		if ((cgs.gametype >= GT_TEAM) && (newInfo.team == cgs.clientinfo[cg.clientNum].team)) //team game and friendly
+			modelStr = team_headmodel.string;
+		else
+			modelStr = enemy_headmodel.string;
 	} else {
-		Q_strncpyz( newInfo.headModelName, v, sizeof( newInfo.headModelName ) );
-
-		slash = strchr( newInfo.headModelName, '/' );
-		if ( !slash ) {
-			// modelName didn not include a skin name
-			Q_strncpyz( newInfo.headSkinName, "default", sizeof( newInfo.headSkinName ) );
-		} else {
-			Q_strncpyz( newInfo.headSkinName, slash + 1, sizeof( newInfo.headSkinName ) );
-			// truncate modelName
-			*slash = 0;
-		}
+		modelStr = (char *) v;
 	}
+
+	if (!*modelStr)
+		modelStr = DEFAULT_MODEL;
+
+	//Need to use newInfo.modelName as a buffer here, so store it first
+	Q_strncpyz(newInfo.headModelName, modelStr, sizeof(newInfo.headModelName));
+	modelStr = newInfo.headModelName;
+
+	slash = strchr(modelStr, '/');
+
+	if (!slash) { //no skin name
+		skinStr = "default";
+	} else { //get skin name and replace / with \0
+		skinStr = slash + 1;
+		*slash = '\0';
+	}
+
+	Q_strncpyz(newInfo.headSkinName, skinStr, sizeof(newInfo.headSkinName));
+
+/*	CG_Printf("%s head: \"%s\" skin: \"%s\" body: \"%s\" skin: \"%s\"..\n",
+		newInfo.name,
+		newInfo.headModelName,
+		newInfo.headSkinName,
+		newInfo.modelName,
+		newInfo.skinName
+	); */
 
 	// scan for an existing clientinfo that matches this modelname
 	// so we can avoid loading checks if possible

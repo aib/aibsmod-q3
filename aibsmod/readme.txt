@@ -1,5 +1,12 @@
 *** aibsmod Documentation ***
 
+v0.92 Notes:
+	Modelleri duzelttim. cg_forceModel, model, headmodel, team_model, team_headmodel, enemy_model ve enemy_headmodel'in hepsinin calismasi lazim. Tek sey, VQ3 modelleri kullaniyorsaniz, team game'lerde modellerin skinleri red/blue olarak replace ediliyor. (Mesela DM'de enemy_model'i bones/blue, headmodel'i bones/red yapip ucubik bir yaratikla karsilasmak mumkunken, TDM'de kafasi da vucudu da team rengini aliyor.)
+
+	forceModel'i acip kapamaya gerek yok, yukaridaki variable'lardan herhangi biri degistigi anda modellerin otomatik reload edilmesi lazim. CPMA modellerini acip kapadiktan sonra vid_restart hala sart, malesef.
+
+	Su yukarda bahsini ettigim durum disinda her seyin calismasi lazim, lutfen calismayan seyleri bana bildirin.
+
 v0.91 Notes:
 	Alt tab seyini, rocket arena'da havada vuranin gozukmesini duzelttim. 10 tane kadar yeni renk ekledim. aibsmod_test9 altina atilacak pak1.pk3 seklinde bir update bu. Yoksa serverdan otomatik olarak almasi lazim. Almazsa, modu tekrar indirebilirsiniz.
 
@@ -50,8 +57,11 @@ Server Variables/Settings:
 	* am_nonRamboKill <0/1/2>
 		This setting controls whether non-rambo players can be damaged by other non-rambo players. If it is "0", non-rambo players cannot be damaged by other non-rambo players. A value of "1" will allow such damage, but will not reward (nor punish) such kills in [non-team] Rambomatch mode. A value of "2" will punish non-rambo killers by subtracting a point from their score in [non-team] Rambomatch mode. In Team Rambomatch mode, settings 1 and 2 do not differ and always reward opposing team non-rambo kills with +1 and punish team kills with -1. Players can "callvote nonrambokill 0/1/2" to change this setting.
 
-	* am_redGoalRotation and am_blueGoalRotation
+	* am_redGoalRotation <0-360> and am_blueGoalRotation <0-360>
 		These settings rotate the red and blue goals respectively, if the map isn't using custom ones. They are necessary on maps where the red/blue flag orientation isn't correct, i.e. the goals that have replaced the flags in Football mode are facing the wrong way. They can also be used to make scoring a goal more difficult. Their values are in degrees clockwise from the original orientation. (e.g. "am_redGoalRotation 90" means "turn the red goal 90 degrees clockwise")
+
+	* am_midair_groundLaunch <0/n>
+		This setting was introduced in order to discourage "ground camping" in the Midair Arena mode. Since ground hits do not count in this mode, it is an efficient (but an annoying and rather meaningless) strategy to stay on the ground and shoot players who dare take into the air. While the method employed by this setting isn't a very efficient deterrer, the idea came up many times (by myself and others alike) while I was developing the mod, and I thought to include it. If this setting is nonzero, any player taking rocket damage while on the ground will be shot into the air with velocity 'n' as set. About 750 seems to be a good value, being the velocity of a good rocket jump, and will at least give "honorable" players a chance against ground campers. It might also replace rocket jumping as it eliminates the need to press the jump key. A small value (such as 1) effectively eliminates ground knockback. I highly suggest the default value of 0 (disabled, VQ3-identical physics), but if you need it, it's there. Players can "callvote midair_glaunch n" to change this setting.
 
 	* am_dropTeamPowerups <0/1>
 		This setting controls whether players drop their current powerups (e.g. quad) when they die in team games, as they do in FFA games.
@@ -90,6 +100,9 @@ Client Variables/Settings:
 
 	* am_hitFeedback <0/1/2>
 		Changes the feedback sound you hear when you damage a player. 0 is the default value that uses the original Quake 3 Arena behavior - all hits make the same sound. (Unfortunately, the Team Arena sound effects that notify you of the target's armor level, is incompatible with aibsmod.) 1 employs CPMA-style sound effects with different levels at 1-25, 26-50, 51-75 and 76+ damage. 2 behaves like Threewave with different sounds at at 1-19, 20-49, 50-99 and 100+ damage.
+
+	* am_chatBeep <0/1/2>
+		Enables or disables the "chat beep" you hear when somebody sends a message. 0 disables all beeps, 1 enables all, 2 enables beeps for team chat only.
 
 	* am_CPMASkins      <0/1>
 	* am_colors         "#####"

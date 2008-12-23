@@ -10,7 +10,7 @@
 #define GAMEVERSION		"aibsmod_test9"
 #define	GAME_VERSION	"aibsmod-1"
 
-#define VERSION_STRING	"aibsmod v0.91"
+#define VERSION_STRING	"aibsmod v0.92"
 
 //Couldn't find a suitable place for these, didn't want to modify q_shared.h
 #define MIN(x,y) ((x < y) ? (x) : (y))

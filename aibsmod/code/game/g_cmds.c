@@ -1217,6 +1217,12 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		return;
 	}
 
+	//aibsmod - There was a hack along these lines (and a corresponding .diff patch), but where was it?
+	if( strchr( arg1, '\n' ) || strchr( arg2, '\n' ) ) {
+		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
+		return;
+	}
+
 	if ( !Q_stricmp( arg1, "map_restart" ) ) {
 	} else if ( !Q_stricmp( arg1, "nextmap" ) ) {
 	} else if ( !Q_stricmp( arg1, "map" ) ) {
@@ -1229,18 +1235,20 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	//aibsmod votes
 	} else if (!Q_stricmp(arg1, "piercing")) {
 	} else if (!Q_stricmp(arg1, "hypergauntlet")) {
+	} else if (!Q_stricmp(arg1, "rocketbounce")) {
+	} else if (!Q_stricmp(arg1, "tripmines")) {
 	} else if (!Q_stricmp(arg1, "fastswitch")) {
 	} else if (!Q_stricmp(arg1, "selfdamage")) {
 	} else if (!Q_stricmp(arg1, "falldamage")) {
 	} else if (!Q_stricmp(arg1, "nonrambokill")) {
 	} else if (!Q_stricmp(arg1, "training")) {
-	} else if (!Q_stricmp(arg1, "rocketbounce")) {
 	} else if (!Q_stricmp(arg1, "disableweapons")) {
 	} else if (!Q_stricmp(arg1, "teleportdelay")) {
+	} else if (!Q_stricmp(arg1, "midair_glaunch")) {
 	} else {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
 		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, g_doWarmup, timelimit <time>, fraglimit <frags>.\n\"" );
-		trap_SendServerCommand( ent-g_entities, "print \"aibsmod-specific commands are: piercing <0|1>, hypergauntlet <0|1>, rocketbounce <n>, fastswitch <0|1>, selfdamage <0|1>, falldamage <0|1>, nonrambokill <0|1|2>, training <0|1|2>, disableweapons <0|1>, teleportdelay <n>.\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"aibsmod-specific commands are: piercing <0|1>, hypergauntlet <0|1>, rocketbounce <n>, tripmines <0|1>, fastswitch <0|1>, selfdamage <0|1>, falldamage <0|1>, nonrambokill <0|1|2>, training <0|1|2>, disableweapons <0|1>, teleportdelay <n>, midair_glaunch <n>.\n\"" );
 		return;
 	}
 
@@ -1299,6 +1307,9 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	} else if (!Q_stricmp(arg1, "rocketbounce")) {
 		Com_sprintf(level.voteString, sizeof(level.voteString), "am_rocketBounce %s", arg2);
 		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s", level.voteString);
+	} else if (!Q_stricmp(arg1, "tripmines")) {
+		Com_sprintf(level.voteString, sizeof(level.voteString), "am_tripmineGrenades %s", arg2);
+		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s", level.voteString);
 	} else if (!Q_stricmp(arg1, "fastswitch")) {
 		Com_sprintf(level.voteString, sizeof(level.voteString), "am_fastWeaponSwitch %s", arg2);
 		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s", level.voteString);
@@ -1319,6 +1330,9 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s", level.voteString);
 	} else if (!Q_stricmp(arg1, "teleportdelay")) {
 		Com_sprintf(level.voteString, sizeof(level.voteString), "am_teleportDelay %s", arg2);
+		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s", level.voteString);
+	} else if (!Q_stricmp(arg1, "midair_glaunch")) {
+		Com_sprintf(level.voteString, sizeof(level.voteString), "am_midair_groundLaunch %s", arg2);
 		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s", level.voteString);
 	} else {
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );

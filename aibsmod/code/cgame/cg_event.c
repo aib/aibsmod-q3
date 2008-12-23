@@ -1397,6 +1397,9 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		}
 		break;
 
+	case EV_TRIPMINE_FIRE:
+		break;
+
 	case EV_TRIPMINE:
 		switch (es->eventParm) {
 			case 1: //tripmine arming
