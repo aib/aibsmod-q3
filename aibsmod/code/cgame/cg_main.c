@@ -190,6 +190,7 @@ vmCvar_t	am_drawButtons;
 
 vmCvar_t	am_hitFeedback;
 vmCvar_t	am_chatBeep;
+vmCvar_t	am_weaponBob;
 
 vmCvar_t	am_CPMASkins;
 vmCvar_t	am_colors;
@@ -350,6 +351,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 	{ &am_hitFeedback, "am_hitFeedback", "0", CVAR_ARCHIVE },
 	{ &am_chatBeep, "am_chatBeep", "1", CVAR_ARCHIVE },
+	{ &am_weaponBob, "am_weaponBob", "1", CVAR_ARCHIVE },
 
 	{ &am_CPMASkins, "am_CPMASkins", "0", CVAR_ARCHIVE },
 	{ &am_colors, "am_colors", "-----", CVAR_USERINFO | CVAR_ARCHIVE },

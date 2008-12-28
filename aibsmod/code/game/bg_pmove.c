@@ -1622,7 +1622,7 @@ static void PM_Weapon( void ) {
 	//aibsmod - tripmines behave a bit differently
 	if (am_tripmineGrenades.integer && (pm->ps->weapon == WP_GRENADE_LAUNCHER)) {
 		//out of ammo
-		if (pm->ps->ammo[WP_GRENADE_LAUNCHER] < 5) {
+		if ((pm->ps->ammo[WP_GRENADE_LAUNCHER] >= 0) && (pm->ps->ammo[WP_GRENADE_LAUNCHER] < 5)) {
 			PM_AddEvent(EV_NOAMMO);
 			pm->ps->weaponTime += 500;
 			return;

@@ -1110,8 +1110,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
-	//aibsmod - in training mode, don't allow any protectable damage or telefragging
-	if (am_trainingMode.integer && ((mod == MOD_TELEFRAG) || !(dflags & DAMAGE_NO_PROTECTION)))
+	//aibsmod - in training mode, don't allow any protectable damage or telefragging (to players)
+	if (am_trainingMode.integer && targ->client && ((mod == MOD_TELEFRAG) || !(dflags & DAMAGE_NO_PROTECTION)))
 		damage = 0;
 
 	//aibsmod - no gauntlet damage in Football (only knockback)

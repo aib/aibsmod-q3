@@ -16,6 +16,15 @@
 #define MIN(x,y) ((x < y) ? (x) : (y))
 #define MAX(x,y) ((x > y) ? (x) : (y))
 
+//buttonstate bitmask for the EV_CURRENT_BUTTONS event
+#define BTNFLAG_BUTTON_UP			1
+#define BTNFLAG_BUTTON_DOWN			2
+#define BTNFLAG_BUTTON_LEFT			4
+#define BTNFLAG_BUTTON_RIGHT		8
+#define BTNFLAG_BUTTON_JUMP			16
+#define BTNFLAG_BUTTON_FIRE			64
+
+//Model coloring parts
 typedef enum {
 	AM_COLORPART_NONE = -1,
 

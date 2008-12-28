@@ -258,58 +258,54 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 #endif
 	other = &g_entities[trace->entityNum];
 
-//	//aibsmod - no bounces in Rocket Arena
-//	if (g_gametype.integer != GT_ROCKETARENA) {
+	// check for bounce
+	if ( !other->takedamage &&
+		( ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF ) ) ) {
+		G_BounceMissile( ent, trace );
+		G_AddEvent( ent, EV_GRENADE_BOUNCE, 0 );
+		return;
+	}
 
-		// check for bounce
-		if ( !other->takedamage &&
-			( ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF ) ) ) {
-			G_BounceMissile( ent, trace );
-			G_AddEvent( ent, EV_GRENADE_BOUNCE, 0 );
-			return;
+	//aibsmod - check for limited bounce
+	if (!other->takedamage && (ent->s.eFlags & EF_BOUNCE_LIMITED) && ent->bounceCount) {
+		if (ent->bounceCount < 0) {
+			ent->bounceCount++;
+			ent->target_ent = ent; //set target_ent so missile will impact owner
+		} else {
+			ent->bounceCount--;
 		}
 
-		//aibsmod - check for limited bounce
-		if (!other->takedamage && (ent->s.eFlags & EF_BOUNCE_LIMITED) && ent->bounceCount) {
-			if (ent->bounceCount < 0) {
-				ent->bounceCount++;
-				ent->target_ent = ent; //set target_ent so missile will impact owner
-			} else {
-				ent->bounceCount--;
-			}
+		if (ent->methodOfDeath == MOD_ROCKET)
+			ent->methodOfDeath = MOD_ROCKET_BOUNCE;
 
-			if (ent->methodOfDeath == MOD_ROCKET)
-				ent->methodOfDeath = MOD_ROCKET_BOUNCE;
+		if (ent->splashMethodOfDeath == MOD_ROCKET_SPLASH)
+			ent->splashMethodOfDeath = MOD_ROCKET_BOUNCE_SPLASH;
 
-			if (ent->splashMethodOfDeath == MOD_ROCKET_SPLASH)
-				ent->splashMethodOfDeath = MOD_ROCKET_BOUNCE_SPLASH;
-
-			G_BounceMissile(ent, trace);
-			G_AddEvent(ent, EV_GRENADE_BOUNCE, 0);
-			return;
-		}
+		G_BounceMissile(ent, trace);
+		G_AddEvent(ent, EV_GRENADE_BOUNCE, 0);
+		return;
+	}
 
 #ifdef MISSIONPACK
-		if ( other->takedamage ) {
-			if ( ent->s.weapon != WP_PROX_LAUNCHER ) {
-				if ( other->client && other->client->invulnerabilityTime > level.time ) {
-					//
-					VectorCopy( ent->s.pos.trDelta, forward );
-					VectorNormalize( forward );
-					if (G_InvulnerabilityEffect( other, forward, ent->s.pos.trBase, impactpoint, bouncedir )) {
-						VectorCopy( bouncedir, trace->plane.normal );
-						eFlags = ent->s.eFlags & EF_BOUNCE_HALF;
-						ent->s.eFlags &= ~EF_BOUNCE_HALF;
-						G_BounceMissile( ent, trace );
-						ent->s.eFlags |= eFlags;
-					}
-					ent->target_ent = other;
-					return;
+	if ( other->takedamage ) {
+		if ( ent->s.weapon != WP_PROX_LAUNCHER ) {
+			if ( other->client && other->client->invulnerabilityTime > level.time ) {
+				//
+				VectorCopy( ent->s.pos.trDelta, forward );
+				VectorNormalize( forward );
+				if (G_InvulnerabilityEffect( other, forward, ent->s.pos.trBase, impactpoint, bouncedir )) {
+					VectorCopy( bouncedir, trace->plane.normal );
+					eFlags = ent->s.eFlags & EF_BOUNCE_HALF;
+					ent->s.eFlags &= ~EF_BOUNCE_HALF;
+					G_BounceMissile( ent, trace );
+					ent->s.eFlags |= eFlags;
 				}
+				ent->target_ent = other;
+				return;
 			}
 		}
+	}
 #endif
-//	} //Rocket Arena
 
 	// impact damage
 	if (other->takedamage) {

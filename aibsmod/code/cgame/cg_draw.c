@@ -546,6 +546,7 @@ static void CG_DrawStatusBar( void ) {
 		angles[YAW] = 90 + 20 * sin( cg.time / 1000.0 );
 		CG_Draw3DModel( CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE,
 					   cg_weapons[ cent->currentState.weapon ].ammoModel, 0, origin, angles, -1, AM_COLORPART_NONE );
+
 	}
 
 	CG_DrawStatusBarHead( 185 + CHAR_WIDTH*3 + TEXT_ICON_SPACE );
@@ -2074,12 +2075,15 @@ CG_DrawSpectator
 */
 static void CG_DrawSpectator(void) {
 	CG_DrawBigString(320 - 9 * 8, 440, "SPECTATOR", 1.0F);
-	if ( cgs.gametype == GT_TOURNAMENT ) {
+
+	//aibsmod - let's change this
+/*	if ( cgs.gametype == GT_TOURNAMENT ) {
 		CG_DrawBigString(320 - 15 * 8, 460, "waiting to play", 1.0F);
 	}
 	else if ( cgs.gametype >= GT_TEAM ) {
 		CG_DrawBigString(320 - 39 * 8, 460, "press ESC and use the JOIN menu to play", 1.0F);
-	}
+	}*/
+	CG_DrawBigString(320 - 35 * 8, 460, "FIRE to follow, LEFT/RIGHT to cycle", 1.0f);
 }
 
 /*
@@ -2107,12 +2111,12 @@ static void CG_DrawVote(void) {
 	}
 
 	//aibsmod - added colors and seperated the common code
-	s = va("VOTE(%i):%s // YES:" S_COLOR_GREEN "%i" S_COLOR_WHITE " NO:" S_COLOR_GREEN "%i" S_COLOR_WHITE "", sec, cgs.voteString, cgs.voteYes, cgs.voteNo);
-	CG_DrawSmallString( 0, 58, s, 1.0F );
+	s = va("VOTE(%i) YES:" S_COLOR_GREEN "%i" S_COLOR_WHITE " NO:" S_COLOR_RED "%i" S_COLOR_WHITE " // %s", sec, cgs.voteYes, cgs.voteNo, cgs.voteString);
+	CG_DrawSmallString( 0, 26, s, 1.0F );
 
 #ifdef MISSIONPACK
 	s = "or press ESC then click Vote";
-	CG_DrawSmallString( 0, 58 + SMALLCHAR_HEIGHT + 2, s, 1.0F );
+	CG_DrawSmallString( 0, 26 + SMALLCHAR_HEIGHT + 2, s, 1.0F );
 #endif
 }
 

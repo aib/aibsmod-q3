@@ -355,7 +355,7 @@ static void CG_Obituary( entityState_t *ent ) {
 			break;
 
 		case MOD_AIRROCKET:
-			message = "was shot by";
+			message = "was shot down by";
 			break;
 
 		default:

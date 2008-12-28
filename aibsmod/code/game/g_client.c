@@ -1008,7 +1008,7 @@ void ClientBegin( int clientNum ) {
 	//aibsmod - create a new buttonsEntity
 	client->pers.buttonsEntity = G_Spawn();
 	client->pers.buttonsEntity->classname = "buttonsEntity";
-	trap_LinkEntity(client->pers.buttonsEntity);
+	client->pers.buttonsEntity->s.otherEntityNum = client->ps.clientNum;
 
 	// save eflags around this, because changing teams will
 	// cause this to happen with a valid entity, and we

@@ -323,8 +323,9 @@ struct gclient_s {
 #endif
 
 	//aibsmod-specific stuff
-	gentity_t	*lastAttacker;		//last enemy attacker as calculated by aibsmod
-	int			teleportTime;		//next allowed time to teleport
+	gentity_t	*lastAttacker;			//last enemy attacker as calculated by aibsmod
+	int			teleportTime;			//next allowed time to teleport
+	int			lastFollowDirection;	//so left/right keys in spectator mode don't cycle too fast
 
 	char		*areabits;
 };
@@ -803,9 +804,9 @@ extern	vmCvar_t	am_teleportDelay;
 extern	vmCvar_t	am_spawnHealth;
 extern	vmCvar_t	am_spawnNoMG;
 
-extern	vmCvar_t	am_disableWeapons;
 extern	vmCvar_t	am_selfDamage;
 extern	vmCvar_t	am_fallDamage;
+extern	vmCvar_t	am_damageKick;
 extern	vmCvar_t	am_nonRamboKill;
 
 extern	vmCvar_t	am_dropTeamPowerups;

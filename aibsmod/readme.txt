@@ -42,6 +42,12 @@ Server Variables/Settings:
 	* am_selfDamage <0/1>
 		This setting controls whether players can damage themselves. If set to 0, players cannot damage themselves (neither health nor armorwise) but knockback still applies. Players can "callvote selfdamage 0/1" to change this setting.
 
+	* am_fallDamage <0/1>
+		This setting controls whether players take fall damage. Players can "callvote falldamage 0/1" to change this setting.
+
+	* am_damageKick <0/1>
+		This setting controls whether players' screens kick when they take damage. Disabling it also disables the blotch of blood that shows up on the screen.
+
 	* am_disableWeapons <0/1>
 		This setting controls whether players can use weapons other than the gauntlet. It is mainly useful in football and telefrag matches (see the "teleport" command below). Players can "callvote disableweapons 0/1" to change this setting.
 
@@ -53,6 +59,9 @@ Server Variables/Settings:
 
 	* am_rocketBounce <n>
 		This setting controls whether rockets can bounce off of walls. 0 is the default and doesn't allow rockets to bounce off walls. Changing this setting to any number will allow rockets to bounce that many times. For example, if am_rocketBounce is 2, rockets will bounce off of the first two walls they encounter, and then explode on the third. If set to a negative number, rockets that have bounced off at least once will be able to hit their owners. Players can "callvote rocketbounce n" to change this setting.
+
+	* am_tripmineGrenades <0|1>
+		This setting controls whether grenades are replaced by laser tripmines. See the section entitled "Laser Tripmines" below for details. Players call "callvote tripmines 0/1" to change this setting.
 
 	* am_nonRamboKill <0/1/2>
 		This setting controls whether non-rambo players can be damaged by other non-rambo players. If it is "0", non-rambo players cannot be damaged by other non-rambo players. A value of "1" will allow such damage, but will not reward (nor punish) such kills in [non-team] Rambomatch mode. A value of "2" will punish non-rambo killers by subtracting a point from their score in [non-team] Rambomatch mode. In Team Rambomatch mode, settings 1 and 2 do not differ and always reward opposing team non-rambo kills with +1 and punish team kills with -1. Players can "callvote nonrambokill 0/1/2" to change this setting.
@@ -67,10 +76,10 @@ Server Variables/Settings:
 		This setting controls whether players drop their current powerups (e.g. quad) when they die in team games, as they do in FFA games.
 
 	* am_droppableWeapons <0/1>
-		Controls whether the "drop weapon" client command is enabled.
+		This setting controls whether the "drop weapon" client command is enabled.
 
 	* am_teleportDelay <n>
-		Controls whether the "teleport" command (see the "Client Commands" section below) is enabled, and the delay between teleports. If it is a negative number, the command is disabled. Otherwise, it is the delay in milliseconds between successive uses of the "teleport" command. Players can "callvote teleportdelay n" to change this setting.
+		This setting controls whether the "teleport" command (see the "Client Commands" section below) is enabled, and the delay between teleports. If it is a negative number, the command is disabled. Otherwise, it is the delay in milliseconds between successive uses of the "teleport" command. Players can "callvote teleportdelay n" to change this setting.
 
 	* am_spawnHealth <n>
 		If set (greater than 0), players will start with this amount of health. This variable can be adjusted by maps; see the Mapmaking section below for details.
@@ -104,6 +113,9 @@ Client Variables/Settings:
 	* am_chatBeep <0/1/2>
 		Enables or disables the "chat beep" you hear when somebody sends a message. 0 disables all beeps, 1 enables all, 2 enables beeps for team chat only.
 
+	* am_weaponBob <0/1>
+		Enables or disables the bobbing of your weapon as you move around.
+
 	* am_CPMASkins      <0/1>
 	* am_colors         "#####"
 	* am_enemyColors    "#####"
@@ -124,6 +136,15 @@ Client Commands:
 
 	* teleport
 		This command teleports you immediately to the point your crosshair is on, with a maximum distance of 8192 game units. (Same as the railgun's range.) It will try to avoid teleporting you into walls, but may place you slightly off-target in doing so. It will telefrag other players. am_teleportDelay needs to be positive in order for this command to work, and it will only work once every am_teleportDelay milliseconds.
+
+
+Laser Tripmines:
+
+	aibsmod has laser tripmines that you may remember from a few other games. They are placed on solid surfaces and automatically activate after a few seconds. Once activated, they shoot a laser beam straight across and explode if anything crosses it.
+
+	They are rather small and hard to hit, but have 50 health. They do 150 splash damage with a radius of 360 units. (That is thrice the rocket splash radius, but the damage scales down with the distance.) If two or more are placed close by, they will cause eachother to explode, creating chain reactions.
+
+	They work by measuring the distance to the first solid (or laser length, if you will) once every server frame. If that distance changes across two frames, they explode with a slight delay. Due to this fact and the limitations of the Quake 3 engine, it is possible to cross the beam at high velocities without causing the mine to explode. Very slight changes in laser length do not disturb the mine, meaning, you can move along the path of the beam if you move slowly enough. This is by design.
 
 
 The Enhanced Scoreboard:

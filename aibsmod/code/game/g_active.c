@@ -56,8 +56,11 @@ void P_DamageFeedback( gentity_t *player ) {
 		client->ps.damageEvent++;
 	}
 
-
-	client->ps.damageCount = count;
+	//aibsmod - no view angle kick if am_damageKick is 0
+	if (am_damageKick.integer)
+		client->ps.damageCount = count;
+	else
+		client->ps.damageCount = 0;
 
 	//
 	// clear totals
@@ -333,9 +336,30 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 	client->oldbuttons = client->buttons;
 	client->buttons = ucmd->buttons;
 
-	// attack button cycles through spectators
-	if ( ( client->buttons & BUTTON_ATTACK ) && ! ( client->oldbuttons & BUTTON_ATTACK ) ) {
-		Cmd_FollowCycle_f( ent, 1 );
+//	// attack button cycles through spectators
+//	if ( ( client->buttons & BUTTON_ATTACK ) && ! ( client->oldbuttons & BUTTON_ATTACK ) ) {
+//		Cmd_FollowCycle_f( ent, 1 );
+//	}
+
+	//aibsmod - left/right cycle through spectators
+	if (client->sess.spectatorState == SPECTATOR_FOLLOW) {
+		if ((ucmd->rightmove == 0) && (client->lastFollowDirection != 0)) {
+			client->lastFollowDirection = 0;
+		} if ((ucmd->rightmove > 0) && (client->lastFollowDirection != 1)) {
+			Cmd_FollowCycle_f(ent, 1);
+			client->lastFollowDirection = 1;
+		} else if ((ucmd->rightmove < 0) && (client->lastFollowDirection != -1)) {
+			Cmd_FollowCycle_f(ent, -1);
+			client->lastFollowDirection = -1;
+		}
+	}
+
+	//aibsmod - attack toggles follow
+	if ((client->buttons & BUTTON_ATTACK) && !(client->oldbuttons & BUTTON_ATTACK)) {
+		if (client->sess.spectatorState == SPECTATOR_FOLLOW)
+			StopFollowing(ent);
+		else
+			Cmd_FollowCycle_f(ent, 1);
 	}
 }
 
@@ -639,7 +663,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 
 		//aibsmod
 		case EV_TRIPMINE_FIRE:	//client firing tripmine
-			if (am_tripmineGrenades.integer && (ent->client->ps.ammo[WP_GRENADE_LAUNCHER] >= 5) && CheckTripmineAttack(ent))
+			if (am_tripmineGrenades.integer && ((ent->client->ps.ammo[WP_GRENADE_LAUNCHER] < 0) || (ent->client->ps.ammo[WP_GRENADE_LAUNCHER] >= 5)) && CheckTripmineAttack(ent))
 				ent->client->ps.ammo[WP_GRENADE_LAUNCHER] -= 5;
 			break;
 
@@ -960,15 +984,10 @@ void ClientThink_real( gentity_t *ent ) {
 
 	//aibsmod - update buttonsEntity
 	if (client->pers.buttonsEntity) {
-		//set owner
-		client->pers.buttonsEntity->s.otherEntityNum = client->ps.clientNum;
+		//update position
+		G_SetOrigin(client->pers.buttonsEntity, ent->s.pos.trBase);
 
-		//set broadcast
-		client->pers.buttonsEntity->r.svFlags = SVF_BROADCAST;
-
-		//move over to client's position
-		G_SetOrigin(client->pers.buttonsEntity, client->ps.origin);
-
+		//update buttons
 		G_AddEvent(client->pers.buttonsEntity, EV_CURRENT_BUTTONS,
 			((pm.cmd.forwardmove > 0) ? BTNFLAG_BUTTON_UP : 0) |
 			((pm.cmd.forwardmove < 0) ? BTNFLAG_BUTTON_DOWN : 0) |
@@ -977,6 +996,9 @@ void ClientThink_real( gentity_t *ent ) {
 			((pm.cmd.upmove > 0) ? BTNFLAG_BUTTON_JUMP : 0) |
 			((pm.cmd.buttons & BUTTON_ATTACK) ? BTNFLAG_BUTTON_FIRE : 0)
 		);
+
+		//link
+		trap_LinkEntity(client->pers.buttonsEntity);
 	}
 
 	// use the snapped origin for linking so it matches client predicted versions
@@ -1079,6 +1101,7 @@ SpectatorClientEndFrame
 */
 void SpectatorClientEndFrame( gentity_t *ent ) {
 	gclient_t	*cl;
+	int savedPing;
 
 	// if we are doing a chase cam or a remote view, grab the latest info
 	if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
@@ -1096,7 +1119,12 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 			cl = &level.clients[ clientNum ];
 			if ( cl->pers.connected == CON_CONNECTED && cl->sess.sessionTeam != TEAM_SPECTATOR ) {
 				flags = (cl->ps.eFlags & ~(EF_VOTED | EF_TEAMVOTED)) | (ent->client->ps.eFlags & (EF_VOTED | EF_TEAMVOTED));
+
+				//aibsmod - save and restore ping
+				savedPing = ent->client->ps.ping;
 				ent->client->ps = cl->ps;
+				ent->client->ps.ping = savedPing;
+
 				ent->client->ps.pm_flags |= PMF_FOLLOW;
 				ent->client->ps.eFlags = flags;
 				return;

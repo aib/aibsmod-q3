@@ -93,6 +93,7 @@ vmCvar_t	am_teleportDelay;
 
 vmCvar_t	am_selfDamage;
 vmCvar_t	am_fallDamage;
+vmCvar_t	am_damageKick;
 vmCvar_t	am_nonRamboKill;
 
 vmCvar_t	am_dropTeamPowerups;
@@ -193,6 +194,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &am_trainingMode, "am_trainingMode", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
 	{ &am_airControl, "am_airControl", "1.0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
 	{ &am_disableWeapons, "am_disableWeapons", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
+	{ &am_tripmineGrenades, "am_tripmineGrenades", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
 
 	//aibsmod server-side cvars
 	{ &am_spawnHealth, "am_spawnHealth", "0", 0, 0, qtrue },
@@ -201,11 +203,11 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &am_piercingRail, "am_piercingRail", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_hyperGauntlet, "am_hyperGauntlet", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_rocketBounce, "am_rocketBounce", "0", CVAR_ARCHIVE, 0, qtrue },
-	{ &am_tripmineGrenades, "am_tripmineGrenades", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_teleportDelay, "am_teleportDelay", "-1", CVAR_ARCHIVE, 0, qtrue },
 
 	{ &am_selfDamage, "am_selfDamage", "1", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_fallDamage, "am_fallDamage", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &am_damageKick, "am_damageKick", "1", CVAR_ARCHIVE, 0, qtrue },
 	{ &am_nonRamboKill, "am_nonRamboKill", "2", CVAR_ARCHIVE, 0, qtrue },
 
 	{ &am_dropTeamPowerups, "am_dropTeamPowerups", "0", CVAR_ARCHIVE, 0, qtrue },
@@ -423,11 +425,12 @@ void G_UpdateCvars( void ) {
 				cv->modificationCount = cv->vmCvar->modificationCount;
 
 				if ( cv->trackChange ) {
-					if ((cv->vmCvar == &g_speed) && (g_speed.integer == oldSpeed))
-						trap_SendServerCommand(-1, "print \"Server: g_speed changed without changing value.\n\"");
-					else
+					if ((cv->vmCvar == &g_speed) && (g_speed.integer == oldSpeed)) {
+//						trap_SendServerCommand(-1, "print \"Server: g_speed changed without changing value.\n\"");
+					} else {
 						trap_SendServerCommand( -1, va("print \"Server: %s changed to %s\n\"",
 							cv->cvarName, cv->vmCvar->string ) );
+					}
 				}
 
 				if (cv->teamShader) {
@@ -555,8 +558,11 @@ VectorSet(level.footballSpawnPoint, 0, 0, 100);
 		level.football = NULL;
 	}
 
-	if ((g_gametype.integer == GT_ROCKETARENA) && (am_disableWeapons.integer))
+	if (g_gametype.integer == GT_ROCKETARENA) {
 		trap_Cvar_Set("am_disableWeapons", "0");
+		trap_Cvar_Set("am_tripmineGrenades", "0");
+		trap_Cvar_Set("am_rocketBounce", "0");
+	}
 
 	// general initialization
 	G_FindTeams();

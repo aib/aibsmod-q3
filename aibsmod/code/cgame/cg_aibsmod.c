@@ -250,8 +250,9 @@ void CG_FootballGoalpost(centity_t *cent)
 //draw a laser tripmine
 void CG_Tripmine(centity_t *cent)
 {
-	refEntity_t		mineBody;
-	const vec3_t	laserColor = { 1.0f, 0.0f, 0.0f };
+	refEntity_t	mineBody;
+	vec3_t		laserColor;
+	int			timePart;
 
 	memset(&mineBody, 0, sizeof(mineBody));
 
@@ -271,8 +272,15 @@ void CG_Tripmine(centity_t *cent)
 	//add to refresh list
 	trap_R_AddRefEntityToScene(&mineBody);
 
+	timePart = (cg.time + cent->currentState.generic1) % 2000; //add current + creation time and get flicker phase
+
 	//Draw laser if armed
 	if (cent->currentState.modelindex == 1) { //armed
+		if (timePart < 50) //flicker for 50 ms. every 2000 ms.
+			CG_SetColors(cent->currentState.otherEntityNum, AM_COLORPART_2, laserColor);
+		else
+			CG_SetColors(cent->currentState.otherEntityNum, AM_COLORPART_1, laserColor);
+
 		CG_Laser(cent->currentState.origin, cent->currentState.angles2, laserColor);
 	}
 }

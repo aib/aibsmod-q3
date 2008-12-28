@@ -1267,6 +1267,7 @@ extern	vmCvar_t		am_drawButtons;
 
 extern	vmCvar_t		am_hitFeedback;
 extern	vmCvar_t		am_chatBeep;
+extern	vmCvar_t		am_weaponBob;
 
 extern	vmCvar_t		am_CPMASkins;
 extern	vmCvar_t		am_colors;

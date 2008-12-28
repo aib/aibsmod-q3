@@ -113,9 +113,15 @@ qboolean CheckTripmineAttack(gentity_t *ent)
 	VectorMA(muzzle, TRIPMINE_PLACE_RANGE*tr.fraction, forward, minePos);
 	vectoangles(tr.plane.normal, mineAngles);
 
+	if ((tr.plane.normal[0] == 0.0f) && (tr.plane.normal[1] == 0.0f)) //mine directly on floor or ceiling, adjust yaw
+		mineAngles[YAW] = ent->client->ps.viewangles[YAW];
+
 	mine = G_Spawn();
 	mine->classname = "tripmine";
 	mine->s.eType = ET_TRIPMINE;
+
+	mine->s.otherEntityNum = ent->s.number; //owner
+	mine->s.generic1 = level.time; //flicker offset
 
 	//Adjust callbacks
 	mine->think = Tripmine_Arm;
