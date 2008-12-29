@@ -987,7 +987,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 		if ((g_gametype.integer == GT_ROCKETARENA) &&
 			(mod == MOD_ROCKET || mod == MOD_ROCKET_SPLASH) &&
-			(targ->s.groundEntityNum != ENTITYNUM_NONE) &&
+			((targ->s.groundEntityNum != ENTITYNUM_NONE) || targ->waterlevel) &&
 			am_rocketArena_groundLaunch.integer)
 		{
 			targ->client->ps.velocity[2] += am_rocketArena_groundLaunch.integer;

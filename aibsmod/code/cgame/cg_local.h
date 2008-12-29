@@ -640,6 +640,9 @@ typedef struct {
 	int			buttonState;		//sent by the server so we can draw buttons pressed
 	vec3_t		footballPos;		//position of the football
 
+	amDemoFF_t	demoFastForward;
+	int			demoFFStopTime;
+
 } cg_t;
 
 
@@ -1273,6 +1276,8 @@ extern	vmCvar_t		am_CPMASkins;
 extern	vmCvar_t		am_colors;
 extern	vmCvar_t		am_enemyColors;
 extern	vmCvar_t		am_friendlyColors;
+
+extern	vmCvar_t		am_demoFastForwardSpeed;
 
 extern	vmCvar_t		amh_depth;
 

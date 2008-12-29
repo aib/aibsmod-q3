@@ -114,7 +114,7 @@ qboolean CheckTripmineAttack(gentity_t *ent)
 	vectoangles(tr.plane.normal, mineAngles);
 
 	if ((tr.plane.normal[0] == 0.0f) && (tr.plane.normal[1] == 0.0f)) //mine directly on floor or ceiling, adjust yaw
-		mineAngles[YAW] = ent->client->ps.viewangles[YAW];
+		mineAngles[YAW] = ent->client->ps.viewangles[YAW] + 180;
 
 	mine = G_Spawn();
 	mine->classname = "tripmine";
@@ -126,18 +126,18 @@ qboolean CheckTripmineAttack(gentity_t *ent)
 	//Adjust callbacks
 	mine->think = Tripmine_Arm;
 	mine->nextthink = level.time + TRIPMINE_ARM_TIME;
-	mine->dieTime = level.time + TRIPMINE_LIFE;
+	mine->dieTime = level.time + TRIPMINE_LIFETIME;
 
 	//Killable
-	mine->health = 50;
+	mine->health = TRIPMINE_HEALTH;
 	mine->takedamage = qtrue;
 	mine->r.contents = CONTENTS_CORPSE;
 	mine->die = Tripmine_Die;
 
 	//Adjust damages
 	mine->parent = ent;
-	mine->splashDamage = 150;
-	mine->splashRadius = 360;
+	mine->splashDamage = TRIPMINE_DAMAGE;
+	mine->splashRadius = TRIPMINE_SPLASH;
 	mine->splashMethodOfDeath = MOD_TRIPMINE_SPLASH;
 
 	//Adjust graphics

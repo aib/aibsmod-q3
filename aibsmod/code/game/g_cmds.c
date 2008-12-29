@@ -1636,7 +1636,7 @@ void Cmd_Drop_f(gentity_t *ent)
 	gentity_t	*dropped;
 
 	if (trap_Argc() < 2) {
-		trap_SendServerCommand(ent-g_entities, va("print \"usage: drop weapon\n\""));
+		trap_SendServerCommand(ent-g_entities, va("print \"Usage: drop weapon\n\""));
 		return;
 	}
 

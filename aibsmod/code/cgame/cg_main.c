@@ -197,6 +197,8 @@ vmCvar_t	am_colors;
 vmCvar_t	am_enemyColors;
 vmCvar_t	am_friendlyColors;
 
+vmCvar_t	am_demoFastForwardSpeed;
+
 vmCvar_t	amh_depth;
 
 vmCvar_t	model;
@@ -357,6 +359,8 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &am_colors, "am_colors", "-----", CVAR_USERINFO | CVAR_ARCHIVE },
 	{ &am_enemyColors, "am_enemyColors", "-----", CVAR_ARCHIVE },
 	{ &am_friendlyColors, "am_friendlyColors", "-----", CVAR_ARCHIVE },
+
+	{ &am_demoFastForwardSpeed, "am_demoFastForwardSpeed", "50", CVAR_ARCHIVE },
 
 	{ &amh_depth, "amh_depth", "0", CVAR_CHEAT },
 
@@ -2049,6 +2053,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 
 	s = CG_ConfigString( CS_LEVEL_START_TIME );
 	cgs.levelStartTime = atoi( s );
+
+	//aibsmod initialization
+	cg.demoFastForward = AM_DEMOFF_OFF;
 
 	CG_ParseServerinfo();
 

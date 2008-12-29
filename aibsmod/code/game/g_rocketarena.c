@@ -10,7 +10,7 @@ void ra_register_hit(gentity_t *attacker, gentity_t *inflictor, gentity_t *targe
 	float ownerVelocity;
 
 	//Don't register ground hits
-	if (target->s.groundEntityNum != ENTITYNUM_NONE)
+	if ((target->s.groundEntityNum != ENTITYNUM_NONE) || target->waterlevel)
 		return;
 
 	//Don't register disconnected hits

@@ -833,7 +833,7 @@ void ClientThink_real( gentity_t *ent ) {
 	}
 
 	//aibsmod - check for air rocketed players hitting the ground
-	if (ent->s.groundEntityNum != ENTITYNUM_NONE) {
+	if ((ent->s.groundEntityNum != ENTITYNUM_NONE) || ent->waterlevel) {
 		ra_hit_ground(ent);
 	}
 

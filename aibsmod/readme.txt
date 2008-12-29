@@ -1,5 +1,8 @@
 *** aibsmod Documentation ***
 
+v0.94 Notes:
+	Bikac yeni bisey ekledim. Bir de asagidaki notlara bakin:
+
 v0.92 Notes:
 	Modelleri duzelttim. cg_forceModel, model, headmodel, team_model, team_headmodel, enemy_model ve enemy_headmodel'in hepsinin calismasi lazim. Tek sey, VQ3 modelleri kullaniyorsaniz, team game'lerde modellerin skinleri red/blue olarak replace ediliyor. (Mesela DM'de enemy_model'i bones/blue, headmodel'i bones/red yapip ucubik bir yaratikla karsilasmak mumkunken, TDM'de kafasi da vucudu da team rengini aliyor.)
 
@@ -128,6 +131,9 @@ Client Variables/Settings:
 	* enemy_headmodel	<model name>
 		While the former two of these variables existed in the original client, they did nothing. aibsmod added the latter two and gave a purpose to all four. These variables allow you to adjust the torso/legs model and the head model of your teammates and your enemies, if cg_forceModels is set to nonzero. Note that the 'teammate' "team_model" and "team_headmodel" settings do not affect the way you see yourself, your own model is always drawn using the "model" and "headmodel" settings. Because of the way the original code handles model settings, re-setting of the cg_forceModel variable and/or a vid_restart command may be in order after changing any of these.
 
+	* am_demoFastForwardSpeed <n>
+		Sets the fast-forward speed (timescale) for the demo fast-forward commands. Also see the "Demo Commands" section below.
+
 
 Client Commands:
 
@@ -136,6 +142,15 @@ Client Commands:
 
 	* teleport
 		This command teleports you immediately to the point your crosshair is on, with a maximum distance of 8192 game units. (Same as the railgun's range.) It will try to avoid teleporting you into walls, but may place you slightly off-target in doing so. It will telefrag other players. am_teleportDelay needs to be positive in order for this command to work, and it will only work once every am_teleportDelay milliseconds.
+
+
+Demo Commands:
+
+	* demoff_time [mm:]ss
+		This command fast-forwards your demo to the specified time, as reported by the client timer (cg_drawTimer 1). The minute part is optional; you can specify a time as either "70" (one minute and 10 seconds) or "1:10" (same.)
+
+	* demoff_timefromnow [mm:]ss
+		This command fast-forwards your demo 'ss' seconds (or 'mm' minutes and 'ss' seconds) into the future.
 
 
 Laser Tripmines:
@@ -294,16 +309,22 @@ Mapmaking:
 
 Notes:
 
-	This mod is no longer compatible with vanilla Q3 clients (meaning clients lacking this mod.) This was a design decision taken around test6, where fast weapon switching, training mode and the button display was implemented. Whereas VQ3 clients couldn't simply benefit from the former two, the method used for sending button presses to spectator aibsmod clients dropped their respective spectatees from the game due to the lack of a particular feature in the Q3A code.
+	This mod is not compatible with vanilla Q3 clients. Although aibsmod contains many modifications, VQ3-like behavior was a priority in the design and where possible, the default values of settings were chosen such that unconfigured aibsmod servers and clients both would look and feel like their VQ3 counterparts.
 
 
 Credits:
 
-	//TODO
+	Orhan "aib" Kavrakoglu - http://URL - aibok42 gmail.
+		Code
+		Concepts
+		Design
+		Models
+		Sounds
+		Bad-looking graphics
 
-	Orhan "aib" Kavrakoglu - http://aib.ftuff.com/ - aibok42 gmail.
-		Code; Concepts; Design; Models; Sounds; Bad-looking graphics
+	Baska kimseyi yazmiyorum. Asagidakileri silicem. Mesaj atin.
 
+/*
 	gelaek/skos
 		Concepts; Maps: dy3ram, football, football2; Testing; Sounds
 
@@ -327,5 +348,5 @@ Credits:
 		lepidodendron
 		disq
 		aib
-
+*/
 	Special thanks to zfs

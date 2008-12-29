@@ -266,6 +266,9 @@ void CG_Tripmine(centity_t *cent)
 
 	mineBody.hModel = cgs.media.tripmineModel;
 
+	CG_SetShaderColors(cent->currentState.otherEntityNum, AM_COLORPART_1, mineBody.shaderRGBA);
+	mineBody.shaderRGBA[3] = 255;
+
 	//convert angles to axis
 	AnglesToAxis(cent->lerpAngles, mineBody.axis);
 

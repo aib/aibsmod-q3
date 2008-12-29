@@ -7,10 +7,10 @@
 #ifndef __AIBSMOD_H__
 #define __AIBSMOD_H__
 
-#define GAMEVERSION		"aibsmod_test9"
+#define GAMEVERSION		"aibsmod_test93"
 #define	GAME_VERSION	"aibsmod-1"
 
-#define VERSION_STRING	"aibsmod v0.92"
+#define VERSION_STRING	"aibsmod v0.93"
 
 //Couldn't find a suitable place for these, didn't want to modify q_shared.h
 #define MIN(x,y) ((x < y) ? (x) : (y))
@@ -36,6 +36,13 @@ typedef enum {
 
 	AM_MAX_COLORPARTS
 } amColorpart_t;
+
+//Demo fast-forwarding
+typedef enum {
+	AM_DEMOFF_OFF,
+	AM_DEMOFF_LEVELTIME,	//Fast-forward until level time
+	AM_DEMOFF_TIMEOFFSET,	//Fast-forward n seconds
+} amDemoFF_t;
 
 //The constants below are used by game mechanics
 
@@ -83,11 +90,17 @@ typedef enum {
 #define TRIPMINE_THINK_DELAY	50
 #define TRIPMINE_RANGE			8192
 #define TRIPMINE_ARM_TIME		2500
+
 //explode if laser length changes this much in TRIPMINE_THINK_DELAY
 //to allow crawling away at 50ups, for example, this should be 50 * (1000 / TRIPMINE_THINK_DELAY)
 #define TRIPMINE_TRIP_DELTA		3.0f
+
+#define TRIPMINE_HEALTH			60
+#define TRIPMINE_DAMAGE			150
+#define TRIPMINE_SPLASH			360
+
 //alive for this long
-#define TRIPMINE_LIFE			(300000 + TRIPMINE_ARM_TIME)
+#define TRIPMINE_LIFETIME		(300000 + TRIPMINE_ARM_TIME)
 #define TRIPMINE_EXPLODE_DELAY	200
 
 #endif /*__AIBSMOD_H__*/

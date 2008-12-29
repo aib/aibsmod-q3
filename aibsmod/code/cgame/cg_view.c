@@ -859,6 +859,17 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 		CG_Printf( "cg.clientFrame:%i\n", cg.clientFrame );
 	}
 
-
+	//aibsmod - stop demo fast forwarding
+	if (cg.demoFastForward == AM_DEMOFF_LEVELTIME) {
+		if (cg.time >= (cgs.levelStartTime + cg.demoFFStopTime)) {
+			trap_Cvar_Set("timescale", "1");
+			cg.demoFastForward = AM_DEMOFF_OFF;
+		}
+	} else if (cg.demoFastForward == AM_DEMOFF_TIMEOFFSET) {
+		if (cg.time >= cg.demoFFStopTime) {
+			trap_Cvar_Set("timescale", "1");
+			cg.demoFastForward = AM_DEMOFF_OFF;
+		}
+	}
 }
 

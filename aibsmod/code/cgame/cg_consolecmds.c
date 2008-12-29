@@ -59,7 +59,7 @@ Debugging command to print the current position
 */
 static void CG_Viewpos_f (void) {
 	CG_Printf ("(%i %i %i) : %i\n", (int)cg.refdef.vieworg[0],
-		(int)cg.refdef.vieworg[1], (int)cg.refdef.vieworg[2], 
+		(int)cg.refdef.vieworg[1], (int)cg.refdef.vieworg[2],
 		(int)cg.refdefViewAngles[YAW]);
 }
 
@@ -106,7 +106,7 @@ static void CG_LoadHud_f( void) {
 
 	String_Init();
 	Menu_Reset();
-	
+
 	trap_Cvar_VariableStringBuffer("cg_hudFiles", buff, sizeof(buff));
 	hudSet = buff;
 	if (hudSet[0] == '\0') {
@@ -424,6 +424,84 @@ static void CG_Camera_f( void ) {
 }
 */
 
+//aibsmod commands
+static void CG_DemoFFTime_f(void)
+{
+	char	timestr[8];
+	char	*colon;
+	int		seconds;
+
+	if (trap_Argc() != 2) {
+		CG_Printf("Usage: demoff_time [mm:]ss\n");
+		return;
+	}
+
+	if (!cg.demoPlayback) {
+		CG_Printf("Not playing a demo.\n");
+		return;
+	}
+
+	seconds = 0;
+	trap_Argv(1, timestr, 8);
+
+	colon = strchr(timestr, ':');
+
+	if (colon == NULL) { //just specified seconds
+		seconds = atoi(timestr);
+	} else {
+		*colon++ = '\0'; //replace colon with \0
+		seconds = atoi(colon);
+		seconds += (60 * atoi(timestr));
+	}
+
+	if (seconds <= 0) {
+		CG_Printf("Invalid time.\n");
+		return;
+	}
+
+	cg.demoFFStopTime = cgs.levelStartTime + (seconds * 1000);
+	cg.demoFastForward = AM_DEMOFF_LEVELTIME;
+	trap_Cvar_Set("timescale", va("%f", am_demoFastForwardSpeed.value));
+}
+
+static void CG_DemoFFTimeOffset_f(void)
+{
+	char	timestr[8];
+	char	*colon;
+	int		seconds;
+
+	if (trap_Argc() != 2) {
+		CG_Printf("Usage: demoff_timefromnow [mm:]ss\n");
+		return;
+	}
+
+	if (!cg.demoPlayback) {
+		CG_Printf("Not playing a demo.\n");
+		return;
+	}
+
+	seconds = 0;
+	trap_Argv(1, timestr, 8);
+
+	colon = strchr(timestr, ':');
+
+	if (colon == NULL) { //just specified seconds
+		seconds = atoi(timestr);
+	} else {
+		*colon++ = '\0'; //replace colon with \0
+		seconds = atoi(colon);
+		seconds += (60 * atoi(timestr));
+	}
+
+	if (seconds <= 0) {
+		CG_Printf("Invalid time.\n");
+		return;
+	}
+
+	cg.demoFFStopTime = cg.time + (seconds * 1000);
+	cg.demoFastForward = AM_DEMOFF_TIMEOFFSET;
+	trap_Cvar_Set("timescale", va("%f", am_demoFastForwardSpeed.value));
+}
 
 typedef struct {
 	char	*cmd;
@@ -480,7 +558,11 @@ static consoleCommand_t	commands[] = {
 #endif
 	{ "startOrbit", CG_StartOrbit_f },
 	//{ "camera", CG_Camera_f },
-	{ "loaddeferred", CG_LoadDeferredPlayers }	
+	{ "loaddeferred", CG_LoadDeferredPlayers }	,
+
+	//aibsmod
+	{ "demoff_timefromnow", CG_DemoFFTimeOffset_f },
+	{ "demoff_time", CG_DemoFFTime_f }
 };
 
 
