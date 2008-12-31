@@ -984,6 +984,9 @@ void ClientThink_real( gentity_t *ent ) {
 
 	//aibsmod - update buttonsEntity
 	if (client->pers.buttonsEntity) {
+		//update owner (we seem to need this)
+		client->pers.buttonsEntity->s.otherEntityNum = client->ps.clientNum;
+
 		//update position
 		G_SetOrigin(client->pers.buttonsEntity, ent->s.pos.trBase);
 

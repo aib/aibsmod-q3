@@ -24,6 +24,25 @@ powerups/ramboWeapon
 	}
 }
 
+textures/weapons/tripmine
+{
+	{
+		map $whiteimage
+		rgbGen entity
+		blendFunc GL_ONE GL_ZERO
+	}
+	{
+		map textures/weapons/tripmine.tga
+		rgbGen identity
+		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+	}
+	{
+		map $lightmap
+		blendFunc GL_DST_COLOR GL_ZERO
+		rgbGen identityLighting
+	}
+}
+
 tripmineExplosion
 {
 	cull disable

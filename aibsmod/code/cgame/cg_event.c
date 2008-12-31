@@ -1418,7 +1418,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				le = CG_MakeExplosion(es->origin, es->origin2, cgs.media.dishFlashModel, cgs.media.tripmineExplosionShader, 1000, qtrue);
 				le->light = 300;
 				VectorCopy(color, le->lightColor);
-				CG_ImpactMark(cgs.media.burnMarkShader, es->origin, dir, random()*360, 1,1,1,1, qfalse, 128, qfalse);
+				CG_ImpactMark(cgs.media.burnMarkShader, es->origin, es->origin2, random()*360, 1,1,1,1, qfalse, 128, qfalse);
 
 				break;
 			/*	//aibsmod

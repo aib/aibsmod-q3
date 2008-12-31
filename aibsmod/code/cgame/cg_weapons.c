@@ -1489,6 +1489,25 @@ WEAPON SELECTION
 */
 
 /*
+===============
+CG_WeaponSelectable
+===============
+*/
+static qboolean CG_WeaponSelectable( int i ) {
+	if ((i == WP_GRENADE_LAUNCHER) && am_tripmineGrenades.integer && (cg.snap->ps.ammo[WP_GRENADE_LAUNCHER] >= 0) && (cg.snap->ps.ammo[WP_GRENADE_LAUNCHER] < 5))
+		return qfalse;
+	else if ( !cg.snap->ps.ammo[i] ) {
+		return qfalse;
+	}
+	if ( ! (cg.snap->ps.stats[ STAT_WEAPONS ] & ( 1 << i ) ) ) {
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
+
+/*
 ===================
 CG_DrawWeaponSelect
 ===================
@@ -1565,24 +1584,6 @@ void CG_DrawWeaponSelect( void ) {
 	trap_R_SetColor( NULL );
 }
 
-
-/*
-===============
-CG_WeaponSelectable
-===============
-*/
-static qboolean CG_WeaponSelectable( int i ) {
-	if ((i == WP_GRENADE_LAUNCHER) && am_tripmineGrenades.integer && (cg.snap->ps.ammo[WP_GRENADE_LAUNCHER] >= 0) && (cg.snap->ps.ammo[WP_GRENADE_LAUNCHER] < 5))
-		return qfalse;
-	else if ( !cg.snap->ps.ammo[i] ) {
-		return qfalse;
-	}
-	if ( ! (cg.snap->ps.stats[ STAT_WEAPONS ] & ( 1 << i ) ) ) {
-		return qfalse;
-	}
-
-	return qtrue;
-}
 
 /*
 ===============

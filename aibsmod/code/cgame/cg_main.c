@@ -1133,6 +1133,9 @@ static void CG_RegisterGraphics( void ) {
 		}
 	}
 
+	//aibsmod - we DO need the rail core shader (we call it "laser")
+	cgs.media.railCoreShader = trap_R_RegisterShader( "railCore" );
+
 	// wall marks
 	cgs.media.bulletMarkShader = trap_R_RegisterShader( "gfx/damage/bullet_mrk" );
 	cgs.media.burnMarkShader = trap_R_RegisterShader( "gfx/damage/burn_med_mrk" );

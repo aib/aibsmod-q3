@@ -990,6 +990,14 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			((targ->s.groundEntityNum != ENTITYNUM_NONE) || targ->waterlevel) &&
 			am_rocketArena_groundLaunch.integer)
 		{
+			float spreadAngle;
+			float spreadStrength;
+
+			spreadAngle = random() * 2.0f * M_PI; //any random direction
+			spreadStrength = 0.25f + (random() * 0.25f); //.25 ~ .5
+
+			targ->client->ps.velocity[0] += sin(spreadAngle) * spreadStrength * am_rocketArena_groundLaunch.integer;
+			targ->client->ps.velocity[1] += cos(spreadAngle) * spreadStrength * am_rocketArena_groundLaunch.integer;
 			targ->client->ps.velocity[2] += am_rocketArena_groundLaunch.integer;
 		} else {
 			VectorScale (dir, g_knockback.value * (float)knockback / mass, kvel);
