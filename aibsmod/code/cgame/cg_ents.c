@@ -482,7 +482,11 @@ static void CG_Missile( centity_t *cent ) {
 	}
 
 	// add to refresh list, possibly with quad glow
-	CG_AddRefEntityWithPowerups( &ent, s1, TEAM_FREE );
+	//aibsmod - this never worked, else we'd see grenades with quad shaders around them
+	//The reason is, I'm guessing, PW_QUAD isn't set on quad missiles
+//	CG_AddRefEntityWithPowerups( &ent, s1, TEAM_FREE );
+
+	trap_R_AddRefEntityToScene(&ent);
 }
 
 /*

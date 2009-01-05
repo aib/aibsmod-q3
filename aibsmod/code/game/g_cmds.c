@@ -1203,10 +1203,11 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		trap_SendServerCommand( ent-g_entities, "print \"You have called the maximum number of votes.\n\"" );
 		return;
 	}
-	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
-		trap_SendServerCommand( ent-g_entities, "print \"Not allowed to call a vote as spectator.\n\"" );
-		return;
-	}
+	//aibsmod - screw this
+//	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+//		trap_SendServerCommand( ent-g_entities, "print \"Not allowed to call a vote as spectator.\n\"" );
+//		return;
+//	}
 
 	// make sure it is a valid command to vote on
 	trap_Argv( 1, arg1, sizeof( arg1 ) );
@@ -1373,10 +1374,11 @@ void Cmd_Vote_f( gentity_t *ent ) {
 		trap_SendServerCommand( ent-g_entities, "print \"Vote already cast.\n\"" );
 		return;
 	}
-	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
-		trap_SendServerCommand( ent-g_entities, "print \"Not allowed to vote as spectator.\n\"" );
-		return;
-	}
+	//aibsmod - screw this
+//	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+//		trap_SendServerCommand( ent-g_entities, "print \"Not allowed to vote as spectator.\n\"" );
+//		return;
+//	}
 
 	trap_SendServerCommand( ent-g_entities, "print \"Vote cast.\n\"" );
 
@@ -1428,7 +1430,7 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 		return;
 	}
 	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
-		trap_SendServerCommand( ent-g_entities, "print \"Not allowed to call a vote as spectator.\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"Not allowed to call a team vote as spectator.\n\"" );
 		return;
 	}
 
@@ -1549,7 +1551,7 @@ void Cmd_TeamVote_f( gentity_t *ent ) {
 		return;
 	}
 	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
-		trap_SendServerCommand( ent-g_entities, "print \"Not allowed to vote as spectator.\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"Not allowed to team vote as spectator.\n\"" );
 		return;
 	}
 

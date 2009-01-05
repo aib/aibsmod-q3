@@ -145,22 +145,12 @@ void TeamMain_MenuInit( void ) {
 	trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);
 	gametype = atoi( Info_ValueForKey( info,"g_gametype" ) );
 
-	// set initial states
-	switch( gametype ) {
-	case GT_SINGLE_PLAYER:
-	case GT_FFA:
-	case GT_TOURNAMENT:
-	case GT_RAMBO:
+	//aibsmod - This is much simpler than a switch
+	if (gametype < GT_TEAM) {
 		s_teammain.joinred.generic.flags  |= QMF_GRAYED;
 		s_teammain.joinblue.generic.flags |= QMF_GRAYED;
-		break;
-
-	default:
-	case GT_TEAM:
-	case GT_RAMBO_TEAM:
-	case GT_CTF:
+	} else {
 		s_teammain.joingame.generic.flags |= QMF_GRAYED;
-		break;
 	}
 
 	Menu_AddItem( &s_teammain.menu, (void*) &s_teammain.frame );

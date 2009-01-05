@@ -200,6 +200,7 @@ vmCvar_t	am_friendlyColors;
 vmCvar_t	am_demoFastForwardSpeed;
 
 vmCvar_t	amh_depth;
+vmCvar_t	amh_customPlayerShader;
 
 vmCvar_t	model;
 vmCvar_t	headmodel;
@@ -363,6 +364,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &am_demoFastForwardSpeed, "am_demoFastForwardSpeed", "50", CVAR_ARCHIVE },
 
 	{ &amh_depth, "amh_depth", "0", CVAR_CHEAT },
+	{ &amh_customPlayerShader, "amh_customPlayerShader", "0", CVAR_CHEAT },
 
 	//aibsmod - fixing model cvars
 	{ &model,			"model",			DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE },
@@ -1217,6 +1219,7 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.tripmineExplosionShader = trap_R_RegisterShader("tripmineExplosion");
 	cgs.media.ramboShader = trap_R_RegisterShader("powerups/rambo");
 	cgs.media.ramboWeaponShader = trap_R_RegisterShader("powerups/ramboWeapon");
+	cgs.media.customPlayerShader = trap_R_RegisterShader("players/custom");
 
 	cgs.media.medalAirRocket = trap_R_RegisterShader("medals/airrocket");
 	cgs.media.medalAirGrenade = trap_R_RegisterShader("medals/airgrenade");

@@ -539,7 +539,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	InitBodyQue();
 
 	ClearRegisteredItems();
-VectorSet(level.footballSpawnPoint, 0, 0, 100);
+
 	// parse the key/value pairs and spawn gentities
 	//aibsmod - also look for football and goal post spawn points
 	G_SpawnEntitiesFromString();
@@ -547,7 +547,10 @@ VectorSet(level.footballSpawnPoint, 0, 0, 100);
 	//aibsmod initialization
 	level.rambo = NULL;
 	if (g_gametype.integer == GT_FOOTBALL) {
-		football_create(level.footballSpawnPoint);
+		if (level.footballSpawnFound) { //found any kind of spawn point for the football
+			football_create(level.footballSpawnPoint);
+		}
+
 		if (level.goalSpawnPointsFound == 2) { //found CTF flag posts we should convert to goal posts
 			goalpost_create(level.redGoalSpawnPoint, TEAM_RED);
 			goalpost_create(level.blueGoalSpawnPoint, TEAM_BLUE);
@@ -883,6 +886,12 @@ void CalculateRanks( void ) {
 						level.follow2 = i;
 					}
 				}
+			}
+
+			//aibsmod - let the spectators count as voters, too
+			else {
+				if ( !(g_entities[i].r.svFlags & SVF_BOT) )
+					level.numVotingClients++;
 			}
 		}
 	}

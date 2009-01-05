@@ -428,7 +428,7 @@ RAILGUN
 weapon_railgun_fire
 =================
 */
-//http://code3arena.planetquake.gamespy.com/tutorials/tutorial5.shtml
+//aibsmod - taken from http://code3arena.planetquake.gamespy.com/tutorials/tutorial5.shtml
 #define	MAX_RAIL_HITS	4
 void weapon_railgun_fire (gentity_t *ent) {
 	vec3_t		end;
@@ -558,7 +558,7 @@ void weapon_railgun_fire (gentity_t *ent) {
 	}
 	tent->s.clientNum = ent->s.clientNum;
 
-	//send the effect to everyone since it tunnels through walls
+	//aibsmod - send the effect to everyone since it tunnels through walls
 	tent->r.svFlags |= SVF_BROADCAST;
 
 	// give the shooter a reward sound if they have made two railgun hits in a row

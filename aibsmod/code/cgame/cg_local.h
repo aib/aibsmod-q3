@@ -839,6 +839,7 @@ typedef struct {
 	qhandle_t	ramboShader;
 	qhandle_t	ramboWeaponShader;
 	qhandle_t	tripmineExplosionShader;
+	qhandle_t	customPlayerShader;
 
 	qhandle_t	medalAirRocket;
 	qhandle_t	medalAirGrenade;
@@ -1280,6 +1281,7 @@ extern	vmCvar_t		am_friendlyColors;
 extern	vmCvar_t		am_demoFastForwardSpeed;
 
 extern	vmCvar_t		amh_depth;
+extern	vmCvar_t		amh_customPlayerShader;
 
 //making these proper cvars, sigh
 extern	vmCvar_t		model;
