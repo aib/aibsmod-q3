@@ -455,6 +455,9 @@ typedef enum {
 	EV_TAUNT_PATROL,
 
 	//aibsmod events
+	EV_TRIPMINE_FIRE,		//pmove communicates this to server if tripmine is being fired
+	EV_REDEEMER_FIRE,		//same
+
 	EV_RAMBO_STEAL,			//rambo changed (might have just died)
 	EV_RAMBO_KILL,			//rambo killed someone
 
@@ -468,7 +471,6 @@ typedef enum {
 
 	EV_DROP_WEAPON,
 
-	EV_TRIPMINE_FIRE,		//pmove communicates this to server if tripmine is being fired
 	EV_TRIPMINE				//tripmine sounds
 
 } entity_event_t;

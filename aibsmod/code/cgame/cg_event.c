@@ -1206,12 +1206,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		break;
 
 	//aibsmod stuff
-	case EV_TRIPMINE_FIRE:
-		break;
-
-	case EV_REDEEMER_FIRE:
-		break;
-
 	case EV_RAMBO_STEAL:
 		DEBUGNAME("EV_RAMBO_STEAL");
 		if (es->eventParm == 1) { //stolen
@@ -1403,6 +1397,9 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		}
 		break;
 
+	case EV_TRIPMINE_FIRE:
+		break;
+
 	case EV_TRIPMINE:
 		switch (es->eventParm) {
 			case 1: //tripmine arming
@@ -1422,7 +1419,23 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				le->light = 300;
 				VectorCopy(color, le->lightColor);
 				CG_ImpactMark(cgs.media.burnMarkShader, es->origin, es->origin2, random()*360, 1,1,1,1, qfalse, 128, qfalse);
+
 				break;
+			/*	//aibsmod
+				case WP_TRIPMINE: //modified rocket explosion
+					mod = ;
+					shader = ;
+					sfx = ;
+					mark = ;
+					radius = 128;
+					light = 300;
+					isSprite = qtrue;
+					duration = 1000;
+					lightColor[0] = 1;
+					lightColor[1] = 0.75;
+					lightColor[2] = 0.0;*/
+
+
 		}
 		break;
 	//aibsmod stuff ends

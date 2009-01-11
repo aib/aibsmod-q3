@@ -1823,6 +1823,26 @@ void ClientCommand( int clientNum ) {
 		Cmd_Drop_f(ent);
 	else if (Q_stricmp(cmd, "teleport") == 0)
 		Cmd_Teleport_f(ent);
+else if (Q_stricmp(cmd, "astral") == 0) {
+char		s[MAX_TOKEN_CHARS];
+float x, y, z;
+
+if (trap_Argc() == 4) {
+trap_Argv(1, s, sizeof(s));
+x = atof(s);
+trap_Argv(2, s, sizeof(s));
+y = atof(s);
+trap_Argv(3, s, sizeof(s));
+z = atof(s);
+
+VectorSet(ent->client->eyesOrigin, x, y, z);
+ent->client->astral = qtrue;
+} else {
+trap_SendServerCommand( ent-g_entities, va("print \"usage: astral x y z\n\""));
+}
+} else if (Q_stricmp(cmd, "noastral") == 0) {
+ent->client->astral = qfalse;
+}
 
 	else
 		trap_SendServerCommand( clientNum, va("print \"unknown cmd %s\n\"", cmd ) );

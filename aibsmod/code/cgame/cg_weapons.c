@@ -193,12 +193,10 @@ CG_RailTrail
 ==========================
 */
 //aibsmod - modified to take clientNum instead of clientInfo*
-//also modified so piercing rails (of length <=8192) don't dry out the LocalEntities pool
 void CG_RailTrail (int clientNum, vec3_t start, vec3_t end) {
 	vec3_t axis[36], move, move2, next_move, vec, temp;
 	float  len;
 	int    i, j, skip;
-	int		totalDots;
 
 	localEntity_t *le;
 	refEntity_t   *re;
@@ -210,7 +208,6 @@ void CG_RailTrail (int clientNum, vec3_t start, vec3_t end) {
 #define RADIUS   4
 #define ROTATION 1
 #define SPACING  5
-#define MAX_DOTS 128
 
 	start[2] -= 4;
 	VectorCopy (start, move);
@@ -275,12 +272,8 @@ void CG_RailTrail (int clientNum, vec3_t start, vec3_t end) {
 	skip = -1;
 
 	j = 18;
-	totalDots = 0;
     for (i = 0; i < len; i += SPACING) {
 		if (i != skip) {
-			if (++totalDots > MAX_DOTS)
-				break;
-
 			skip = i + SPACING;
 			le = CG_AllocLocalEntity();
             re = &le->refEntity;

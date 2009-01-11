@@ -327,6 +327,10 @@ struct gclient_s {
 	int			teleportTime;			//next allowed time to teleport
 	int			lastFollowDirection;	//so left/right keys in spectator mode don't cycle too fast
 
+	qboolean	astral;
+	vec3_t		eyesOrigin;
+	vec3_t		actualOrigin;
+
 	char		*areabits;
 };
 

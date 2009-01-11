@@ -215,8 +215,6 @@ vmCvar_t	am_trainingMode;
 vmCvar_t	am_airControl;
 vmCvar_t	am_disableWeapons;
 vmCvar_t	am_tripmineGrenades;
-vmCvar_t	am_redeemerBFG;
-
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -344,7 +342,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &am_airControl, "am_airControl", "1.0", CVAR_SERVERINFO },
 	{ &am_disableWeapons, "am_disableWeapons", "0", CVAR_SERVERINFO },
 	{ &am_tripmineGrenades, "am_tripmineGrenades", "0", CVAR_SERVERINFO },
-	{ &am_redeemerBFG, "am_redeemerBFG", "0", CVAR_SERVERINFO },
 
 	//aibsmod client-side cvars
 	{ &am_drawFootballTracer, "am_drawFootballTracer", "0", CVAR_ARCHIVE },
@@ -1217,7 +1214,6 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.goalpostBlueRightModel = trap_R_RegisterModel("models/football/goalpost_blue_right.md3");
 
 	cgs.media.tripmineModel = trap_R_RegisterModel("models/weapons/tripmine.md3");
-	cgs.media.redeemerModel = trap_R_RegisterModel("models/ammo/rocket/rocket.md3");
 
 	//aibsmod shaders
 	cgs.media.tripmineExplosionShader = trap_R_RegisterShader("tripmineExplosion");

@@ -834,13 +834,11 @@ typedef struct {
 	qhandle_t	goalpostBlueRightModel;
 
 	qhandle_t	tripmineModel;
-	qhandle_t	redeemerModel;
 
 	//aibsmod shaders
 	qhandle_t	ramboShader;
 	qhandle_t	ramboWeaponShader;
 	qhandle_t	tripmineExplosionShader;
-	qhandle_t	customPlayerShader;
 
 	qhandle_t	medalAirRocket;
 	qhandle_t	medalAirGrenade;
@@ -1282,7 +1280,6 @@ extern	vmCvar_t		am_friendlyColors;
 extern	vmCvar_t		am_demoFastForwardSpeed;
 
 extern	vmCvar_t		amh_depth;
-extern	vmCvar_t		amh_customPlayerShader;
 
 //making these proper cvars, sigh
 extern	vmCvar_t		model;
@@ -1579,7 +1576,6 @@ void CG_Laser(const vec3_t start, const vec3_t end, const vec3_t color);
 void CG_Football(centity_t *cent);
 void CG_FootballGoalpost(centity_t *cent);
 void CG_Tripmine(centity_t *cent);
-void CG_DifferentPlayerModel(centity_t *cent, int renderfx);
 void CG_BBox(centity_t *cent);
 void CG_DrawFootballTracer(void);
 

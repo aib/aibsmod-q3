@@ -637,8 +637,4 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand ("stats");
 	trap_AddCommand ("teamtask");
 	trap_AddCommand ("loaddefered");	// spelled wrong, but not changing for demo
-
-	//aibsmod commands
-	trap_AddCommand("drop");
-	trap_AddCommand("teleport");
 }
