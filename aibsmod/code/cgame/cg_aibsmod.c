@@ -288,6 +288,31 @@ void CG_Tripmine(centity_t *cent)
 	}
 }
 
+//draw a redeemer missile
+void CG_DifferentPlayerModel(centity_t *cent, int renderfx)
+{
+	refEntity_t	redeemerMissile;
+
+	memset(&redeemerMissile, 0, sizeof(redeemerMissile));
+
+	//set frame
+	redeemerMissile.frame = cent->currentState.frame;
+	redeemerMissile.oldframe = redeemerMissile.frame;
+	redeemerMissile.backlerp = 0;
+
+	VectorCopy(cent->lerpOrigin, redeemerMissile.origin);
+	VectorCopy(cent->lerpOrigin, redeemerMissile.oldorigin);
+
+	redeemerMissile.hModel = cgs.media.redeemerModel;
+	redeemerMissile.renderfx = renderfx;
+
+	//convert angles to axis
+	AnglesToAxis(cent->lerpAngles, redeemerMissile.axis);
+
+	//add to refresh list
+	trap_R_AddRefEntityToScene(&redeemerMissile);
+}
+
 //draw a bounding box (mins=origin2 and maxs=angles2)
 void CG_BBox(centity_t *cent)
 {

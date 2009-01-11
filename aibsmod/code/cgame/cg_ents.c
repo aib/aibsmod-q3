@@ -983,6 +983,9 @@ static void CG_AddCEntity( centity_t *cent ) {
 	case ET_BBOX:
 		CG_BBox(cent);
 		break;
+
+	case ET_CLONE:
+		CG_Player(cent);
 	}
 }
 

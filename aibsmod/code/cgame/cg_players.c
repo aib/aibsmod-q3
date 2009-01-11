@@ -2313,6 +2313,16 @@ void CG_Player( centity_t *cent ) {
 		}
 	}
 
+	//aibsmod - wallhack
+	if (amh_depth.integer)
+		renderfx |= RF_DEPTHHACK;
+
+	//aibsmod - draw something else (e.g. redeemer missile) if EF_DIFFERENT_MODEL is set
+	if (cent->currentState.eFlags & EF_DIFFERENT_MODEL) {
+		CG_DifferentPlayerModel(cent, renderfx);
+		return;
+	}
+
 	memset( &legs, 0, sizeof(legs) );
 	memset( &torso, 0, sizeof(torso) );
 	memset( &head, 0, sizeof(head) );
@@ -2336,10 +2346,6 @@ void CG_Player( centity_t *cent ) {
 	if ( cg_shadows.integer == 3 && shadow ) {
 		renderfx |= RF_SHADOW_PLANE;
 	}
-
-	//aibsmod - wallhack
-	if (amh_depth.integer)
-		renderfx |= RF_DEPTHHACK;
 
 	//aibsmod - CPMA skins
 	if (am_CPMASkins.integer) {

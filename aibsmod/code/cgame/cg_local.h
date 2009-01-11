@@ -834,6 +834,7 @@ typedef struct {
 	qhandle_t	goalpostBlueRightModel;
 
 	qhandle_t	tripmineModel;
+	qhandle_t	redeemerModel;
 
 	//aibsmod shaders
 	qhandle_t	ramboShader;
@@ -1578,6 +1579,7 @@ void CG_Laser(const vec3_t start, const vec3_t end, const vec3_t color);
 void CG_Football(centity_t *cent);
 void CG_FootballGoalpost(centity_t *cent);
 void CG_Tripmine(centity_t *cent);
+void CG_DifferentPlayerModel(centity_t *cent, int renderfx);
 void CG_BBox(centity_t *cent);
 void CG_DrawFootballTracer(void);
 
