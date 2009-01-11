@@ -1280,9 +1280,6 @@ void ClientSpawn(gentity_t *ent) {
 	//Clear last jump time
 	ent->jumpTime = level.time;
 
-	//Start tracking origin
-	VectorCopy(client->ps.origin, client->actualOrigin);
-
 	// run a client frame to drop exactly to the floor,
 	// initialize animations and other things
 	client->ps.commandTime = level.time - 100;

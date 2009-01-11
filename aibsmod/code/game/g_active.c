@@ -779,10 +779,6 @@ void ClientThink_real( gentity_t *ent ) {
 	if (client->pers.connected != CON_CONNECTED) {
 		return;
 	}
-
-	//aibsmod - restore origin
-	VectorCopy(client->actualOrigin, client->ps.origin);
-
 	// mark the time, so the connection sprite can be removed
 	ucmd = &ent->client->pers.cmd;
 
@@ -1066,11 +1062,6 @@ void ClientThink_real( gentity_t *ent ) {
 
 	// perform once-a-second actions
 	ClientTimerActions( ent, msec );
-
-	//aibsmod - save new origin and if astral, return to eyes
-	VectorCopy(client->ps.origin, client->actualOrigin);
-	if (client->astral)
-		VectorCopy(client->eyesOrigin, client->ps.origin);
 }
 
 /*
