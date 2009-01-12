@@ -663,8 +663,9 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 
 		//aibsmod
 		case EV_TRIPMINE_FIRE:	//client firing tripmine
-			if (am_tripmineGrenades.integer && ((ent->client->ps.ammo[WP_GRENADE_LAUNCHER] < 0) || (ent->client->ps.ammo[WP_GRENADE_LAUNCHER] >= 5)) && CheckTripmineAttack(ent))
-				ent->client->ps.ammo[WP_GRENADE_LAUNCHER] -= 5;
+			if (am_tripmineGrenades.integer && ((ent->client->ps.ammo[WP_GRENADE_LAUNCHER] == -1) || (ent->client->ps.ammo[WP_GRENADE_LAUNCHER] >= 5)) && CheckTripmineAttack(ent))
+				if (ent->client->ps.ammo[WP_GRENADE_LAUNCHER] != -1)
+					ent->client->ps.ammo[WP_GRENADE_LAUNCHER] -= 5;
 			break;
 
 		default:
@@ -832,11 +833,6 @@ void ClientThink_real( gentity_t *ent ) {
 		return;
 	}
 
-	//aibsmod - check for air rocketed players hitting the ground
-	if ((ent->s.groundEntityNum != ENTITYNUM_NONE) || ent->waterlevel) {
-		ra_hit_ground(ent);
-	}
-
 	// check for inactivity timer, but never drop the local client of a non-dedicated server
 	if ( !ClientInactivityTimer( client ) ) {
 		return;
@@ -980,6 +976,11 @@ void ClientThink_real( gentity_t *ent ) {
 
 	if ( !( ent->client->ps.eFlags & EF_FIRING ) ) {
 		client->fireHeld = qfalse;		// for grapple
+	}
+
+	//aibsmod - check for air rocketed players hitting the ground
+	if ((ent->s.groundEntityNum != ENTITYNUM_NONE) || ent->waterlevel) {
+		ra_hit_ground(ent);
 	}
 
 	//aibsmod - update buttonsEntity
