@@ -957,10 +957,17 @@ void ClientThink_real( gentity_t *ent ) {
 				ent->client->ps.pm_type = PM_SPINTERMISSION;
 			}
 		}
-		Pmove (&pm);
-#else
-		Pmove (&pm);
 #endif
+
+	//aibsmod - Pmove uses clientnum for collision exceptions
+	if (ent->s.eType == ET_CLONE)
+		pm.ps->clientNum = ent->s.number;
+
+	Pmove (&pm);
+
+	//aibsmod - Pmove uses clientnum for collision exceptions
+	if (ent->s.eType == ET_CLONE)
+		pm.ps->clientNum = ent->s.clientNum;
 
 	// save results of pmove
 	if ( ent->client->ps.eventSequence != oldEventSequence ) {
@@ -983,8 +990,8 @@ void ClientThink_real( gentity_t *ent ) {
 		ra_hit_ground(ent);
 	}
 
-	//aibsmod - update buttonsEntity
-	if (client->pers.buttonsEntity) {
+	//aibsmod - update buttonsEntity (not on clones)
+	if ((ent->s.eType != ET_CLONE) && client->pers.buttonsEntity) {
 		//update owner (we seem to need this)
 		client->pers.buttonsEntity->s.otherEntityNum = client->ps.clientNum;
 

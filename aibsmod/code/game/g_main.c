@@ -1873,9 +1873,15 @@ int start, end;
 			continue;
 		}
 
-		//aibsmod - use G_RunFootball for ET_FOOTBALL
+		//aibsmod
 		if (ent->s.eType == ET_FOOTBALL) {
 			G_RunFootball(ent);
+			continue;
+		}
+
+		//aibsmod
+		if (ent->s.eType == ET_CLONE) {
+			G_RunClone(ent);
 			continue;
 		}
 

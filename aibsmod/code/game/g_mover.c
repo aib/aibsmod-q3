@@ -44,10 +44,10 @@ gentity_t	*G_TestEntityPosition( gentity_t *ent ) {
 	} else {
 		trap_Trace( &tr, ent->s.pos.trBase, ent->r.mins, ent->r.maxs, ent->s.pos.trBase, ent->s.number, mask );
 	}
-	
+
 	if (tr.startsolid)
 		return &g_entities[ tr.entityNum ];
-		
+
 	return NULL;
 }
 
@@ -103,7 +103,7 @@ qboolean	G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move, v
 
 	// EF_MOVER_STOP will just stop when contacting another entity
 	// instead of pushing it, but entities can still ride on top of it
-	if ( ( pusher->s.eFlags & EF_MOVER_STOP ) && 
+	if ( ( pusher->s.eFlags & EF_MOVER_STOP ) &&
 		check->s.groundEntityNum != pusher->s.number ) {
 		return qfalse;
 	}
@@ -121,7 +121,7 @@ qboolean	G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move, v
 	}
 	pushed_p++;
 
-	// try moving the contacted entity 
+	// try moving the contacted entity
 	// figure movement due to the pusher's amove
 	G_CreateRotationMatrix( amove, transpose );
 	G_TransposeMatrix( transpose, matrix );
@@ -192,7 +192,7 @@ qboolean G_CheckProxMinePosition( gentity_t *check ) {
 	VectorMA(check->s.pos.trBase, 0.125, check->movedir, start);
 	VectorMA(check->s.pos.trBase, 2, check->movedir, end);
 	trap_Trace( &tr, start, NULL, NULL, end, check->s.number, MASK_SOLID );
-	
+
 	if (tr.startsolid || tr.fraction < 1)
 		return qfalse;
 
@@ -213,7 +213,7 @@ qboolean G_TryPushingProxMine( gentity_t *check, gentity_t *pusher, vec3_t move,
 	VectorSubtract (vec3_origin, amove, org);
 	AngleVectors (org, forward, right, up);
 
-	// try moving the contacted entity 
+	// try moving the contacted entity
 	VectorAdd (check->s.pos.trBase, move, check->s.pos.trBase);
 
 	// figure movement due to the pusher's amove
@@ -336,7 +336,8 @@ qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **
 		}
 #endif
 		// only push items and players
-		if ( check->s.eType != ET_ITEM && check->s.eType != ET_PLAYER && !check->physicsObject ) {
+		//aibsmod - and clones
+		if ( check->s.eType != ET_ITEM && check->s.eType != ET_PLAYER && check->s.eType != ET_CLONE && !check->physicsObject ) {
 			continue;
 		}
 
@@ -371,7 +372,7 @@ qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **
 			continue;
 		}
 
-		
+
 		// save off the obstacle so we can call the block function (crush, etc)
 		*obstacle = check;
 
@@ -381,7 +382,8 @@ qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **
 		for ( p=pushed_p-1 ; p>=pushed ; p-- ) {
 			VectorCopy (p->origin, p->ent->s.pos.trBase);
 			VectorCopy (p->angles, p->ent->s.apos.trBase);
-			if ( p->ent->client ) {
+			//aibsmod - the above should be enough for clones
+			if ((p->ent->s.eType != ET_CLONE) && ( p->ent->client )) {
 				p->ent->client->ps.delta_angles[YAW] = p->deltayaw;
 				VectorCopy (p->origin, p->ent->client->ps.origin);
 			}
@@ -519,7 +521,7 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time ) {
 		ent->s.pos.trType = TR_LINEAR_STOP;
 		break;
 	}
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, ent->r.currentOrigin );	
+	BG_EvaluateTrajectory( &ent->s.pos, level.time, ent->r.currentOrigin );
 	trap_LinkEntity( ent );
 }
 
@@ -1057,7 +1059,7 @@ void SpawnPlatTrigger( gentity_t *ent ) {
 	trigger->touch = Touch_PlatCenterTrigger;
 	trigger->r.contents = CONTENTS_TRIGGER;
 	trigger->parent = ent;
-	
+
 	tmin[0] = ent->pos1[0] + ent->r.mins[0] + 33;
 	tmin[1] = ent->pos1[1] + ent->r.mins[1] + 33;
 	tmin[2] = ent->pos1[2] + ent->r.mins[2];
@@ -1074,7 +1076,7 @@ void SpawnPlatTrigger( gentity_t *ent ) {
 		tmin[1] = ent->pos1[1] + (ent->r.mins[1] + ent->r.maxs[1]) *0.5;
 		tmax[1] = tmin[1] + 1;
 	}
-	
+
 	VectorCopy (tmin, trigger->r.mins);
 	VectorCopy (tmax, trigger->r.maxs);
 
@@ -1182,7 +1184,7 @@ void SP_func_button( gentity_t *ent ) {
 	float		lip;
 
 	ent->sound1to2 = G_SoundIndex("sound/movers/switches/butn2.wav");
-	
+
 	if ( !ent->speed ) {
 		ent->speed = 40;
 	}

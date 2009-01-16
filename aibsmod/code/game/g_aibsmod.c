@@ -225,3 +225,104 @@ void TeleportPlayerWithoutShooting(gentity_t *player, vec3_t dest, vec3_t angles
 		trap_LinkEntity (player);
 	}
 }
+
+gentity_t *ClonePlayer(gentity_t *ent)
+{
+	gentity_t *clone;
+
+	if (!ent->client)
+		return NULL;
+
+	clone = G_Spawn();
+	clone->client = ent->client;
+	clone->classname = "clone";
+	clone->s.eType = ET_CLONE;
+	clone->s.clientNum = ent->s.clientNum;
+
+	//Set killability and health
+	clone->takedamage = qtrue;
+	clone->health = ent->health;
+	clone->die = player_die;
+
+	//Set contents and bbox
+	clone->r.contents = ent->r.contents;
+	clone->clipmask = ent->clipmask;
+	VectorCopy(ent->r.mins, clone->r.mins);
+	VectorCopy(ent->r.maxs, clone->r.maxs);
+
+	G_SetOrigin(clone, ent->r.currentOrigin);
+
+	return clone;
+}
+
+//We want clones to behave like a synchonized player, so we'll run ClientThink_real here once every server frame, just like RunClient
+//Some stuff needs to be backed up and restored (such as player command arriving times)
+//Yet others need to be copied to actual player state
+//god help me --aib
+void G_RunClone(gentity_t *clone)
+{
+	//b_* are backups variables
+	gentity_t	*original;
+	int			b_commandTime;
+	int			b_pm_type;
+	vec3_t		b_origin;
+	vec3_t		b_velocity;
+	int			b_weaponTime;
+	int			b_serverTime;
+
+	//Kill clones of disconnected clients
+	if (clone->client->pers.connected != CON_CONNECTED) {
+		trap_UnlinkEntity(clone);
+		clone->inuse = qfalse;
+	}
+
+	original = &g_entities[clone->s.clientNum];
+
+	//backup
+	b_commandTime = clone->client->ps.commandTime;
+	b_pm_type = clone->client->ps.pm_type;
+	VectorCopy(clone->client->ps.origin, b_origin);
+	VectorCopy(clone->client->ps.velocity, b_velocity);
+	b_weaponTime = clone->client->ps.weaponTime;
+	b_serverTime = clone->client->pers.cmd.serverTime;
+
+	//now put clone data into the playerState
+	clone->client->ps.commandTime = level.previousTime;
+	clone->client->ps.pm_type = PM_NORMAL;
+	VectorCopy(clone->s.pos.trBase, clone->client->ps.origin);
+	VectorCopy(clone->s.pos.trDelta, clone->client->ps.velocity);
+	clone->client->pers.cmd.serverTime = level.time;
+
+	//cross your fingers and call ClientThink_real
+	ClientThink_real(clone);
+
+	//get modified playerState data back into the clone
+	VectorCopy(clone->client->ps.origin, clone->s.pos.trBase);
+	VectorCopy(clone->client->ps.velocity, clone->s.pos.trDelta);
+
+	//restore
+	clone->client->ps.commandTime = b_commandTime;
+	clone->client->ps.pm_type = b_pm_type;
+	VectorCopy(b_origin, clone->client->ps.origin);
+	VectorCopy(b_velocity, clone->client->ps.velocity);
+	clone->client->ps.weaponTime = b_weaponTime;
+	clone->client->pers.cmd.serverTime = b_serverTime;
+}
+
+/*
+//Kills a clone and returns the original entity
+gentity_t *KillClone(gentity_t *clone)
+{
+	gentity_t	*original;
+
+	original = &g_entities[clone->s.clientNum];
+
+	VectorCopy(clone->s.pos.trBase, clone->client->ps.origin);
+	VectorCopy(clone->s.pos.trDelta, clone->client->ps.velocity);
+
+	trap_UnlinkEntity(clone);
+	clone->inuse = qfalse;
+
+	return original;
+}
+*/

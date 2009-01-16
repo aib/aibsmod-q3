@@ -1032,6 +1032,8 @@ void give_rocketarena_weapons(gclient_t *player);
 void teleport_player_straight(gentity_t *player);
 void switch_rambo(gentity_t *oldrambo, gentity_t *newrambo);
 void TeleportPlayerWithoutShooting(gentity_t *player, vec3_t dest, vec3_t angles);
+gentity_t *ClonePlayer(gentity_t *ent);
+void G_RunClone(gentity_t *clone);
 
 //g_football.c
 void football_create(vec3_t origin);

@@ -722,6 +722,7 @@ typedef enum {
 	ET_FOOTBALL_SOLID,
 	ET_TRIPMINE,
 	ET_BBOX,
+	ET_CLONE,
 
 	ET_EVENTS				// any of the EV_* events can be added freestanding
 							// by setting eType to ET_EVENTS + eventNum

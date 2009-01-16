@@ -996,12 +996,22 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			spreadAngle = random() * 2.0f * M_PI; //any random direction
 			spreadStrength = 0.25f + (random() * 0.25f); //.25 ~ .5
 
-			targ->client->ps.velocity[0] += sin(spreadAngle) * spreadStrength * am_rocketArena_groundLaunch.integer;
-			targ->client->ps.velocity[1] += cos(spreadAngle) * spreadStrength * am_rocketArena_groundLaunch.integer;
-			targ->client->ps.velocity[2] += am_rocketArena_groundLaunch.integer;
+			VectorSet(kvel,
+				sin(spreadAngle) * spreadStrength * am_rocketArena_groundLaunch.integer,
+				cos(spreadAngle) * spreadStrength * am_rocketArena_groundLaunch.integer,
+				am_rocketArena_groundLaunch.integer
+			);
+
+//			VectorAdd(targ->client->ps.velocity, kvel, targ->client->ps.velocity);
 		} else {
 			VectorScale (dir, g_knockback.value * (float)knockback / mass, kvel);
-			VectorAdd (targ->client->ps.velocity, kvel, targ->client->ps.velocity);
+//			VectorAdd (targ->client->ps.velocity, kvel, targ->client->ps.velocity);
+		}
+
+		if (targ->s.eType == ET_CLONE) { //clones will have the knockback added to themselves, not the client
+			VectorAdd(targ->s.pos.trDelta, kvel, targ->s.pos.trDelta);
+		} else {
+			VectorAdd(targ->client->ps.velocity, kvel, targ->client->ps.velocity);
 		}
 
 		// set the timer so that the other client can't cancel

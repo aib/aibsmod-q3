@@ -1461,10 +1461,12 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 	} else if ( ps->stats[STAT_HEALTH] <= GIB_HEALTH ) {
 		s->eType = ET_INVISIBLE;
 	} else {
-		s->eType = ET_PLAYER;
+		if (s->eType != ET_CLONE) //aibsmod - we don't want our clones turning into ordinary players
+			s->eType = ET_PLAYER;
 	}
 
-	s->number = ps->clientNum;
+	if (s->eType != ET_CLONE) //aibsmod - nor into other entities!
+		s->number = ps->clientNum;
 
 	s->pos.trType = TR_INTERPOLATE;
 	VectorCopy( ps->origin, s->pos.trBase );
@@ -1537,10 +1539,12 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 	} else if ( ps->stats[STAT_HEALTH] <= GIB_HEALTH ) {
 		s->eType = ET_INVISIBLE;
 	} else {
-		s->eType = ET_PLAYER;
+		if (s->eType != ET_CLONE) //aibsmod - we don't want our clones turning into ordinary players
+			s->eType = ET_PLAYER;
 	}
 
-	s->number = ps->clientNum;
+	if (s->eType != ET_CLONE) //aibsmod - nor into other entities!
+		s->number = ps->clientNum;
 
 	s->pos.trType = TR_LINEAR_STOP;
 	VectorCopy( ps->origin, s->pos.trBase );

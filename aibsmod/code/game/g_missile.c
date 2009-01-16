@@ -334,7 +334,8 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 		}
 
 		// if it's a player, stick it on to them (flag them and remove this entity)
-		if( other->s.eType == ET_PLAYER && other->health > 0 ) {
+		//aibsmod - clones work, too
+		if( ((other->s.eType == ET_PLAYER) || (other->s.eType == ET_CLONE)) && other->health > 0 ) {
 			ProximityMine_Player( ent, other );
 			return;
 		}
