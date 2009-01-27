@@ -2313,6 +2313,12 @@ void CG_Player( centity_t *cent ) {
 		}
 	}
 
+	//aibsmod - draw players (not clones!) differently if the flag is set
+	if (cent->currentState.eType == ET_PLAYER && cent->currentState.eFlags & EF_DIFFERENT_MODEL) {
+		CG_DifferentModel(cent, renderfx);
+		return;
+	}
+
 	memset( &legs, 0, sizeof(legs) );
 	memset( &torso, 0, sizeof(torso) );
 	memset( &head, 0, sizeof(head) );

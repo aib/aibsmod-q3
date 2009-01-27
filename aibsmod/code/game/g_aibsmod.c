@@ -255,6 +255,17 @@ gentity_t *ClonePlayer(gentity_t *ent)
 	return clone;
 }
 
+void ReturnToClone(gentity_t *ent, gentity_t *clone)
+{
+//	G_SetOrigin(ent, clone->s.pos.trBase);
+	VectorCopy(clone->s.pos.trBase, ent->client->ps.origin);
+	VectorCopy(clone->s.pos.trDelta, ent->client->ps.velocity);
+
+	trap_UnlinkEntity(clone);
+	clone->inuse = qfalse;
+	clone->takedamage = qfalse;
+}
+
 //We want clones to behave like a synchonized player, so we'll run ClientThink_real here once every server frame, just like RunClient
 //Some stuff needs to be backed up and restored (such as player command arriving times)
 //Yet others need to be copied to actual player state
@@ -269,6 +280,7 @@ void G_RunClone(gentity_t *clone)
 	vec3_t		b_velocity;
 	int			b_weaponTime;
 	int			b_serverTime;
+	int			b_noclip;
 
 	//Kill clones of disconnected clients
 	if (clone->client->pers.connected != CON_CONNECTED) {
@@ -285,6 +297,7 @@ void G_RunClone(gentity_t *clone)
 	VectorCopy(clone->client->ps.velocity, b_velocity);
 	b_weaponTime = clone->client->ps.weaponTime;
 	b_serverTime = clone->client->pers.cmd.serverTime;
+	b_noclip = clone->client->noclip;
 
 	//now put clone data into the playerState
 	clone->client->ps.commandTime = level.previousTime;
@@ -292,6 +305,7 @@ void G_RunClone(gentity_t *clone)
 	VectorCopy(clone->s.pos.trBase, clone->client->ps.origin);
 	VectorCopy(clone->s.pos.trDelta, clone->client->ps.velocity);
 	clone->client->pers.cmd.serverTime = level.time;
+	clone->client->noclip = 0;
 
 	//cross your fingers and call ClientThink_real
 	ClientThink_real(clone);
@@ -307,22 +321,5 @@ void G_RunClone(gentity_t *clone)
 	VectorCopy(b_velocity, clone->client->ps.velocity);
 	clone->client->ps.weaponTime = b_weaponTime;
 	clone->client->pers.cmd.serverTime = b_serverTime;
+	clone->client->noclip = b_noclip;
 }
-
-/*
-//Kills a clone and returns the original entity
-gentity_t *KillClone(gentity_t *clone)
-{
-	gentity_t	*original;
-
-	original = &g_entities[clone->s.clientNum];
-
-	VectorCopy(clone->s.pos.trBase, clone->client->ps.origin);
-	VectorCopy(clone->s.pos.trDelta, clone->client->ps.velocity);
-
-	trap_UnlinkEntity(clone);
-	clone->inuse = qfalse;
-
-	return original;
-}
-*/

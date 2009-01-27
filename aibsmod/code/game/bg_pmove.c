@@ -28,6 +28,8 @@ float	pm_spectatorfriction = 5.0f;
 
 int		c_pmove = 0;
 
+static void PM_RedeemerMove(void);
+
 /*
 ===============
 PM_AddEvent
@@ -1826,7 +1828,6 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd ) {
 		}
 		ps->viewangles[i] = SHORT2ANGLE(temp);
 	}
-
 }
 
 
@@ -1956,6 +1957,13 @@ void PmoveSingle (pmove_t *pmove) {
 		return;
 	}
 
+	//aibsmod
+	if (pm->ps->pm_type == PM_REDEEMER) {
+		PM_RedeemerMove();
+		PM_DropTimers();
+		return;
+	}
+
 	if (pm->ps->pm_type == PM_FREEZE) {
 		return;		// no movement at all
 	}
@@ -2076,4 +2084,32 @@ void Pmove (pmove_t *pmove) {
 	}
 
 	//PM_CheckStuck();
+}
+
+//aibsmod
+static void PM_RedeemerMove(void)
+{
+	vec3_t oldDirection;
+	vec3_t newDirection;
+
+	//On the first frame, set up missile's velocity
+	if (pm->ps->pm_flags & PMF_FIREDREDEEMER) {
+		pm->ps->pm_flags &= ~(PMF_FIREDREDEEMER);
+
+		VectorCopy(pml.forward, newDirection);
+	}
+
+	//On subsequent frames, add a fraction of looking direction to missile's velocity
+	else {
+		VectorCopy(pm->ps->velocity, oldDirection);
+		VectorNormalize(oldDirection);
+
+		//Add movement constant (times frame time) times look vector to missile vector
+		VectorMA(oldDirection, REDEEMER_MOVE_CONSTANT*pml.frametime, pml.forward, newDirection);
+		VectorNormalize(newDirection);
+	}
+
+	//Velocity = REDEEMER_VELOCITY*newDirection, calculate origin
+	VectorMA(vec3_origin, REDEEMER_VELOCITY, newDirection, pm->ps->velocity);
+	VectorMA(pm->ps->origin, pml.frametime, pm->ps->velocity, pm->ps->origin);
 }

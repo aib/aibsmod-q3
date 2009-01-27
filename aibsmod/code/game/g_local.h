@@ -2,7 +2,6 @@
 //
 // g_local.h -- local definitions for game module
 
-#include "aibsmod.h"
 #include "q_shared.h"
 #include "bg_public.h"
 #include "g_public.h"
@@ -171,6 +170,10 @@ struct gentity_s {
 	float		laserDistance;			//tripmine fires when this changes
 
 	int			ignoreOwnerClearTime;	//time to clear EF_IGNORE_OWNER flag
+
+	int			redeeming;				//controlling a redeemer
+	gentity_t	*redeemClone;			//body to return to after redeemer explodes
+
 };
 
 
@@ -799,6 +802,7 @@ extern	vmCvar_t	g_proxMineTimeout;
 extern	vmCvar_t	am_piercingRail;
 extern	vmCvar_t	am_hyperGauntlet;
 extern	vmCvar_t	am_rocketBounce;
+extern	vmCvar_t	am_redeemerBFG;
 extern	vmCvar_t	am_teleportDelay;
 
 extern	vmCvar_t	am_spawnHealth;
@@ -1033,6 +1037,7 @@ void teleport_player_straight(gentity_t *player);
 void switch_rambo(gentity_t *oldrambo, gentity_t *newrambo);
 void TeleportPlayerWithoutShooting(gentity_t *player, vec3_t dest, vec3_t angles);
 gentity_t *ClonePlayer(gentity_t *ent);
+void ReturnToClone(gentity_t *ent, gentity_t *clone);
 void G_RunClone(gentity_t *clone);
 
 //g_football.c
@@ -1053,6 +1058,11 @@ void Tripmine_Arm(gentity_t *ent);
 void Tripmine_Think(gentity_t *ent);
 void Tripmine_Explode(gentity_t *ent);
 qboolean CheckTripmineAttack(gentity_t *ent);
+
+//g_redeemer.c
+void Redeemer_Fire(gentity_t *ent);
+void Redeemer_Check(gentity_t *ent);
+void Redeemer_Explode(gentity_t *ent);
 
 //g_rocketarena.c
 void ra_register_hit(gentity_t *attacker, gentity_t *inflictor, gentity_t *target);

@@ -1,8 +1,8 @@
 #include "g_local.h"
 
 //aibsmod
-const vec3_t tripmine_mins = { +0.0f, -13.0f, -7.0f };
-const vec3_t tripmine_maxs = { +2.0f, +13.0f, +7.0f };
+const static vec3_t tripmine_mins = { +0.0f, -13.0f, -7.0f };
+const static vec3_t tripmine_maxs = { +2.0f, +13.0f, +7.0f };
 
 void Tripmine_Arm(gentity_t *ent)
 {
@@ -98,7 +98,6 @@ qboolean CheckTripmineAttack(gentity_t *ent)
 	vec3_t		mineAngles;
 
 	AngleVectors(ent->client->ps.viewangles, forward, right, up);
-
 	CalcMuzzlePoint(ent, forward, right, up, muzzle);
 
 	VectorMA(muzzle, TRIPMINE_PLACE_RANGE, forward, end);

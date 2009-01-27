@@ -84,12 +84,21 @@ typedef enum {
 #define OWN_GOAL_SCORE			-10
 #define GOAL_ASSIST_SCORE		5
 
-//g_weapon.c
+//g_tripmine.c
 #define TRIPMINE_MASK			(CONTENTS_SOLID|CONTENTS_BODY)
 #define TRIPMINE_PLACE_RANGE	40.0f
 #define TRIPMINE_THINK_DELAY	50
 #define TRIPMINE_RANGE			8192
 #define TRIPMINE_ARM_TIME		2500
+
+//g_redeemer.c
+#define REDEEMER_MASK			(CONTENTS_SOLID|CONTENTS_BODY)
+
+//bg_pmove.c
+//Speed of the redeemer missile
+#define REDEEMER_VELOCITY		300.0f
+//How much of player's forward vector affects the missile trajectory
+#define REDEEMER_MOVE_CONSTANT	0.9f
 
 //explode if laser length changes this much in TRIPMINE_THINK_DELAY
 //to allow crawling away at 50ups, for example, this should be 50 * (1000 / TRIPMINE_THINK_DELAY)

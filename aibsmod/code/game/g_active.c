@@ -843,7 +843,10 @@ void ClientThink_real( gentity_t *ent ) {
 		client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
 	}
 
-	if ( client->noclip ) {
+	//aibsmod
+	if (ent->redeeming == 1) {
+		client->ps.pm_type = PM_REDEEMER;
+	} else if ( client->noclip ) {
 		client->ps.pm_type = PM_NOCLIP;
 	} else if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
 		client->ps.pm_type = PM_DEAD;
@@ -968,6 +971,11 @@ void ClientThink_real( gentity_t *ent ) {
 	//aibsmod - Pmove uses clientnum for collision exceptions
 	if (ent->s.eType == ET_CLONE)
 		pm.ps->clientNum = ent->s.clientNum;
+
+	//Was controlling a redeemer, check for hits
+	if (ent->redeeming == 1) {
+		Redeemer_Check(ent);
+	}
 
 	// save results of pmove
 	if ( ent->client->ps.eventSequence != oldEventSequence ) {

@@ -7,6 +7,7 @@
 
 //aibsmod - moved over to aibsmod.h
 //#define	GAME_VERSION		"baseq3-1"
+#include "aibsmod.h"
 
 #define	DEFAULT_GRAVITY		800
 #define	GIB_HEALTH			-40
@@ -118,7 +119,10 @@ typedef enum {
 	PM_DEAD,		// no acceleration or turning, but free falling
 	PM_FREEZE,		// stuck in place with no control
 	PM_INTERMISSION,	// no movement or status bar
-	PM_SPINTERMISSION	// no movement or status bar
+	PM_SPINTERMISSION,	// no movement or status bar
+
+	//aibsmod
+	PM_REDEEMER		//controlling a redeemer missile
 } pmtype_t;
 
 typedef enum {
@@ -144,6 +148,7 @@ typedef enum {
 #define PMF_INVULEXPAND		16384	// invulnerability sphere set to full size
 
 #define PMF_GOTFOOTBALL		0x00008000	//just got football, disable attack until next time (like PMF_RESPAWNED but doesn't affect jumps)
+#define PMF_FIREDREDEEMER	0x00010000	//just fired redeemer, don't clip client angles yet
 
 #define	PMF_ALL_TIMES	(PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
 
@@ -265,6 +270,8 @@ typedef enum {
 #define EF_BOUNCE_LIMITED	0x01000000		//like EF_BOUNCE, but limited times
 #define EF_AWARD_GOAL		0x00000800
 #define EF_IGNORE_OWNER		0x00000100		//don't allow .otherEntityNum to interact
+#define EF_DIFFERENT_MODEL	0x00000020		//draw a different model (e.g. redeemer missile) instead of a player
+
 
 // NOTE: may not have more than 16
 typedef enum {

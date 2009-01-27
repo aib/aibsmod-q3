@@ -86,6 +86,8 @@ set cc=lcc -DQ3_VM -S -Wf-target=bytecode -Wf-g -I..\..\cgame -I..\..\game -I..\
 @if errorlevel 1 goto quit
 %cc%  ../g_tripmine.c
 @if errorlevel 1 goto quit
+%cc%  ../g_redeemer.c
+@if errorlevel 1 goto quit
 %cc%  ../g_rocketarena.c
 @if errorlevel 1 goto quit
 

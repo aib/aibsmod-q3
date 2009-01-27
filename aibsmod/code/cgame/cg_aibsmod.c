@@ -651,3 +651,34 @@ void CG_SetShaderColors(int clientNum, amColorpart_t part, byte targetRGBA[4])
 	if (targetRGBA[1] < 32) targetRGBA[1] = 24;
 	if (targetRGBA[2] < 32) targetRGBA[2] = 24;
 }
+
+//Draw a different model, e.g. a redeemer missile
+void CG_DifferentModel(centity_t *cent, int renderfx)
+{
+	refEntity_t	body;
+	vec3_t angles;
+
+	memset(&body, 0, sizeof(body));
+
+	//set frame
+	body.frame = cent->currentState.frame;
+	body.oldframe = body.frame;
+	body.backlerp = 0;
+	body.renderfx = renderfx;
+
+	VectorCopy(cent->lerpOrigin, body.origin);
+	VectorCopy(cent->lerpOrigin, body.oldorigin);
+	AnglesToAxis(cent->lerpAngles, body.axis);
+
+	switch (cent->currentState.generic1) {
+		case 1: //redeemer missile
+			body.hModel = trap_R_RegisterModel("models/ammo/rocket/rocket.md3");
+
+			//look at where we're heading, not where we're looking
+			vectoangles(cent->currentState.pos.trDelta, angles);
+			AnglesToAxis(angles, body.axis);
+			break;
+	}
+
+	trap_R_AddRefEntityToScene(&body);
+}

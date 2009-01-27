@@ -894,7 +894,11 @@ void FireWeapon( gentity_t *ent ) {
 		weapon_railgun_fire( ent );
 		break;
 	case WP_BFG:
-		BFG_Fire( ent );
+		if (am_redeemerBFG.integer) {
+			Redeemer_Fire(ent);
+		} else {
+			BFG_Fire( ent );
+		}
 		break;
 	case WP_GRAPPLING_HOOK:
 		Weapon_GrapplingHook_Fire( ent );
