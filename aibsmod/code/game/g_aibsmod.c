@@ -251,19 +251,22 @@ gentity_t *ClonePlayer(gentity_t *ent)
 	VectorCopy(ent->r.maxs, clone->r.maxs);
 
 	G_SetOrigin(clone, ent->r.currentOrigin);
+	VectorCopy(ent->client->ps.origin, clone->s.pos.trBase);
+	VectorCopy(ent->client->ps.velocity, clone->s.pos.trDelta);
 
 	return clone;
 }
 
 void ReturnToClone(gentity_t *ent, gentity_t *clone)
 {
-//	G_SetOrigin(ent, clone->s.pos.trBase);
+	G_SetOrigin(ent, clone->s.pos.trBase);
 	VectorCopy(clone->s.pos.trBase, ent->client->ps.origin);
 	VectorCopy(clone->s.pos.trDelta, ent->client->ps.velocity);
 
-	trap_UnlinkEntity(clone);
-	clone->inuse = qfalse;
-	clone->takedamage = qfalse;
+	clone->client = NULL;
+	G_FreeEntity(clone);
+
+	trap_LinkEntity(ent);
 }
 
 //We want clones to behave like a synchonized player, so we'll run ClientThink_real here once every server frame, just like RunClient

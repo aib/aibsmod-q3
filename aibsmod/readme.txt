@@ -1,31 +1,14 @@
 *** aibsmod Documentation ***
 
-v0.94 Notes:
-	Bikac yeni bisey ekledim. Bir de asagidaki notlara bakin:
-
-v0.92 Notes:
-	Modelleri duzelttim. cg_forceModel, model, headmodel, team_model, team_headmodel, enemy_model ve enemy_headmodel'in hepsinin calismasi lazim. Tek sey, VQ3 modelleri kullaniyorsaniz, team game'lerde modellerin skinleri red/blue olarak replace ediliyor. (Mesela DM'de enemy_model'i bones/blue, headmodel'i bones/red yapip ucubik bir yaratikla karsilasmak mumkunken, TDM'de kafasi da vucudu da team rengini aliyor.)
-
-	forceModel'i acip kapamaya gerek yok, yukaridaki variable'lardan herhangi biri degistigi anda modellerin otomatik reload edilmesi lazim. CPMA modellerini acip kapadiktan sonra vid_restart hala sart, malesef.
-
-	Su yukarda bahsini ettigim durum disinda her seyin calismasi lazim, lutfen calismayan seyleri bana bildirin.
-
-v0.91 Notes:
-	Alt tab seyini, rocket arena'da havada vuranin gozukmesini duzelttim. 10 tane kadar yeni renk ekledim. aibsmod_test9 altina atilacak pak1.pk3 seklinde bir update bu. Yoksa serverdan otomatik olarak almasi lazim. Almazsa, modu tekrar indirebilirsiniz.
-
-v0.90 Notes:
-	#sourgaming:
-	Moda baya yeni bisiy ekledim. Bi tane yeni gametype'imiz var, mevcut gametype'lari \callvote g_gametype yazarak gorebilirsiniz. CPMA skin ve renk sistemi, dusman ve takim modelleri ayarlama var. Bu dosyanin Credits kismini da degistirdim, sanirim formati bu sekilde olacak. Atladigim bir suru birsey var; eger moda katkida bulunduysaniz, isminizin gecmesini istediginiz seklini (Orhan "aib" Kavrakoglu gibi) varsa atladigim seylerle birlikte bana IRC'den yollayiniz. Modu test edenlerden atladigim biri varsa (1-2 kereden fazla vq3 oynayanlari ariyorum, su anda sadece emin olduklarimi listeledim) nicklerini verirseniz, veya daha onemlisi bana gorunmek istedikleri isim/nickleri mesaj atmalarini soylerseniz, super olur.
-
-	Deli gibi Midair Arena oynamayi planliyorum.
-	--aib
+v1.00rc1 Notes:
+	Modun bu halini, sadece bug'lari duzelterek, 1.00 olarak release etmeyi dusunuyorum. Buldugunuz butun sorunlari bana IRC'den bildirirseniz sevinirim. (!qmemo aib42 midair'de dm17'de buyuk jumppadden atlarken grenade atinca disconnect oluyorum)
 
 Installation:
 
 	Extract the archive file (probably the one you found this file in) to your Quake 3 directory. The archive contains a directory itself, so you should have:
 
-	* X:\Quake3\aibsmod_test9\readme.txt
-	* X:\Quake3\aibsmod_test9\pak0.pk3
+	* X:\Quake3\aibsmod_test10\readme.txt
+	* X:\Quake3\aibsmod_test10\pak0.pk3
 
 	Where X:\Quake3 is your Quake 3 directory.
 
@@ -321,6 +304,12 @@ Credits:
 		Models
 		Sounds
 		Bad-looking graphics
+
+	Kemal "disq" Hadimli
+		Testing
+		Ideas
+		More testing
+		Constant nagging
 
 	Baska kimseyi yazmiyorum. Asagidakileri silicem. Mesaj atin.
 
