@@ -121,8 +121,24 @@ void teleport_player_straight(gentity_t *player)
 		}
 	}
 
-	if (backtrace_done)
+	if (backtrace_done) {
+		//drop the football
+		if (level.ballCarrier == player)
+			football_drop(level.football, player, NULL, NULL);
+
+		//drop flags if any
+		if ( player->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
+			Team_ReturnFlag( TEAM_FREE );
+		}
+		else if ( player->client->ps.powerups[PW_REDFLAG] ) {		// only happens in standard CTF
+			Team_ReturnFlag( TEAM_RED );
+		}
+		else if ( player->client->ps.powerups[PW_BLUEFLAG] ) {	// only happens in standard CTF
+			Team_ReturnFlag( TEAM_BLUE );
+		}
+		
 		TeleportPlayerWithoutShooting(player, endpoint, NULL);
+	}
 }
 
 //Called when rambo dies, used to switch rambo

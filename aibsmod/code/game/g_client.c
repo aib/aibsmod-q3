@@ -1344,14 +1344,16 @@ void ClientDisconnect( int clientNum ) {
 
 		// They don't get to take powerups with them!
 		// Especially important for stuff like CTF flags
-		TossClientItems( ent );
+		//aibsmod - don't drop anything in Rocket Arena
+		if (g_gametype.integer != GT_ROCKETARENA) {
+			TossClientItems( ent );
 #ifdef MISSIONPACK
-		TossClientPersistantPowerups( ent );
-		if( g_gametype.integer == GT_HARVESTER ) {
-			TossClientCubes( ent );
-		}
+			TossClientPersistantPowerups( ent );
+			if( g_gametype.integer == GT_HARVESTER ) {
+				TossClientCubes( ent );
+			}
 #endif
-
+		}
 	}
 
 	//aibsmod - lose rambo

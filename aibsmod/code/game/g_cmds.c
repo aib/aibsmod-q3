@@ -1823,8 +1823,6 @@ void ClientCommand( int clientNum ) {
 		Cmd_Drop_f(ent);
 	else if (Q_stricmp(cmd, "teleport") == 0)
 		Cmd_Teleport_f(ent);
-else if (Q_stricmp(cmd, "clone") == 0)
-ClonePlayer(ent);
 
 	else
 		trap_SendServerCommand( clientNum, va("print \"unknown cmd %s\n\"", cmd ) );

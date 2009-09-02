@@ -488,7 +488,7 @@ void CG_SetColors(int clientNum, amColorpart_t part, float targetRGB[3])
 	int spectator;
 
 	//No need to bother if CPMA skins are disabled
-	if (!am_CPMASkins.integer) return;
+	if (!am_CPMASkins.integer && part != AM_COLORPART_1 && part != AM_COLORPART_2) return;
 
 	//This function should not be called with clientNum = -1
 	if ((clientNum == -1) || (part == AM_COLORPART_NONE)) {
@@ -498,7 +498,7 @@ void CG_SetColors(int clientNum, amColorpart_t part, float targetRGB[3])
 
 	//Easter egg!
 	if (!strcmp(cgs.clientinfo[clientNum].name, "aib42")) {
-		colcycle = (cg.time % 12000) / 2000.0f;
+		colcycle = (cg.time % 24000) / 4000.0f;
 
 		//aibsmod version info
 		if (colcycle < 1.0f) {
